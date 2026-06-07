@@ -229,7 +229,8 @@ body.lang-fr [data-en]{display:none!important}
       <strong>WhatsApp :</strong> +212 6 11078244<br>
       <strong>Email :</strong> <a href="mailto:com.legrandbazardemarrakech@gmail.com">com.legrandbazardemarrakech@gmail.com</a><br>
       <strong>Instagram :</strong> <a href="https://instagram.com/legrandbazardemarrakech" target="_blank">@legrandbazardemarrakech</a><br>
-      <strong>Web :</strong> <a href="https://legrandbazarmarrakech.com" target="_blank">legrandbazarmarrakech.com</a>
+      <strong>Web :</strong> <a href="https://legrandbazarmarrakech.com" target="_blank">legrandbazarmarrakech.com</a><br>
+      <span style="opacity:.6;font-size:9px">SARL NYX &nbsp;|&nbsp; ICE : 002282634000063</span>
     </div>
   </div>
 
@@ -502,7 +503,60 @@ body.lang-fr [data-en]{display:none!important}
       </table>
     </div><!-- /block-carte -->
 
-    <!-- ══ REPAS GUIDE OFFERT ══ -->
+
+      <div id="sec-bar">
+      <div class="section-title">Bar &amp; Boissons</div>
+      <div class="carte-section-title" data-fr>— Forfaits — À partir de 15 personnes — Alcool en salle uniquement —</div>
+      <div class="carte-section-title" data-en>— Packages — From 15 guests — Alcohol in dining room only —</div>
+      <div class="bar-item" data-prix="20" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait eau simple (½ bouteille d'eau)</span><span class="bar-item-name" data-en>Still water (½ bottle)</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">20 DH</span></div>
+      <div class="bar-item" data-prix="90" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait soft (soft + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Soft drinks package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">90 DH</span></div>
+      <div class="bar-item" data-prix="180" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin de base (½ vin + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Basic wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">180 DH</span></div>
+      <div class="bar-item" data-prix="220" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin standard (½ vin blanc/rouge/gris/rosé + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Standard wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">220 DH</span></div>
+      <div class="bar-item" data-prix="250" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin Grand Bazar (½ vin rouge ou blanc + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Grand Bazar wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
+      <div class="carte-section-title openbar-title" data-fr>— Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
+      <div class="carte-section-title openbar-title" data-en>— Open Bar — From 30 guests — 30 min rounds —</div>
+      <div class="bar-item" data-prix="170" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar Standard (vin + bière + soft + thé + café + eau)</span><span class="bar-item-name" data-en>Open bar Standard</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">170 DH</span></div>
+      <div class="bar-item" data-prix="240" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar Royal (vin haut de gamme + bière + soft + thé + café + eau)</span><span class="bar-item-name" data-en>Open bar Royal</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">240 DH</span></div>
+      <div class="bar-item" data-prix="250" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar complet de Base (alcool fort + vin base + soft)</span><span class="bar-item-name" data-en>Full Open bar Base</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
+      <div class="bar-item" data-prix="350" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar complet Royal (alcool fort haut de gamme + vin luxe + soft)</span><span class="bar-item-name" data-en>Full Open bar Royal</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">350 DH</span></div>
+      <table class="recap-table print-only-recap" id="recap-bar" style="margin-top:8px;table-layout:fixed">
+        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
+        <thead><tr>
+          <th>Bar &amp; Boissons</th>
+          <th class="r">P.U. TTC</th>
+          <th class="r">Nb.</th>
+          <th class="r">Total TTC</th>
+        </tr></thead>
+        <tbody id="recap-bar-body"></tbody>
+      </table>
+    </div>
+
+    <!-- ══ ANIMATIONS ══ -->
+    <div id="sec-anim">
+      <div class="section-title anim-title">Animations &amp; Extras (optionnel)</div>
+      <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Gnawa — 4 musiciens</span><span class="bar-item-name" data-en>Gnawa — 4 musicians</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
+      <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Danseuses orientales — 2 danseuses, 1 passage 15 min</span><span class="bar-item-name" data-en>Oriental dancers — 2 dancers, 15 min set</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
+      <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Groupe de musique — 3 musiciens + chanteur</span><span class="bar-item-name" data-en>Live band — 3 musicians + singer</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
+      <div class="bar-item" data-prix="1000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Joueur de saxophone</span><span class="bar-item-name" data-en>Saxophone player</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">1 000 DH</span></div>
+      <div class="bar-item" data-prix="40" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Calligraphe (hors support) — par personne</span><span class="bar-item-name" data-en>Calligrapher (materials not incl.) — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">40 DH</span></div>
+      <div class="bar-item" data-prix="5" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Flyer personnalisé recto — par personne</span><span class="bar-item-name" data-en>Custom flyer single-sided — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">5 DH</span></div>
+      <div class="bar-item" data-prix="10" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Flyer personnalisé recto-verso — par personne</span><span class="bar-item-name" data-en>Custom flyer double-sided — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">10 DH</span></div>
+      <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name">DJ</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
+      <table class="recap-table print-only-recap" id="recap-anim" style="margin-top:8px;table-layout:fixed">
+        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
+        <thead><tr>
+          <th>Animations &amp; Extras</th>
+          <th class="r">P.U. TTC</th>
+          <th class="r">Nb.</th>
+          <th class="r">Total TTC</th>
+        </tr></thead>
+        <tbody id="recap-anim-body"></tbody>
+      </table>
+    </div>
+
+    <!-- TOTAUX -->
+
+<!-- ══ REPAS GUIDE OFFERT ══ -->
     <div id="bloc-guide" style="display:none;margin-top:14px">
 
       <!-- Interface de sélection (écran uniquement) -->
@@ -627,65 +681,28 @@ body.lang-fr [data-en]{display:none!important}
       </table>
     </div>
 
-
-      <div id="sec-bar">
-      <div class="section-title">Bar &amp; Boissons</div>
-      <div class="carte-section-title" data-fr>— Forfaits — À partir de 15 personnes — Alcool en salle uniquement —</div>
-      <div class="carte-section-title" data-en>— Packages — From 15 guests — Alcohol in dining room only —</div>
-      <div class="bar-item" data-prix="20" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait eau simple (½ bouteille d'eau)</span><span class="bar-item-name" data-en>Still water (½ bottle)</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">20 DH</span></div>
-      <div class="bar-item" data-prix="90" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait soft (soft + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Soft drinks package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">90 DH</span></div>
-      <div class="bar-item" data-prix="180" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin de base (½ vin + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Basic wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">180 DH</span></div>
-      <div class="bar-item" data-prix="220" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin standard (½ vin blanc/rouge/gris/rosé + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Standard wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">220 DH</span></div>
-      <div class="bar-item" data-prix="250" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin Grand Bazar (½ vin rouge ou blanc + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Grand Bazar wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
-      <div class="carte-section-title openbar-title" data-fr>— Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
-      <div class="carte-section-title openbar-title" data-en>— Open Bar — From 30 guests — 30 min rounds —</div>
-      <div class="bar-item" data-prix="170" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar Standard (vin + bière + soft + thé + café + eau)</span><span class="bar-item-name" data-en>Open bar Standard</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">170 DH</span></div>
-      <div class="bar-item" data-prix="240" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar Royal (vin haut de gamme + bière + soft + thé + café + eau)</span><span class="bar-item-name" data-en>Open bar Royal</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">240 DH</span></div>
-      <div class="bar-item" data-prix="250" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar complet de Base (alcool fort + vin base + soft)</span><span class="bar-item-name" data-en>Full Open bar Base</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
-      <div class="bar-item" data-prix="350" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar complet Royal (alcool fort haut de gamme + vin luxe + soft)</span><span class="bar-item-name" data-en>Full Open bar Royal</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">350 DH</span></div>
-      <table class="recap-table print-only-recap" id="recap-bar" style="margin-top:8px;table-layout:fixed">
-        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
-        <thead><tr>
-          <th>Bar &amp; Boissons</th>
-          <th class="r">P.U. TTC</th>
-          <th class="r">Nb.</th>
-          <th class="r">Total TTC</th>
-        </tr></thead>
-        <tbody id="recap-bar-body"></tbody>
-      </table>
-    </div>
-
-    <!-- ══ ANIMATIONS ══ -->
-    <div id="sec-anim">
-      <div class="section-title anim-title">Animations &amp; Extras (optionnel)</div>
-      <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Gnawa — 4 musiciens</span><span class="bar-item-name" data-en>Gnawa — 4 musicians</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
-      <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Danseuses orientales — 2 danseuses, 1 passage 15 min</span><span class="bar-item-name" data-en>Oriental dancers — 2 dancers, 15 min set</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
-      <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Groupe de musique — 3 musiciens + chanteur</span><span class="bar-item-name" data-en>Live band — 3 musicians + singer</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
-      <div class="bar-item" data-prix="1000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Joueur de saxophone</span><span class="bar-item-name" data-en>Saxophone player</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">1 000 DH</span></div>
-      <div class="bar-item" data-prix="40" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Calligraphe (hors support) — par personne</span><span class="bar-item-name" data-en>Calligrapher (materials not incl.) — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">40 DH</span></div>
-      <div class="bar-item" data-prix="5" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Flyer personnalisé recto — par personne</span><span class="bar-item-name" data-en>Custom flyer single-sided — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">5 DH</span></div>
-      <div class="bar-item" data-prix="10" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Flyer personnalisé recto-verso — par personne</span><span class="bar-item-name" data-en>Custom flyer double-sided — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">10 DH</span></div>
-      <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name">DJ</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
-      <table class="recap-table print-only-recap" id="recap-anim" style="margin-top:8px;table-layout:fixed">
-        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
-        <thead><tr>
-          <th>Animations &amp; Extras</th>
-          <th class="r">P.U. TTC</th>
-          <th class="r">Nb.</th>
-          <th class="r">Total TTC</th>
-        </tr></thead>
-        <tbody id="recap-anim-body"></tbody>
-      </table>
-    </div>
-
-    <!-- TOTAUX -->
-    <div class="totaux-block">
+        <div class="totaux-block" style="flex-direction:column;align-items:flex-end">
+      <div class="screen-only" style="margin-bottom:4px">
+        <button onclick="toggleSoldeAnt()" style="font-size:10px;color:var(--text-light);background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;text-decoration:underline;padding:0">
+          + Ajouter un solde antérieur dû
+        </button>
+      </div>
       <table class="totaux-table">
         <tr><td data-fr>Sous-total HT</td><td data-en>Subtotal excl. VAT</td><td id="ht">— DH</td></tr>
         <tr><td data-fr>TVA (10%)</td><td data-en>VAT (10%)</td><td id="tva">— DH</td></tr>
         <tr class="grand-total"><td data-fr>TOTAL TTC</td><td data-en>TOTAL INCL. VAT</td><td id="ttc">— DH</td></tr>
         <tr class="acompte-row"><td data-fr>Acompte demandé (50%)</td><td data-en>Deposit required (50%)</td><td id="acompte">— DH</td></tr>
         <tr class="acompte-row"><td data-fr>Déjà versé</td><td data-en>Already paid</td><td style="text-align:right"><input type="number" min="0" id="deja-verse" placeholder="0" value="0" style="width:90px;border:none;border-bottom:1px dashed var(--border);font-family:'Cormorant Garamond',serif;font-size:12.5px;text-align:right;outline:none;background:transparent;font-weight:600" oninput="recalc()"> DH</td></tr>
+        <tr class="acompte-row" id="solde-ant-row" style="display:none">
+          <td data-fr style="color:var(--burgundy)">+ Solde antérieur dû</td>
+          <td data-en style="color:var(--burgundy)">+ Previous balance due</td>
+          <td style="text-align:right">
+            <input type="number" min="0" id="solde-anterieur" placeholder="0" value="0"
+              style="width:90px;border:none;border-bottom:1px dashed var(--burgundy);font-family:'Cormorant Garamond',serif;font-size:12.5px;text-align:right;outline:none;background:transparent;font-weight:600;color:var(--burgundy)"
+              oninput="toggleSoldeAnt();recalc()">
+            <span style="color:var(--burgundy)"> DH</span>
+          </td>
+        </tr>
         <tr class="reste-row"><td data-fr>Reste à régler</td><td data-en>Balance due</td><td id="reste">— DH</td></tr>
       </table>
     </div>
@@ -832,9 +849,10 @@ body.lang-fr [data-en]{display:none!important}
 
   <!-- FOOTER : numérotation uniquement -->
   <div class="doc-footer">
-    <span data-fr>Restaurant · Rooftop · Marrakech &nbsp;|&nbsp; Page </span>
-    <span data-en>Restaurant · Rooftop · Marrakech &nbsp;|&nbsp; Page </span>
-    <span id="pg-num">1</span>
+    <strong>SARL NYX</strong> — Capital social : 4 000 000,00 DH<br>
+    Domaine Royal Palm, villa n°16, route d'Amizmiz, km12, Tamesloht, 40000 Marrakech<br>
+    <strong>ICE :</strong> 002282634000063 &nbsp;|&nbsp; <strong>RC :</strong> 97273 &nbsp;|&nbsp; <strong>TP :</strong> 45103536 &nbsp;|&nbsp; <strong>IF :</strong> 3763702 &nbsp;|&nbsp; <strong>CNSS :</strong> 155549<br>
+    <span style="opacity:.6">Restaurant · Rooftop · Marrakech &nbsp;|&nbsp; Page <span id="pg-num">1</span></span>
   </div>
 
 </div>
@@ -939,17 +957,57 @@ document.addEventListener('change',e=>{if(e.target.name==='accompagnement')setAc
 function setPrix(inp){const item=inp.closest('.carte-item');if(item)item.dataset.prix=inp.value||'0';}
 function setPrixBar(inp){const item=inp.closest('.bar-item');if(item)item.dataset.prix=inp.value||'0';}
 function fmt(n){if(!n&&n!==0)return'— DH';return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' DH';}
-function recalc(){let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'){document.querySelectorAll('.carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});}document.querySelectorAll('.bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});const ht=total/1.1,tva=total-ht;document.getElementById('ht').textContent=fmt(ht);document.getElementById('tva').textContent=fmt(tva);document.getElementById('ttc').textContent=fmt(total);document.getElementById('acompte').textContent=fmt(total*0.5);const dejaVerse=parseFloat(document.getElementById('deja-verse')?.value)||0;const reste=total-dejaVerse;document.getElementById('reste').textContent=fmt(reste>0?reste:0);}
+function recalc(){let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'){document.querySelectorAll('.carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});}document.querySelectorAll('.bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});const ht=total/1.1,tva=total-ht;document.getElementById('ht').textContent=fmt(ht);document.getElementById('tva').textContent=fmt(tva);document.getElementById('ttc').textContent=fmt(total);document.getElementById('acompte').textContent=fmt(total*0.5);const dejaVerse=parseFloat(document.getElementById('deja-verse')?.value)||0;const soldeAnt=parseFloat(document.getElementById('solde-anterieur')?.value)||0;const reste=total-dejaVerse+soldeAnt;document.getElementById('reste').textContent=fmt(reste>0?reste:0);
+  // Mettre à jour le montant dans les blocs règlement
+  const acompteVal=document.getElementById('reste').textContent;['lien-montant','especes-montant','cheque-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=acompteVal;});
+}
+function toggleSoldeAnt(){
+  const row = document.getElementById('solde-ant-row');
+  const inp = document.getElementById('solde-anterieur');
+  if(!row) return;
+  const val = parseFloat(inp?.value)||0;
+  // Afficher si valeur > 0 ou si on clique le bouton
+  if(row.style.display==='none'){
+    row.style.display='';
+    if(inp) inp.focus();
+  } else if(val===0){
+    row.style.display='none';
+  }
+  recalc();
+}
+
 function showReglement(val){document.querySelectorAll('.regl-bloc').forEach(b=>b.style.display='none');const bloc=document.getElementById('regl-'+val);if(bloc)bloc.style.display='block';const a=document.getElementById('reste').textContent;['lien-montant','especes-montant','cheque-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=a;});}
 
 function genererDocument(){
   const isFr=lang==='fr';
-  // Nom fichier : JJ_MM_AA_NomClient_NbPax
+  // Nom fichier : AA_MM_JJ_Société_Contact_Référence_NbPax (champs vides omis)
   const dv=document.getElementById('inp-date-prestation').value;
-  let dp='';if(dv){const[y,m,d]=dv.split('-');dp=`${y.slice(2)}_${m}_${d}`;}else{const n=new Date();dp=`${String(n.getFullYear()).slice(2)}_${String(n.getMonth()+1).padStart(2,'0')}_${String(n.getDate()).padStart(2,'0')}`;}
-  const contact=(document.getElementById('inp-contact').value||'Client').trim().replace(/[^a-zA-ZÀ-ɏ0-9\s]/g,'').replace(/\s+/g,'_');
-  const nbPax=document.getElementById('nb-convives').value||'0';
-  document.title=`${dp}_${contact}_${nbPax}pax`;
+  let dp='';
+  if(dv){const[y,m,d]=dv.split('-');dp=`${y.slice(2)}_${m}_${d}`;}
+  else{const n=new Date();dp=`${String(n.getFullYear()).slice(2)}_${String(n.getMonth()+1).padStart(2,'0')}_${String(n.getDate()).padStart(2,'0')}`;}
+
+  const clean=s=>s.trim().replace(/[^a-zA-Z\u00C0-\u024F0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+
+  // Récupérer les champs info client
+  const infoRows=document.querySelectorAll('.info-box .field-row');
+  let societeVal='',contactVal='',refVal='';
+  infoRows.forEach(row=>{
+    const lbls=row.querySelectorAll('.field-label');
+    const inp=row.querySelector('.field-value');
+    if(!inp||!inp.value.trim()) return;
+    const t=Array.from(lbls).map(l=>l.textContent.trim().toLowerCase()).join(' ');
+    if(t.includes('société')||t.includes('company')) societeVal=inp.value.trim();
+    else if(t==='contact') contactVal=inp.value.trim();
+    else if(t.includes('référence')||t.includes('reference')) refVal=inp.value.trim();
+  });
+  const nbPax=document.getElementById('nb-convives').value||'';
+
+  const parts=[dp];
+  if(societeVal) parts.push(clean(societeVal));
+  if(contactVal) parts.push(clean(contactVal));
+  if(refVal) parts.push(clean(refVal));
+  if(nbPax&&nbPax!=='0') parts.push(nbPax+'pax');
+  document.title=parts.join('_');
   // Règlement
   document.querySelectorAll('.regl-bloc').forEach(b=>b.classList.remove('active-regl'));
   const cr=document.querySelector('input[name="reglement"]:checked');
