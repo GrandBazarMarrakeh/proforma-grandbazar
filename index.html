@@ -595,8 +595,8 @@ body.lang-fr [data-en]{display:none!important}
             <option value="Menu 2|Salade César|Mhamsa à la truffe|Orange à la cannelle">Menu 2 — Salade César / Mhamsa truffe / Orange cannelle</option>
             <option value="Menu 3|Assortiment salades marocaines|Tajine kefta|Macédoine de fruits">Menu 3 — Assortiment salades / Tajine kefta / Macédoine</option>
             <option value="Menu 4|Salade fraîcheur|Brochette de kefta|Carré chocolat">Menu 4 — Salade fraîcheur / Brochette kefta / Carré chocolat</option>
-            <option value="Menu 5|Salade tomate mozzarella|Tajine kefta|Macédoine de fruits">Menu 5 — Tomate mozza / Tajine kefta / Macédoine</option>
-            <option value="Menu 6|Salade fraîcheur|Brochette de kefta|Carré chocolat">Menu 6 — Salade fraîcheur / Brochette kefta / Carré chocolat</option>
+            <option value="Menu 5|Salade tomate mozzarella|Tajine de bœuf aux pruneaux|Banoffee Pie">Menu 5 — Tomate mozza / Tajine bœuf pruneaux / Banoffee Pie</option>
+            <option value="Menu 6|Zaalouk|Couscous Royal|Assortiment pâtisseries marocaines">Menu 6 — Zaalouk / Couscous Royal / Pâtisseries marocaines</option>
           </select>
           <div id="guide-detail-global" style="display:none;font-size:10.5px;color:var(--text-light);padding:5px 10px;background:rgba(201,168,76,.08);border-left:3px solid var(--gold);border-radius:2px">
             <div>↳ Entrée : <span id="gm-e-global"></span></div>
@@ -865,8 +865,8 @@ const MENUS=[
   {id:2,prix_p:200,prix_c:250,entree_fr:'Salade César',entree_en:'Caesar Salad',plat_fr:'Mhamssa à la truffe',plat_en:'Truffle Mhamssa',dessert_fr:'Orange à la cannelle',dessert_en:'Orange with cinnamon'},
   {id:3,prix_p:250,prix_c:300,entree_fr:'Assortiment de salades marocaines',entree_en:'Selection of Moroccan salads',plat_fr:'Tajine kefta (semoule, frites ou riz)',plat_en:'Kefta Tagine (couscous, fries or rice)',dessert_fr:"Macédoine de fruits à l'orange",dessert_en:'Fresh fruit salad with orange'},
   {id:4,prix_p:250,prix_c:300,entree_fr:'Salade fraîcheur',entree_en:'Fresh garden salad',plat_fr:'Brochette de kefta (semoule, frites ou riz)',plat_en:'Kefta skewers (couscous, fries or rice)',dessert_fr:'Carré chocolat',dessert_en:'Chocolate square cake'},
-  {id:5,prix_p:300,prix_c:350,entree_fr:'Salade tomate mozzarella',entree_en:'Tomato mozzarella salad',plat_fr:'Tajine kefta (semoule, frites ou riz)',plat_en:'Kefta Tagine (couscous, fries or rice)',dessert_fr:"Macédoine de fruits à l'orange",dessert_en:'Fresh fruit salad with orange'},
-  {id:6,prix_p:300,prix_c:350,entree_fr:'Salade fraîcheur',entree_en:'Fresh garden salad',plat_fr:'Brochette de kefta (semoule, frites ou riz)',plat_en:'Kefta skewers (couscous, fries or rice)',dessert_fr:'Carré chocolat',dessert_en:'Chocolate square cake'},
+  {id:5,prix_p:300,prix_c:350,entree_fr:'Salade tomate mozzarella',entree_en:'Tomato mozzarella salad',plat_fr:'Tajine de bœuf aux pruneaux (semoule ou salade verte)',plat_en:'Beef tagine with prunes (couscous or green salad)',dessert_fr:'Banoffee Pie',dessert_en:'Banoffee Pie'},
+  {id:6,prix_p:300,prix_c:350,entree_fr:'Zaalouk',entree_en:'Zaalouk',plat_fr:'Couscous Royal',plat_en:'Royal Couscous',dessert_fr:'Assortiment pâtisseries marocaines',dessert_en:'Assorted Moroccan pastries'},
 ];
 let lang='fr',tarif='partenaire',mode='fixe',selMenu=null;
 document.getElementById('ref-date').valueAsDate=new Date();
@@ -937,7 +937,20 @@ function setTarif(t){
 }
 function setMode(m){mode=m;document.getElementById('block-fixe').style.display=m==='fixe'?'block':'none';document.getElementById('block-carte').style.display=m==='carte'?'block':'none';['mb-fixe','mb-fixe-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='fixe');});['mb-carte','mb-carte-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='carte');});document.getElementById('btn-fixe').classList.toggle('active',m==='fixe');document.getElementById('btn-carte').classList.toggle('active',m==='carte');recalc();}
 
-function buildMenuCards(){const c=document.getElementById('menu-selector');if(!c)return;c.innerHTML='';const isFr=lang==='fr';MENUS.forEach(m=>{const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const d=document.createElement('div');d.className='menu-card'+(selMenu===m.id?' selected':'');d.onclick=()=>selectMenu(m.id);d.innerHTML=`<div class="menu-card-title">Menu ${m.id}</div><div class="menu-card-price">${prix} DH<span style="font-size:11px;font-weight:400"> / pers.</span></div><div class="menu-card-detail"><strong>${isFr?'Entrée':'Starter'}</strong>${isFr?m.entree_fr:m.entree_en}<strong>${isFr?'Plat':'Main'}</strong>${isFr?m.plat_fr:m.plat_en}<strong>Dessert</strong>${isFr?m.dessert_fr:m.dessert_en}<br><span style="font-size:9px;color:var(--text-light);margin-top:3px;display:block">Partenaire: ${m.prix_p} DH | Particulier: ${m.prix_c} DH</span></div>`;c.appendChild(d);});}
+function buildMenuCards(){const c=document.getElementById('menu-selector');if(!c)return;c.innerHTML='';const isFr=lang==='fr';MENUS.forEach(m=>{const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const d=document.createElement('div');d.className='menu-card'+(selMenu===m.id?' selected':'');d.onclick=()=>selectMenu(m.id);const accompOptions = {
+    1: {fr:['Semoule','Salade verte'], en:['Couscous','Green salad']},
+    2: null,
+    3: {fr:['Semoule','Frites','Riz'], en:['Couscous','Fries','Rice']},
+    4: {fr:['Semoule','Frites','Riz'], en:['Couscous','Fries','Rice']},
+    5: {fr:['Semoule','Salade verte'], en:['Couscous','Green salad']},
+    6: null
+  };
+  const acc = accompOptions[m.id];
+  const accHtml = acc ? `<div style="margin-top:6px;font-size:9px;text-transform:uppercase;color:var(--burgundy);font-weight:700">${isFr?'Accompagnement':'Side dish'}</div>
+    <select class="menu-accompagnement" data-menu="${m.id}" onclick="event.stopPropagation()" style="width:100%;border:1px solid var(--border);border-radius:3px;font-family:'Cormorant Garamond',serif;font-size:11px;padding:3px 5px;background:white;margin-top:2px">
+      ${(isFr?acc.fr:acc.en).map(o=>`<option>${o}</option>`).join('')}
+    </select>` : '';
+  d.innerHTML=`<div class="menu-card-title">Menu ${m.id}</div><div class="menu-card-price">${prix} DH<span style="font-size:11px;font-weight:400"> / pers.</span></div><div class="menu-card-detail"><strong>${isFr?'Entrée':'Starter'}</strong>${isFr?m.entree_fr:m.entree_en}<strong>${isFr?'Plat':'Main'}</strong>${isFr?m.plat_fr:m.plat_en}<strong>Dessert</strong>${isFr?m.dessert_fr:m.dessert_en}${accHtml}<br><span style="font-size:9px;color:var(--text-light);margin-top:3px;display:block">Partenaire: ${m.prix_p} DH | Particulier: ${m.prix_c} DH</span></div>`;c.appendChild(d);});}
 function selectMenu(id){selMenu=selMenu===id?null:id;buildMenuCards();recalc();}
 function toggleItem(el){const cb=el.querySelector('input[type="checkbox"]');cb.checked=!cb.checked;el.classList.toggle('selected',cb.checked);if(cb.checked){const q=el.querySelector('.carte-qty input');if(q&&parseInt(q.value)===0)q.value=1;}recalc();}
 function toggleBar(el){const cb=el.querySelector('input[type="checkbox"]');cb.checked=!cb.checked;el.classList.toggle('selected',cb.checked);if(cb.checked){const q=el.querySelector('.carte-qty input');if(q&&parseInt(q.value)===0)q.value=1;}recalc();}
@@ -1034,6 +1047,21 @@ function genererDocument(){
   // Recap anim
   const bA=document.getElementById('recap-anim-body');if(bA)bA.innerHTML='';
   document.querySelectorAll('#sec-anim .bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`.bar-item-name[data-${lang}]`)||item.querySelector('.bar-item-name'))?.textContent||'';if(bA)bA.innerHTML+=`<tr><td><strong>${name}</strong></td><td class="r">${prix>0?prix.toLocaleString('fr-FR')+' DH':'—'}</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${prix>0?(prix*qty).toLocaleString('fr-FR')+' DH':'—'}</strong></td></tr>`;});
+  // ── Note automatique régimes dans observations ──
+  const obsTA = document.querySelector('.notes-area textarea');
+  if(obsTA && obsTA.value.trim()===''){
+    const regimeNotes=[];
+    document.querySelectorAll('.regime-item').forEach(item=>{
+      const cb=item.querySelector('input[type="checkbox"]');
+      const nb=item.querySelector('.regime-nb')?.value||'';
+      const lbl=item.querySelector(`label[data-${lang}]`)?.textContent||item.querySelector('label')?.textContent||'';
+      if(cb?.checked && nb && parseInt(nb)>0) regimeNotes.push(`${nb} ${lbl.trim()}`);
+    });
+    if(regimeNotes.length>0){
+      obsTA.value = (isFr?'Régimes à prévoir : ':'Dietary requirements: ') + regimeNotes.join(', ') + (isFr?' — plats de substitution à confirmer avec la cuisine 7 jours avant':' — substitution dishes to confirm with kitchen 7 days before');
+    }
+  }
+
   // ── Récap guide ──
   const gStatut = document.getElementById('guide-statut')?.value || '';
   const bG = document.getElementById('recap-guide-body');
