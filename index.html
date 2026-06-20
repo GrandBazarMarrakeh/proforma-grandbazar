@@ -475,6 +475,49 @@ body.lang-fr [data-en]{display:none!important}
         <div class="carte-item" data-id="d8" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Assiette de Fruits</strong><strong data-en>Fruit Platter</strong><br><span class="carte-item-desc" data-fr>Fruits de saison</span><span class="carte-item-desc" data-en>Seasonal fruits</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
 
         <!-- Glaces & Sorbets -->
+        <!-- Gâteaux d'anniversaire -->
+        <div class="carte-section-title" style="margin-top:8px" data-fr>— Gâteaux d'Anniversaire — 60 DH / portion —</div>
+        <div class="carte-section-title" style="margin-top:8px" data-en>— Birthday Cakes — 60 MAD / portion —</div>
+
+        <div class="carte-item" data-id="ga1" data-prix="60" onclick="toggleItem(this)">
+          <input type="checkbox">
+          <div class="carte-item-name">
+            <strong data-fr>🎂 Gâteau d'anniversaire — Base Fruit</strong>
+            <strong data-en>🎂 Birthday Cake — Fruit Base</strong>
+            <br>
+            <span class="carte-item-desc" data-fr>Fraises, framboises, fruits frais — 60 DH / portion</span>
+            <span class="carte-item-desc" data-en>Strawberries, raspberries, fresh fruits — 60 MAD / portion</span>
+            <!-- Champs supplémentaires visibles quand coché -->
+            <div class="gateau-options" style="display:none;margin-top:6px;padding:6px 0;border-top:1px dashed var(--border)">
+              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-fr>✏️ Message sur le gâteau :</div>
+              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-en>✏️ Message on the cake:</div>
+              <input type="text" class="gateau-message" placeholder="Ex: Joyeux Anniversaire Sophie !" onclick="event.stopPropagation()"
+                style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;padding:2px 4px;outline:none;color:var(--text)">
+            </div>
+          </div>
+          <div class="carte-qty"><input type="number" min="0" value="0" placeholder="Parts" onclick="event.stopPropagation()" oninput="recalc()" title="Nombre de portions"></div>
+          <div class="carte-item-price">60 DH<span style="font-size:9px;display:block;color:var(--text-light)">/portion</span></div>
+        </div>
+
+        <div class="carte-item" data-id="ga2" data-prix="60" onclick="toggleItem(this)">
+          <input type="checkbox">
+          <div class="carte-item-name">
+            <strong data-fr>🎂 Gâteau d'anniversaire — Base Chocolat</strong>
+            <strong data-en>🎂 Birthday Cake — Chocolate Base</strong>
+            <br>
+            <span class="carte-item-desc" data-fr>Ganache chocolat noir, copeaux de chocolat — 60 DH / portion</span>
+            <span class="carte-item-desc" data-en>Dark chocolate ganache, chocolate shavings — 60 MAD / portion</span>
+            <div class="gateau-options" style="display:none;margin-top:6px;padding:6px 0;border-top:1px dashed var(--border)">
+              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-fr>✏️ Message sur le gâteau :</div>
+              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-en>✏️ Message on the cake:</div>
+              <input type="text" class="gateau-message" placeholder="Ex: Joyeux Anniversaire Sophie !" onclick="event.stopPropagation()"
+                style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;padding:2px 4px;outline:none;color:var(--text)">
+            </div>
+          </div>
+          <div class="carte-qty"><input type="number" min="0" value="0" placeholder="Parts" onclick="event.stopPropagation()" oninput="recalc()" title="Nombre de portions"></div>
+          <div class="carte-item-price">60 DH<span style="font-size:9px;display:block;color:var(--text-light)">/portion</span></div>
+        </div>
+
         <div class="carte-section-title" style="margin-top:8px" data-fr>— Glaces &amp; Sorbets — 30 DH / boule —</div>
         <div class="carte-section-title" style="margin-top:8px" data-en>— Ice Creams &amp; Sorbets — 30 MAD / scoop —</div>
         <div class="carte-item" data-id="g1" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Vanille</strong><strong data-en>Vanilla Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
@@ -860,6 +903,63 @@ body.lang-fr [data-en]{display:none!important}
 <script>
 'use strict';
 let nbGuides = 1;
+
+const ACCOMP_MENUS = {
+  1: {fr:['Semoule','Salade verte'], en:['Couscous','Green salad']},
+  2: null,
+  3: {fr:['Semoule','Frites','Riz'], en:['Couscous','Fries','Rice']},
+  4: {fr:['Semoule','Frites','Riz'], en:['Couscous','Fries','Rice']},
+  5: {fr:['Semoule','Salade verte'], en:['Couscous','Green salad']},
+  6: null
+};
+
+function buildMenuCards(){
+  const c=document.getElementById('menu-selector');
+  if(!c) return;
+  // Sauvegarder les accompagnements sélectionnés avant de reconstruire
+  const savedAccomp={};
+  c.querySelectorAll('.menu-accompagnement').forEach(s=>{
+    savedAccomp[s.dataset.menu]=s.value;
+  });
+  c.innerHTML='';
+  const isFr=lang==='fr';
+  MENUS.forEach(m=>{
+    const prix=tarif==='partenaire'?m.prix_p:m.prix_c;
+    const d=document.createElement('div');
+    d.className='menu-card'+(selMenu===m.id?' selected':'');
+    d.onclick=()=>selectMenu(m.id);
+    const acc=ACCOMP_MENUS[m.id];
+    // Construire le HTML de la carte
+    let cardHtml=`<div class="menu-card-title">Menu ${m.id}</div>
+      <div class="menu-card-price">${prix} DH<span style="font-size:11px;font-weight:400"> / pers.</span></div>
+      <div class="menu-card-detail">
+        <strong>${isFr?'Entrée':'Starter'}</strong>${isFr?m.entree_fr:m.entree_en}
+        <strong>${isFr?'Plat':'Main'}</strong>${isFr?m.plat_fr:m.plat_en}
+        <strong>Dessert</strong>${isFr?m.dessert_fr:m.dessert_en}
+        <span style="font-size:9px;color:var(--text-light);margin-top:3px;display:block">Partenaire: ${m.prix_p} DH | Particulier: ${m.prix_c} DH</span>
+      </div>`;
+    // Ajouter le bloc accompagnement HORS de menu-card-detail pour qu'il soit toujours visible
+    if(acc){
+      const opts=(isFr?acc.fr:acc.en).map(o=>`<option${savedAccomp[m.id]===o?' selected':''}>${o}</option>`).join('');
+      cardHtml+=`<div class="menu-accomp-bloc" style="margin-top:8px;padding-top:6px;border-top:1px dashed var(--gold)">
+        <div style="font-size:9px;text-transform:uppercase;color:var(--burgundy);font-weight:700;letter-spacing:1px;margin-bottom:4px">
+          ${isFr?'🍽 Accompagnement (au choix)':'🍽 Side dish (choice)'}
+        </div>
+        <select class="menu-accompagnement field-select" data-menu="${m.id}"
+          onclick="event.stopPropagation()"
+          onchange="event.stopPropagation()"
+          style="width:100%;border:1px solid var(--gold);border-radius:3px;
+                 font-family:'Cormorant Garamond',serif;font-size:12px;
+                 padding:4px 7px;background:rgba(201,168,76,.08);color:var(--navy);
+                 font-weight:600;cursor:pointer">
+          ${opts}
+        </select>
+      </div>`;
+    }
+    d.innerHTML=cardHtml;
+    c.appendChild(d);
+  });
+}
 const MENUS=[
   {id:1,prix_p:200,prix_c:250,entree_fr:'Farandole de légumes grillés',entree_en:'Grilled vegetable selection',plat_fr:'Tajine de poulet (semoule ou salade verte)',plat_en:'Chicken Tagine (couscous or green salad)',dessert_fr:'Mhalabia',dessert_en:'Mhalabia'},
   {id:2,prix_p:200,prix_c:250,entree_fr:'Salade César',entree_en:'Caesar Salad',plat_fr:'Mhamssa à la truffe',plat_en:'Truffle Mhamssa',dessert_fr:'Orange à la cannelle',dessert_en:'Orange with cinnamon'},
@@ -937,22 +1037,24 @@ function setTarif(t){
 }
 function setMode(m){mode=m;document.getElementById('block-fixe').style.display=m==='fixe'?'block':'none';document.getElementById('block-carte').style.display=m==='carte'?'block':'none';['mb-fixe','mb-fixe-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='fixe');});['mb-carte','mb-carte-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='carte');});document.getElementById('btn-fixe').classList.toggle('active',m==='fixe');document.getElementById('btn-carte').classList.toggle('active',m==='carte');recalc();}
 
-function buildMenuCards(){const c=document.getElementById('menu-selector');if(!c)return;c.innerHTML='';const isFr=lang==='fr';MENUS.forEach(m=>{const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const d=document.createElement('div');d.className='menu-card'+(selMenu===m.id?' selected':'');d.onclick=()=>selectMenu(m.id);const accompOptions = {
-    1: {fr:['Semoule','Salade verte'], en:['Couscous','Green salad']},
-    2: null,
-    3: {fr:['Semoule','Frites','Riz'], en:['Couscous','Fries','Rice']},
-    4: {fr:['Semoule','Frites','Riz'], en:['Couscous','Fries','Rice']},
-    5: {fr:['Semoule','Salade verte'], en:['Couscous','Green salad']},
-    6: null
-  };
-  const acc = accompOptions[m.id];
-  const accHtml = acc ? `<div style="margin-top:6px;font-size:9px;text-transform:uppercase;color:var(--burgundy);font-weight:700">${isFr?'Accompagnement':'Side dish'}</div>
-    <select class="menu-accompagnement" data-menu="${m.id}" onclick="event.stopPropagation()" style="width:100%;border:1px solid var(--border);border-radius:3px;font-family:'Cormorant Garamond',serif;font-size:11px;padding:3px 5px;background:white;margin-top:2px">
-      ${(isFr?acc.fr:acc.en).map(o=>`<option>${o}</option>`).join('')}
-    </select>` : '';
-  d.innerHTML=`<div class="menu-card-title">Menu ${m.id}</div><div class="menu-card-price">${prix} DH<span style="font-size:11px;font-weight:400"> / pers.</span></div><div class="menu-card-detail"><strong>${isFr?'Entrée':'Starter'}</strong>${isFr?m.entree_fr:m.entree_en}<strong>${isFr?'Plat':'Main'}</strong>${isFr?m.plat_fr:m.plat_en}<strong>Dessert</strong>${isFr?m.dessert_fr:m.dessert_en}${accHtml}<br><span style="font-size:9px;color:var(--text-light);margin-top:3px;display:block">Partenaire: ${m.prix_p} DH | Particulier: ${m.prix_c} DH</span></div>`;c.appendChild(d);});}
+// Accompagnements par menu (null = pas d'accompagnement)
 function selectMenu(id){selMenu=selMenu===id?null:id;buildMenuCards();recalc();}
-function toggleItem(el){const cb=el.querySelector('input[type="checkbox"]');cb.checked=!cb.checked;el.classList.toggle('selected',cb.checked);if(cb.checked){const q=el.querySelector('.carte-qty input');if(q&&parseInt(q.value)===0)q.value=1;}recalc();}
+function toggleItem(el){
+  const cb=el.querySelector('input[type="checkbox"]');
+  cb.checked=!cb.checked;
+  el.classList.toggle('selected',cb.checked);
+  if(cb.checked){
+    const q=el.querySelector('.carte-qty input');
+    if(q&&parseInt(q.value)===0)q.value=1;
+    // Afficher les options gâteau si présentes
+    const gOpts=el.querySelector('.gateau-options');
+    if(gOpts) gOpts.style.display='block';
+  } else {
+    const gOpts=el.querySelector('.gateau-options');
+    if(gOpts) gOpts.style.display='none';
+  }
+  recalc();
+}
 function toggleBar(el){const cb=el.querySelector('input[type="checkbox"]');cb.checked=!cb.checked;el.classList.toggle('selected',cb.checked);if(cb.checked){const q=el.querySelector('.carte-qty input');if(q&&parseInt(q.value)===0)q.value=1;}recalc();}
 function setAccomp(){
   const val=document.querySelector('input[name="accompagnement"]:checked')?.value||'';
@@ -1040,7 +1142,10 @@ function genererDocument(){
   if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;const total=prix*nb;bF.innerHTML=`<tr class="cat-row"><td colspan="4">${isFr?'🍽 Menu Fixe Groupe':'🍽 Fixed Group Menu'}</td></tr><tr><td><strong>Menu ${m.id}</strong></td><td class="r">${prix} DH</td><td class="r">${nb}</td><td class="r total-cell">${total.toLocaleString('fr-FR')} DH</td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Entrée':'Starter'} : ${isFr?m.entree_fr:m.entree_en}</td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Plat':'Main'} : ${isFr?m.plat_fr:m.plat_en}</td></tr><tr class="detail-row"><td colspan="4">↳ Dessert : ${isFr?m.dessert_fr:m.dessert_en}</td></tr>`;}
   // Recap carte
   const bC=document.getElementById('recap-carte-body');if(bC)bC.innerHTML='';
-  if(bC&&mode==='carte'){[{label:isFr?'🍢 Tapas':'🍢 Tapas',id:'sec-tapas'},{label:isFr?'🥗 Entrées':'🥗 Starters',id:'sec-entrees'},{label:isFr?'🍽 Plats':'🍽 Main Courses',id:'sec-plats'},{label:isFr?'🍮 Desserts':'🍮 Desserts',id:'sec-desserts'}].forEach(sec=>{const items=[];document.querySelectorAll(`#${sec.id} .carte-item.selected`).forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';items.push({name,desc,prix,qty,total:prix*qty});});if(items.length){bC.innerHTML+=`<tr class="cat-row"><td colspan="4">${sec.label}</td></tr>`;items.forEach(it=>{bC.innerHTML+=`<tr><td><strong>${it.name}</strong>${it.desc?'<br><small style="color:var(--text-light);font-style:italic">'+it.desc+'</small>':''}</td><td class="r">${it.prix>0?it.prix.toLocaleString('fr-FR')+' DH':'—'}</td><td class="r"><strong>${it.qty}</strong></td><td class="r total-cell"><strong>${it.total>0?it.total.toLocaleString('fr-FR')+' DH':'—'}</strong></td></tr>`;});}});}
+  if(bC&&mode==='carte'){[{label:isFr?'🍢 Tapas':'🍢 Tapas',id:'sec-tapas'},{label:isFr?'🥗 Entrées':'🥗 Starters',id:'sec-entrees'},{label:isFr?'🍽 Plats':'🍽 Main Courses',id:'sec-plats'},{label:isFr?'🍮 Desserts':'🍮 Desserts',id:'sec-desserts'}].forEach(sec=>{const items=[];document.querySelectorAll(`#${sec.id} .carte-item.selected`).forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';const gMsg=item.querySelector('.gateau-message')?.value||'';
+            items.push({name,desc,prix,qty,total:prix*qty,gMsg});});if(items.length){bC.innerHTML+=`<tr class="cat-row"><td colspan="4">${sec.label}</td></tr>`;items.forEach(it=>{
+          bC.innerHTML+=`<tr><td><strong>${it.name}</strong>${it.desc?'<br><small style="color:var(--text-light);font-style:italic">'+it.desc+'</small>':''}${it.gMsg?'<br><small style="color:var(--burgundy);font-weight:600">✏️ '+(isFr?'Message':'Message')+' : '+it.gMsg+'</small>':''}</td><td class="r">${it.prix>0?it.prix.toLocaleString('fr-FR')+' DH':'—'}</td><td class="r"><strong>${it.qty}</strong></td><td class="r total-cell"><strong>${it.total>0?it.total.toLocaleString('fr-FR')+' DH':'—'}</strong></td></tr>`;
+        });}});}
   // Recap bar
   const bB=document.getElementById('recap-bar-body');if(bB)bB.innerHTML='';
   document.querySelectorAll('#sec-bar .bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`.bar-item-name[data-${lang}]`)||item.querySelector('.bar-item-name'))?.textContent||'';if(bB)bB.innerHTML+=`<tr><td><strong>${name}</strong></td><td class="r">${prix.toLocaleString('fr-FR')} DH</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${(prix*qty).toLocaleString('fr-FR')} DH</strong></td></tr>`;});
