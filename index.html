@@ -220,6 +220,24 @@ body.lang-fr [data-en]{display:none!important}
     <button class="ctrl-btn" id="btn-carte" onclick="setMode('carte')">🧾 À la Carte</button>
   </div>
   <button class="print-btn" onclick="genererDocument()">🖨 Générer &amp; Imprimer</button>
+  <div class="ctrl-group" id="gb-engine-group" style="border-left:2px solid var(--gold);padding-left:10px">
+    <select id="gb-doctype" class="ctrl-btn" style="padding:8px 10px;cursor:pointer">
+      <option value="proforma">📄 Proforma</option>
+      <option value="devis">📝 Devis</option>
+      <option value="facture">🧾 Facture</option>
+      <option value="recu">🧾 Reçu</option>
+    </select>
+    <select id="gb-statut" class="ctrl-btn" style="padding:8px 10px;cursor:pointer" title="Statut du document">
+      <option>Brouillon</option>
+      <option>Envoyé</option>
+      <option>Acompte reçu</option>
+      <option>Soldé</option>
+      <option>Annulé</option>
+    </select>
+    <button class="ctrl-btn" onclick="gbEnregistrer()" title="Attribue un numéro auto et enregistre dans le registre">💾 Enregistrer</button>
+    <button class="ctrl-btn" onclick="gbOuvrirListe()" title="Rouvrir / modifier un document existant">📂 Mes documents</button>
+    <button class="ctrl-btn" onclick="gbTestConnexion()" title="Vérifier la liaison Google">🔌 Test</button>
+  </div>
 </div>
 
 <div class="document">
@@ -1469,6 +1487,143 @@ function genererDocument(){
 
   setTimeout(()=>window.print(), 150);
 }
+</script>
+
+<!-- ══════════════ MOTEUR GESTION (Google Sheets + Drive) ══════════════ -->
+<script>
+(function(){
+  const GB_API="https://script.google.com/macros/s/AKfycbySx3ep7P7nyxfMgz4pHFSbrQP2wj9DLWzpTHtp4-aiE-0AsFyMUMWAlV8Q7Q-0-mzCEw/exec";
+  window.GB_currentId=null;
+
+  // text/plain => requête "simple" => pas de pré-vol CORS bloquant
+  async function gbApi(payload){
+    const res=await fetch(GB_API,{method:'POST',body:JSON.stringify(payload)});
+    const txt=await res.text();
+    let j; try{ j=JSON.parse(txt); }catch(e){ throw new Error('Réponse inattendue du serveur : '+txt.slice(0,180)); }
+    if(!j.ok) throw new Error(j.error||'Erreur serveur');
+    return j;
+  }
+
+  function gbNum(t){ return parseFloat(String(t||'').replace(/[^0-9.,-]/g,'').replace(/\s/g,'').replace(',','.'))||0; }
+
+  function gbMeta(){
+    const f=document.querySelectorAll('.info-box .field-value');
+    const societe=f[0]?f[0].value.trim():'';
+    const contact=(document.getElementById('inp-contact')||{}).value||'';
+    const pax=(document.getElementById('nb-convives')||{}).value||'';
+    return {
+      client:societe,
+      contact:String(contact).trim(),
+      pax:pax,
+      montant:gbNum((document.getElementById('ttc')||{}).textContent),
+      acompte:gbNum((document.getElementById('acompte')||{}).textContent)
+    };
+  }
+
+  function gbCollectState(){
+    const fd={byId:{},fields:[],items:{},accomp:{},reglement:null,observations:null,globals:{}};
+    document.querySelectorAll('input[id],select[id],textarea[id]').forEach(el=>{ if(el.type==='radio') return; fd.byId[el.id]=el.value; });
+    document.querySelectorAll('.info-box .field-value').forEach((el,i)=>{ fd.fields[i]=el.value; });
+    document.querySelectorAll('.carte-item[data-id],.bar-item[data-id]').forEach(el=>{
+      const q=el.querySelector('.carte-qty input'), g=el.querySelector('.gateau-message');
+      fd.items[el.dataset.id]={s:el.classList.contains('selected'),q:q?q.value:null,g:g?g.value:null};
+    });
+    document.querySelectorAll('.menu-accompagnement[data-menu]').forEach(s=>{ fd.accomp[s.dataset.menu]=s.value; });
+    const cr=document.querySelector('input[name="reglement"]:checked'); fd.reglement=cr?cr.value:null;
+    const obs=document.querySelector('.notes-area textarea'); fd.observations=obs?obs.value:null;
+    try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,nbGuides:nbGuides}; }catch(e){ fd.globals={}; }
+    return fd;
+  }
+
+  function gbApplyState(fd){
+    if(!fd) return;
+    const g=fd.globals||{};
+    if(g.lang&&typeof setLang==='function') setLang(g.lang);
+    if(g.tarif&&typeof setTarif==='function') setTarif(g.tarif);
+    try{ if(typeof g.nbGuides!=='undefined') nbGuides=g.nbGuides; }catch(e){}
+    try{ if(typeof g.selMenu!=='undefined') selMenu=g.selMenu; }catch(e){}
+    if(g.mode&&typeof setMode==='function') setMode(g.mode);
+    if(typeof buildMenuCards==='function') buildMenuCards();
+    if(fd.accomp) Object.keys(fd.accomp).forEach(k=>{ const s=document.querySelector('.menu-accompagnement[data-menu="'+k+'"]'); if(s) s.value=fd.accomp[k]; });
+    if(fd.byId) Object.keys(fd.byId).forEach(id=>{ const el=document.getElementById(id); if(el&&fd.byId[id]!=null) el.value=fd.byId[id]; });
+    if(fd.fields){ const els=document.querySelectorAll('.info-box .field-value'); fd.fields.forEach((v,i)=>{ if(els[i]&&v!=null) els[i].value=v; }); }
+    if(fd.items){ document.querySelectorAll('.carte-item[data-id],.bar-item[data-id]').forEach(el=>{
+      const it=fd.items[el.dataset.id]; if(!it) return;
+      el.classList.toggle('selected',!!it.s);
+      const cb=el.querySelector('input[type=checkbox]'); if(cb) cb.checked=!!it.s;
+      const q=el.querySelector('.carte-qty input'); if(q&&it.q!=null) q.value=it.q;
+      const gg=el.querySelector('.gateau-message'); if(gg&&it.g!=null) gg.value=it.g;
+    }); }
+    if(fd.reglement){ const r=document.querySelector('input[name="reglement"][value="'+fd.reglement+'"]'); if(r){ r.checked=true; if(typeof showReglement==='function') showReglement(fd.reglement);} }
+    if(fd.observations!=null){ const obs=document.querySelector('.notes-area textarea'); if(obs) obs.value=fd.observations; }
+    try{ if(typeof updateGuide==='function') updateGuide(); }catch(e){}
+    try{ if(typeof updateLienPaiement==='function') updateLienPaiement(); }catch(e){}
+    if(typeof recalc==='function') recalc();
+  }
+
+  window.gbTestConnexion=async function(){
+    try{ const j=await gbApi({action:'ping'}); alert('✅ Connexion au moteur OK\n'+(j.msg||'')); }
+    catch(e){ alert('❌ Connexion impossible\n\n'+e.message+'\n\nÀ vérifier : déploiement « Application Web » en accès « Tout le monde », et URL terminant par /exec.'); }
+  };
+
+  window.gbEnregistrer=async function(){
+    try{
+      if(typeof recalc==='function') recalc();
+      const type=(document.getElementById('gb-doctype')||{}).value||'proforma';
+      const statut=(document.getElementById('gb-statut')||{}).value||'Brouillon';
+      const payload=Object.assign({statut:statut,type:type,formData:gbCollectState()},gbMeta());
+      let j;
+      if(window.GB_currentId){ payload.action='update'; payload.id=window.GB_currentId; j=await gbApi(payload); }
+      else { payload.action='save'; j=await gbApi(payload); window.GB_currentId=j.id; }
+      const refn=document.getElementById('ref-num'); if(refn&&j.numero) refn.value=j.numero;
+      alert('✅ Enregistré\nN° '+j.numero+'\nStatut : '+statut);
+    }catch(e){ alert('❌ Enregistrement impossible\n'+e.message); }
+  };
+
+  window.gbOuvrirListe=async function(){
+    try{ const j=await gbApi({action:'list'}); gbRenderModal(j.docs||[]); }
+    catch(e){ alert('❌ '+e.message); }
+  };
+
+  window.gbCharger=async function(id){
+    try{
+      const j=await gbApi({action:'get',id:id});
+      if(!j.doc){ alert('Document introuvable'); return; }
+      window.GB_currentId=j.doc.id;
+      const dt=document.getElementById('gb-doctype'); if(dt&&j.doc.type) dt.value=j.doc.type;
+      const st=document.getElementById('gb-statut'); if(st&&j.doc.statut) st.value=j.doc.statut;
+      const refn=document.getElementById('ref-num'); if(refn) refn.value=j.doc.numero;
+      gbApplyState(j.doc.formData);
+      gbCloseModal();
+      alert('📂 Chargé : '+j.doc.numero+'\nModifie puis clique Enregistrer pour mettre à jour (même numéro).');
+    }catch(e){ alert('❌ '+e.message); }
+  };
+
+  window.gbNouveau=function(){ window.GB_currentId=null; gbCloseModal(); alert('🆕 Nouveau document.\nLe prochain « Enregistrer » créera un nouveau numéro.'); };
+  window.gbCloseModal=function(){ const m=document.getElementById('gb-modal'); if(m) m.style.display='none'; };
+
+  function gbRenderModal(docs){
+    let m=document.getElementById('gb-modal');
+    if(!m){ m=document.createElement('div'); m.id='gb-modal'; document.body.appendChild(m); }
+    m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;display:flex;align-items:center;justify-content:center;font-family:Arial,Helvetica,sans-serif';
+    let rows=docs.map(d=>'<tr style="border-bottom:1px solid #eee;cursor:pointer" onclick="gbCharger(\''+d.id+'\')">'
+      +'<td style="padding:8px 10px;font-weight:700;white-space:nowrap">'+(d.numero||'')+'</td>'
+      +'<td style="padding:8px 10px">'+(d.type||'')+'</td>'
+      +'<td style="padding:8px 10px">'+((d.client||'')+' '+(d.contact||'')).trim()+'</td>'
+      +'<td style="padding:8px 10px;white-space:nowrap">'+(d.montant||'')+' DH</td>'
+      +'<td style="padding:8px 10px">'+(d.statut||'')+'</td>'
+      +'<td style="padding:8px 10px;color:#888;font-size:11px;white-space:nowrap">'+(d.dateMaj||'')+'</td></tr>').join('');
+    if(!rows) rows='<tr><td style="padding:16px;color:#888">Aucun document enregistré pour l\'instant.</td></tr>';
+    m.innerHTML='<div style="background:#fff;max-width:780px;width:93%;max-height:82vh;overflow:auto;border-radius:8px;padding:16px;box-shadow:0 8px 40px rgba(0,0,0,.3)">'
+      +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
+      +'<strong style="font-size:16px">📂 Mes documents</strong>'
+      +'<span><button onclick="gbNouveau()" style="margin-right:8px;padding:6px 12px;cursor:pointer">🆕 Nouveau</button>'
+      +'<button onclick="gbCloseModal()" style="padding:6px 12px;cursor:pointer">✕ Fermer</button></span></div>'
+      +'<table style="width:100%;border-collapse:collapse;font-size:13px">'
+      +'<tr style="background:#f5f5f5;text-align:left"><th style="padding:8px 10px">N°</th><th style="padding:8px 10px">Type</th><th style="padding:8px 10px">Client</th><th style="padding:8px 10px">TTC</th><th style="padding:8px 10px">Statut</th><th style="padding:8px 10px">MAJ</th></tr>'
+      +rows+'</table></div>';
+  }
+})();
 </script>
 </body>
 
