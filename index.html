@@ -91,7 +91,7 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:#e8e0d0;min-heigh
 .total-cell{font-weight:600}
 
 /* TOTAUX */
-.totaux-block{display:flex;justify-content:flex-end;margin:12px 0 18px}
+.totaux-block{display:block;margin:12px 0 18px}
 .totaux-table{border-collapse:collapse;min-width:270px}
 .totaux-table tr td{padding:5px 12px;font-size:12.5px;border-bottom:1px solid var(--cream-dark)}
 .totaux-table tr td:last-child{text-align:right;font-weight:600}
@@ -614,37 +614,24 @@ body.lang-fr [data-en]{display:none!important}
       <div class="section-title">Bar &amp; Boissons</div>
       <div class="bar-accordion carte-section-title" onclick="toggleAccordion('acc-forfaits')">— 💧 Forfaits — À partir de 15 personnes —</div>
       <div class="bar-accordion-body" id="acc-forfaits">
-      <div class="bar-item" data-prix="20" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait eau simple (½ bouteille d'eau)</span><span class="bar-item-name" data-en>Still water (½ bottle)</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">20 DH</span></div>
+<div class="bar-item" data-prix="20" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait eau simple (½ bouteille d'eau)</span><span class="bar-item-name" data-en>Still water (½ bottle)</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">20 DH</span></div>
       <div class="bar-item" data-prix="90" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait soft (soft + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Soft drinks package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">90 DH</span></div>
       <div class="bar-item" data-prix="180" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin de base (½ vin + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Basic wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">180 DH</span></div>
       <div class="bar-item" data-prix="220" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin standard (½ vin blanc/rouge/gris/rosé + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Standard wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">220 DH</span></div>
       <div class="bar-item" data-prix="250" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin Grand Bazar (½ vin rouge ou blanc + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Grand Bazar wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
-      </div><!-- /acc-forfaits -->
+      </div>
       <div class="bar-accordion carte-section-title" onclick="toggleAccordion('acc-openbar')">— 🍾 Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
       <div class="bar-accordion-body" id="acc-openbar">
-      <div class="carte-section-title openbar-title" data-fr>— Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
+<div class="carte-section-title openbar-title" data-fr>— Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
       <div class="carte-section-title openbar-title" data-en>— Open Bar — From 30 guests — 30 min rounds —</div>
       <div class="bar-item" data-prix="170" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar Standard (vin + bière + soft + thé + café + eau)</span><span class="bar-item-name" data-en>Open bar Standard</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">170 DH</span></div>
       <div class="bar-item" data-prix="240" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar Royal (vin haut de gamme + bière + soft + thé + café + eau)</span><span class="bar-item-name" data-en>Open bar Royal</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">240 DH</span></div>
       <div class="bar-item" data-prix="250" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar complet de Base (alcool fort + vin base + soft)</span><span class="bar-item-name" data-en>Full Open bar Base</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
       <div class="bar-item" data-prix="350" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar complet Royal (alcool fort haut de gamme + vin luxe + soft)</span><span class="bar-item-name" data-en>Full Open bar Royal</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">350 DH</span></div>
-      </div><!-- /dernier accordéon -->
-      </div><!-- /acc-openbar -->
-      <table class="recap-table print-only-recap" id="recap-bar" style="margin-top:8px;table-layout:fixed">
-        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
-        <thead><tr>
-          <th>Bar &amp; Boissons</th>
-          <th class="r">P.U. TTC</th>
-          <th class="r">Nb.</th>
-          <th class="r">Total TTC</th>
-        </tr></thead>
-        <tbody id="recap-bar-body"></tbody>
-      </table>
-
-      <!-- ══ BIÈRES ══ -->
+      </div>
       <div class="bar-accordion carte-section-title" style="margin-top:10px" onclick="toggleAccordion('bieres-bouteille')">— 🍺 Bières Bouteille —</div>
       <div class="bar-accordion-body" id="bieres-bouteille">
-      <div class="carte-item" data-id="bb1" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Coronita</strong><span class="carte-item-desc"> 20.7cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
+<div class="carte-item" data-id="bb1" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Coronita</strong><span class="carte-item-desc"> 20.7cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
       <div class="carte-item" data-id="bb2" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Budweiser</strong><span class="carte-item-desc"> 25cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
       <div class="carte-item" data-id="bb3" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Estrella Sans Gluten</strong><span class="carte-item-desc"> 25cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
       <div class="carte-item" data-id="bb4" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Spécial Gold</strong><span class="carte-item-desc"> 25cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
@@ -655,45 +642,37 @@ body.lang-fr [data-en]{display:none!important}
       <div class="carte-item" data-id="bb9" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Leffe Blonde</strong><span class="carte-item-desc"> 33cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
       <div class="carte-item" data-id="bb10" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Leffe Brune</strong><span class="carte-item-desc"> 33cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
       <div class="carte-item" data-id="bb11" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Smirnoff Ice</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('bieres-pression')">— 🍺 Bières Pression —</div>
       <div class="bar-accordion-body" id="bieres-pression">
-      <div class="carte-item" data-id="bp1" data-prix="70" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Stella Artois Pression</strong><span class="carte-item-desc"> 25cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">70 DH</div></div>
+<div class="carte-item" data-id="bp1" data-prix="70" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Stella Artois Pression</strong><span class="carte-item-desc"> 25cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">70 DH</div></div>
       <div class="carte-item" data-id="bp2" data-prix="70" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Casablanca Pression</strong><span class="carte-item-desc"> 25cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">70 DH</div></div>
       <div class="carte-item" data-id="bp3" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Stella Artois Pression</strong><span class="carte-item-desc"> 50cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
       <div class="carte-item" data-id="bp4" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Casablanca Pression</strong><span class="carte-item-desc"> 50cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
 
       <!-- ══ VINS AU VERRE ══ -->
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:10px" onclick="toggleAccordion('vins-marocains')">— 🍷 Vins au Verre — Marocains —</div>
       <div class="bar-accordion-body" id="vins-marocains">
-      <div class="carte-item" data-id="vv1" data-prix="100" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Collines du Menzeh — Blanc</strong><strong data-en>Collines du Menzeh — White</strong><span class="carte-item-desc">Chardonnay, Sauvignon blanc</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">100 DH</div></div>
+<div class="carte-item" data-id="vv1" data-prix="100" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Collines du Menzeh — Blanc</strong><strong data-en>Collines du Menzeh — White</strong><span class="carte-item-desc">Chardonnay, Sauvignon blanc</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">100 DH</div></div>
       <div class="carte-item" data-id="vv2" data-prix="100" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Collines du Menzeh — Gris</strong><strong data-en>Collines du Menzeh — Grey</strong><span class="carte-item-desc">Cinsault, Grenache, Syrah</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">100 DH</div></div>
       <div class="carte-item" data-id="vv3" data-prix="100" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Collines du Menzeh — Rosé</strong><strong data-en>Collines du Menzeh — Rosé</strong><span class="carte-item-desc">Cinsault, Grenache, Syrah</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">100 DH</div></div>
       <div class="carte-item" data-id="vv4" data-prix="100" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Collines du Menzeh — Rouge</strong><strong data-en>Collines du Menzeh — Red</strong><span class="carte-item-desc">Syrah, Cabernet Sauvignon</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">100 DH</div></div>
-
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('vins-francais')">— 🍷 Vins au Verre — Français —</div>
       <div class="bar-accordion-body" id="vins-francais">
-      <div class="carte-item" data-id="vv5" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Vin Blanc Français — Barton &amp; Guestier</strong><strong data-en>French White Wine — Barton &amp; Guestier</strong><span class="carte-item-desc">Sauvignon Réserve</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
+<div class="carte-item" data-id="vv5" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Vin Blanc Français — Barton &amp; Guestier</strong><strong data-en>French White Wine — Barton &amp; Guestier</strong><span class="carte-item-desc">Sauvignon Réserve</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
       <div class="carte-item" data-id="vv6" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Vin Rouge Français — Barton &amp; Guestier</strong><strong data-en>French Red Wine — Barton &amp; Guestier</strong><span class="carte-item-desc">Merlot Réserve</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
-
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('champagne-verre')">— 🥂 Champagne au Verre —</div>
       <div class="bar-accordion-body" id="champagne-verre">
-      <div class="carte-item" data-id="vv7" data-prix="180" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Champagne Coupe — Vranken</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">180 DH</div></div>
+<div class="carte-item" data-id="vv7" data-prix="180" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Champagne Coupe — Vranken</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">180 DH</div></div>
 
       <!-- ══ BOUTEILLES CHAMPAGNE ══ -->
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:10px" onclick="toggleAccordion('champagnes-bouteille')">— 🥂 Champagnes — Bouteille —</div>
       <div class="bar-accordion-body" id="champagnes-bouteille">
-      <div class="carte-item" data-id="ch1" data-prix="440" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Moët &amp; Chandon Brut</strong><span class="carte-item-desc"> 20cl — Bébé</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">440 DH</div></div>
+<div class="carte-item" data-id="ch1" data-prix="440" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Moët &amp; Chandon Brut</strong><span class="carte-item-desc"> 20cl — Bébé</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">440 DH</div></div>
       <div class="carte-item" data-id="ch2" data-prix="700" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Moët &amp; Chandon Brut</strong><span class="carte-item-desc"> 37.5cl</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">700 DH</div></div>
       <div class="carte-item" data-id="ch3" data-prix="800" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Vranken</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">800 DH</div></div>
       <div class="carte-item" data-id="ch4" data-prix="1300" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Nicolas Feuillatte Brut</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">1 300 DH</div></div>
@@ -705,27 +684,24 @@ body.lang-fr [data-en]{display:none!important}
       <div class="carte-item" data-id="ch10" data-prix="9000" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Dom Pérignon Brut</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">9 000 DH</div></div>
 
       <!-- ══ PROSECCO ══ -->
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('prosecco')">— 🥂 Cava &amp; Prosecco — Bouteille —</div>
       <div class="bar-accordion-body" id="prosecco">
-      <div class="carte-item" data-id="pr1" data-prix="540" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Freixenet Prosecco Brut</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">540 DH</div></div>
+<div class="carte-item" data-id="pr1" data-prix="540" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Freixenet Prosecco Brut</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">540 DH</div></div>
       <div class="carte-item" data-id="pr2" data-prix="550" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Freixenet Cordon Negro Brut</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">550 DH</div></div>
       <div class="carte-item" data-id="pr3" data-prix="600" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Freixenet Cordon Rosado Rosé</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">600 DH</div></div>
 
       <!-- ══ SOFTS ══ -->
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:10px" onclick="toggleAccordion('softs')">— 🥤 Softs — Choix sur place — 40 DH —</div>
       <div class="bar-accordion-body" id="softs">
-      <div class="carte-item" data-id="so1" data-prix="40" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Soft — Choix sur place</strong><strong data-en>Soft drink — Guest's choice</strong><span class="carte-item-desc" data-fr>Coca-Cola, Sprite, Fanta, Jus, Eau gazeuse... (même prix)</span><span class="carte-item-desc" data-en>Coca-Cola, Sprite, Fanta, Juice, Sparkling water... (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">40 DH</div></div>
+<div class="carte-item" data-id="so1" data-prix="40" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Soft — Choix sur place</strong><strong data-en>Soft drink — Guest's choice</strong><span class="carte-item-desc" data-fr>Coca-Cola, Sprite, Fanta, Jus, Eau gazeuse... (même prix)</span><span class="carte-item-desc" data-en>Coca-Cola, Sprite, Fanta, Juice, Sparkling water... (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">40 DH</div></div>
 
       <!-- ══ VIRGIN COCKTAILS ══ -->
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:10px" onclick="toggleAccordion('virgin')">— 🍹 Virgin Cocktails — 80 DH —</div>
       <div class="bar-accordion-body" id="virgin">
-      <div class="carte-item" data-id="vc0" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Virgin cocktail — Choix sur place</strong><strong data-en>Virgin cocktail — Guest's choice</strong><span class="carte-item-desc" data-fr>Le client choisit sur place parmi la liste (même prix)</span><span class="carte-item-desc" data-en>Guest chooses on-site from the list (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
+<div class="carte-item" data-id="vc0" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Virgin cocktail — Choix sur place</strong><strong data-en>Virgin cocktail — Guest's choice</strong><span class="carte-item-desc" data-fr>Le client choisit sur place parmi la liste (même prix)</span><span class="carte-item-desc" data-en>Guest chooses on-site from the list (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
       <div class="carte-item" data-id="vc1" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Virgin Mojito Classique</strong><span class="carte-item-desc">Menthe, citron, sirop de canne, eau pétillante, passion, framboise</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
       <div class="carte-item" data-id="vc2" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Berry Blast</strong><span class="carte-item-desc">Jus de fraise, framboise, fruits rouges, eau pétillante</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
       <div class="carte-item" data-id="vc3" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Détox Vert</strong><span class="carte-item-desc">Menthe, concombre, pomme verte, jus citron</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
@@ -734,11 +710,10 @@ body.lang-fr [data-en]{display:none!important}
       <div class="carte-item" data-id="vc6" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Tropical Punch</strong><span class="carte-item-desc">Jus de mangue, ananas, orange</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
 
       <!-- ══ COCKTAILS SIGNATURE ══ -->
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:10px" onclick="toggleAccordion('signature')">— 🍸 Cocktails Signature — 130 DH —</div>
       <div class="bar-accordion-body" id="signature">
-      <div class="carte-item" data-id="cs0" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Cocktail Signature — Choix sur place</strong><strong data-en>Signature cocktail — Guest's choice</strong><span class="carte-item-desc" data-fr>Le client choisit sur place parmi la liste (même prix)</span><span class="carte-item-desc" data-en>Guest chooses on-site from the list (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
+<div class="carte-item" data-id="cs0" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Cocktail Signature — Choix sur place</strong><strong data-en>Signature cocktail — Guest's choice</strong><span class="carte-item-desc" data-fr>Le client choisit sur place parmi la liste (même prix)</span><span class="carte-item-desc" data-en>Guest chooses on-site from the list (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
       <div class="carte-item" data-id="cs1" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Koutoubia Sunset</strong><span class="carte-item-desc">Tequila infusée hibiscus, pamplemousse, miel de thym, citron</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
       <div class="carte-item" data-id="cs2" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Caipirismo</strong><span class="carte-item-desc">Cachaça, Aperol, citron, sucre de canne</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
       <div class="carte-item" data-id="cs3" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Red City</strong><span class="carte-item-desc">Gin, purée de framboise, ananas, citron, sirop des roses</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
@@ -749,11 +724,10 @@ body.lang-fr [data-en]{display:none!important}
       <div class="carte-item" data-id="cs8" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Golden Bazar</strong><span class="carte-item-desc">Gin, sirop d'abricot, citron, prosecco</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
 
       <!-- ══ COCKTAILS CLASSIQUES 120 DH ══ -->
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:10px" onclick="toggleAccordion('classiques-120')">— 🍸 Cocktails Classiques — 120 DH —</div>
       <div class="bar-accordion-body" id="classiques-120">
-      <div class="carte-item" data-id="cc0" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Cocktail classique 120 DH — Choix sur place</strong><strong data-en>Classic cocktail 120 DH — Guest's choice</strong><span class="carte-item-desc" data-fr>Le client choisit sur place parmi la liste (même prix)</span><span class="carte-item-desc" data-en>Guest chooses on-site from the list (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
+<div class="carte-item" data-id="cc0" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Cocktail classique 120 DH — Choix sur place</strong><strong data-en>Classic cocktail 120 DH — Guest's choice</strong><span class="carte-item-desc" data-fr>Le client choisit sur place parmi la liste (même prix)</span><span class="carte-item-desc" data-en>Guest chooses on-site from the list (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
       <div class="carte-item" data-id="cc1" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Mai Tai</strong><span class="carte-item-desc">White Rhum, Dark Rhum, citron, orgeat, sucre, Triple sec</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
       <div class="carte-item" data-id="cc2" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Gin Fizz</strong><span class="carte-item-desc">Gin, citron, sucre, eau gazeuse</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
       <div class="carte-item" data-id="cc3" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Negroni</strong><span class="carte-item-desc">Gin, Campari, Red vermouth</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
@@ -772,22 +746,30 @@ body.lang-fr [data-en]{display:none!important}
       <div class="carte-item" data-id="cc16" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Espresso Martini</strong><span class="carte-item-desc">Vodka, Liqueur de Café, vanille, café</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
 
       <!-- ══ COCKTAILS CLASSIQUES 150 DH ══ -->
-      
       </div>
       <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('classiques-150')">— 🍸 Cocktails Classiques — 150 DH —</div>
       <div class="bar-accordion-body" id="classiques-150">
-      <div class="carte-item" data-id="cd0" data-prix="150" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Cocktail classique 150 DH — Choix sur place</strong><strong data-en>Classic cocktail 150 DH — Guest's choice</strong><span class="carte-item-desc" data-fr>Le client choisit sur place parmi la liste (même prix)</span><span class="carte-item-desc" data-en>Guest chooses on-site from the list (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">150 DH</div></div>
+<div class="carte-item" data-id="cd0" data-prix="150" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Cocktail classique 150 DH — Choix sur place</strong><strong data-en>Classic cocktail 150 DH — Guest's choice</strong><span class="carte-item-desc" data-fr>Le client choisit sur place parmi la liste (même prix)</span><span class="carte-item-desc" data-en>Guest chooses on-site from the list (same price)</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">150 DH</div></div>
       <div class="carte-item" data-id="cd1" data-prix="150" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Long Island</strong><span class="carte-item-desc">Gin, White Rhum, Tequila, Vodka, Triple sec, citron, Coca-Cola</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">150 DH</div></div>
       <div class="carte-item" data-id="cd2" data-prix="150" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Sidecar</strong><span class="carte-item-desc">Cognac, citron, Triple sec</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">150 DH</div></div>
       <div class="carte-item" data-id="cd3" data-prix="150" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Cosmopolitan</strong><span class="carte-item-desc">Vodka, cranberry, citron, Triple sec</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">150 DH</div></div>
-
+      </div>
+      <table class="recap-table print-only-recap" id="recap-bar" style="margin-top:8px;table-layout:fixed">
+        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
+        <thead><tr>
+          <th>Bar &amp; Boissons</th>
+          <th class="r">P.U. TTC</th>
+          <th class="r">Nb.</th>
+          <th class="r">Total TTC</th>
+        </tr></thead>
+        <tbody id="recap-bar-body"></tbody>
+      </table>
     </div>
 
-    <!-- ══ ANIMATIONS ══ -->
-    <div id="sec-anim">
+    <div id="sec-anim" style="display:block;width:100%;clear:both">
       <div class="bar-accordion carte-section-title" onclick="toggleAccordion('acc-animations')">— 🎭 Animations &amp; Extras (optionnel) —</div>
       <div class="bar-accordion-body" id="acc-animations">
-      <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Gnawa — 4 musiciens</span><span class="bar-item-name" data-en>Gnawa — 4 musicians</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
+<div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Gnawa — 4 musiciens</span><span class="bar-item-name" data-en>Gnawa — 4 musicians</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
       <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Danseuses orientales — 2 danseuses, 1 passage 15 min</span><span class="bar-item-name" data-en>Oriental dancers — 2 dancers, 15 min set</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
       <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Groupe de musique — 3 musiciens + chanteur</span><span class="bar-item-name" data-en>Live band — 3 musicians + singer</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
       <div class="bar-item" data-prix="1000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Joueur de saxophone</span><span class="bar-item-name" data-en>Saxophone player</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">1 000 DH</span></div>
@@ -795,7 +777,7 @@ body.lang-fr [data-en]{display:none!important}
       <div class="bar-item" data-prix="5" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Flyer personnalisé recto — par personne</span><span class="bar-item-name" data-en>Custom flyer single-sided — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">5 DH</span></div>
       <div class="bar-item" data-prix="10" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Flyer personnalisé recto-verso — par personne</span><span class="bar-item-name" data-en>Custom flyer double-sided — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">10 DH</span></div>
       <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name">DJ</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
-      </div><!-- /acc-animations -->
+      </div>
       <table class="recap-table print-only-recap" id="recap-anim" style="margin-top:8px;table-layout:fixed">
         <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
         <thead><tr>
@@ -808,10 +790,8 @@ body.lang-fr [data-en]{display:none!important}
       </table>
     </div>
 
-    <!-- TOTAUX -->
-
-<!-- ══ REPAS GUIDE OFFERT ══ -->
-    <div id="bloc-guide" style="display:none;margin-top:14px">
+    <!-- ══ REPAS GUIDE OFFERT ══ -->
+    <div id="bloc-guide" style="display:none;margin-top:14px;width:100%;clear:both">
 
       <!-- Interface de sélection (écran uniquement) -->
       <div class="screen-only" style="border:1.5px solid var(--gold);border-radius:4px;padding:12px 14px;background:var(--cream);margin-bottom:10px">
@@ -935,7 +915,7 @@ body.lang-fr [data-en]{display:none!important}
       </table>
     </div>
 
-        <div class="totaux-block" style="flex-direction:column;align-items:flex-end">
+    <div class="totaux-block" style="display:flex;flex-direction:column;align-items:flex-end;clear:both;width:100%">
       <div class="screen-only" style="margin-bottom:4px">
         <button onclick="toggleSoldeAnt()" style="font-size:10px;color:var(--text-light);background:none;border:none;cursor:pointer;font-family:'Cormorant Garamond',serif;text-decoration:underline;padding:0">
           + Ajouter un solde antérieur dû
@@ -959,7 +939,7 @@ body.lang-fr [data-en]{display:none!important}
         </tr>
         <tr class="reste-row"><td data-fr>Reste à régler</td><td data-en>Balance due</td><td id="reste">— DH</td></tr>
       </table>
-    </div>
+    </div><!-- /totaux-block -->
 
     <!-- RÉGIMES ALIMENTAIRES -->
     <div class="regimes-box">
@@ -982,7 +962,7 @@ body.lang-fr [data-en]{display:none!important}
       </div>
       <div class="regime-note" data-fr>⚠ À transmettre <strong>72h avant</strong> la prestation — passé ce délai le restaurant ne peut garantir la prise en compte des régimes spéciaux. Tous nos plats peuvent être préparés <strong>sans porc</strong> et avec <strong>viande halal</strong> sur demande.</div>
       <div class="regime-note" data-en>⚠ Must be sent <strong>72h before</strong> — after this the restaurant cannot guarantee special arrangements. All dishes can be prepared <strong>pork-free</strong> and with <strong>halal meat</strong> on request.</div>
-    </div>
+    </div><!-- /regimes-box -->
 
     <!-- OBSERVATIONS -->
     <div class="section-title" data-fr>Observations</div>
@@ -1020,9 +1000,29 @@ body.lang-fr [data-en]{display:none!important}
     <div class="regl-bloc" id="regl-lien" style="display:none">
       <div class="rib-box"><div class="rib-header"><span class="rib-bank">🔗</span><span class="rib-title" data-fr>Règlement par Lien de Paiement</span><span class="rib-title" data-en>Payment by Link</span></div>
         <div class="rib-grid">
-          <div class="rib-field"><span class="rib-label" data-fr>Transmission du lien</span><span class="rib-label" data-en>Link delivery</span><span class="rib-val" data-fr>Par mail ou WhatsApp après signature et « bon pour accord »</span><span class="rib-val" data-en>By email or WhatsApp after signature and "agreement confirmed"</span></div>
-          <div class="rib-field"><span class="rib-label">WhatsApp</span><span class="rib-val">+212 6 11078244</span></div>
           <div class="rib-field"><span class="rib-label" data-fr>Acompte (50%)</span><span class="rib-label" data-en>Deposit (50%)</span><span class="rib-val" id="lien-montant">—</span></div>
+          <!-- Champ lien de paiement écran -->
+          <div class="rib-field screen-only">
+            <span class="rib-label" data-fr>🔗 Lien de paiement</span>
+            <span class="rib-label" data-en>🔗 Payment link</span>
+            <span class="rib-val">
+              <input type="url" id="lien-paiement-url" placeholder="https://..." oninput="updateLienPaiement()"
+                style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;
+                       font-family:'Cormorant Garamond',serif;font-size:12.5px;padding:2px 4px;
+                       outline:none;color:var(--navy)">
+            </span>
+          </div>
+          <!-- Lien cliquable pour l'impression -->
+          <div class="rib-field" id="lien-paiement-print-row" style="display:none">
+            <span class="rib-label" data-fr>🔗 Lien de paiement</span>
+            <span class="rib-label" data-en>🔗 Payment link</span>
+            <span class="rib-val">
+              <a id="lien-paiement-href" href="#" target="_blank"
+                style="color:var(--burgundy);font-weight:600;word-break:break-all;text-decoration:underline">
+                —
+              </a>
+            </span>
+          </div>
         </div>
         <div class="rib-warning" data-fr>⚠ Lien valable <strong>48h</strong>. Réservation confirmée après validation du paiement.</div>
         <div class="rib-warning" data-en>⚠ Link valid <strong>48 hours</strong>. Reservation confirmed after payment.</div>
@@ -1066,7 +1066,7 @@ body.lang-fr [data-en]{display:none!important}
       </div>
     </div>
 
-  </div>
+  </div><!-- /body -->
 
   <div class="cgv-section">
     <h2 data-fr>Conditions Générales de Vente</h2>
@@ -1333,9 +1333,27 @@ function toggleSoldeAnt(){
   recalc();
 }
 
+function updateLienPaiement(){
+  const url = document.getElementById('lien-paiement-url')?.value?.trim() || '';
+  // Mettre à jour les deux lien-paiement (FR et EN ont même id, chercher tous)
+  document.querySelectorAll('#lien-paiement-href').forEach(a=>{
+    if(url){
+      a.href = url.startsWith('http') ? url : 'https://'+url;
+      a.textContent = url;
+    } else {
+      a.href = '#';
+      a.textContent = '—';
+    }
+  });
+  document.querySelectorAll('#lien-paiement-print-row').forEach(row=>{
+    row.style.display = url ? 'flex' : 'none';
+  });
+}
+
 function showReglement(val){document.querySelectorAll('.regl-bloc').forEach(b=>b.style.display='none');const bloc=document.getElementById('regl-'+val);if(bloc)bloc.style.display='block';const a=document.getElementById('reste').textContent;['lien-montant','especes-montant','cheque-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=a;});}
 
 function genererDocument(){
+  recalc(); // S'assurer que les totaux sont à jour
   const isFr=lang==='fr';
   // Nom fichier : AA_MM_JJ_Société_Contact_Référence_NbPax (champs vides omis)
   const dv=document.getElementById('inp-date-prestation').value;
@@ -1456,277 +1474,5 @@ function genererDocument(){
 </script>
 </body>
 
-</html        </div>
-        <div class="carte-section" id="sec-desserts">
-        <div class="carte-section-title" data-fr>— Nos Douceurs Revisitées —</div>
-        <div class="carte-section-title" data-en>— Our Revisited Sweets —</div>
-        <div class="carte-item" data-id="d1" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Moelleux au Chocolat</strong><strong data-en>Chocolate Moelleux</strong><br><span class="carte-item-desc" data-fr>Signature — cœur d'amlou et glace corne de gazelle</span><span class="carte-item-desc" data-en>Signature — amlou heart and corne de gazelle ice cream</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="d2" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Coco Trompe-l'œil</strong><strong data-en>Coconut Trompe-l'œil</strong><br><span class="carte-item-desc" data-fr>Chocolat noir et blanc, confit de mangue, crumble, sorbet glace coco</span><span class="carte-item-desc" data-en>Dark and white chocolate, mango confit, crumble, coconut sorbet/ice cream</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="d3" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tiramisu Revisité</strong><strong data-en>Tiramisu Revisited</strong><br><span class="carte-item-desc" data-fr>By Grand Bazar — aux café épices marocaines</span><span class="carte-item-desc" data-en>By Grand Bazar — Moroccan spiced coffee</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="d4" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sablé Breton aux Framboises</strong><strong data-en>Breton Shortbread</strong><br><span class="carte-item-desc" data-fr>Coulis et sorbet framboise à la rose</span><span class="carte-item-desc" data-en>Raspberry coulis and rose-infused raspberry sorbet</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="d5" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Profiteroles</strong><br><span class="carte-item-desc" data-fr>Pâte à choux, glace vanille, chocolat noir chaud</span><span class="carte-item-desc" data-en>Choux pastry, vanilla ice cream and hot dark chocolate</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="d6" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pastilla Pralinée</strong><strong data-en>Praline Pastilla</strong><br><span class="carte-item-desc" data-fr>En 3 feuilles traditionnelles de pastilla caramélisées et amlou de noisette</span><span class="carte-item-desc" data-en>Three traditional caramelized pastilla sheets with hazelnut amlou</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="d7" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Café / Thé Gourmand</strong><strong data-en>Gourmet Coffee / Tea</strong><br><span class="carte-item-desc" data-fr>Assortiment de pâtisseries marocaines</span><span class="carte-item-desc" data-en>Assortment of Moroccan pastries</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="d8" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Assiette de Fruits</strong><strong data-en>Fruit Platter</strong><br><span class="carte-item-desc" data-fr>Fruits de saison</span><span class="carte-item-desc" data-en>Seasonal fruits</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-
-        <!-- Glaces & Sorbets -->
-        <!-- Gâteaux d'anniversaire -->
-        <div class="carte-section-title" style="margin-top:8px" data-fr>— Gâteaux d'Anniversaire — 60 DH / portion —</div>
-        <div class="carte-section-title" style="margin-top:8px" data-en>— Birthday Cakes — 60 MAD / portion —</div>
-
-        <div class="carte-item" data-id="ga1" data-prix="60" onclick="toggleItem(this)">
-          <input type="checkbox">
-          <div class="carte-item-name">
-            <strong data-fr>🎂 Gâteau d'anniversaire — Base Fruit</strong>
-            <strong data-en>🎂 Birthday Cake — Fruit Base</strong>
-            <br>
-            <span class="carte-item-desc" data-fr>Fraises, framboises, fruits frais — 60 DH / portion</span>
-            <span class="carte-item-desc" data-en>Strawberries, raspberries, fresh fruits — 60 MAD / portion</span>
-            <!-- Champs supplémentaires visibles quand coché -->
-            <div class="gateau-options" style="display:none;margin-top:6px;padding:6px 0;border-top:1px dashed var(--border)">
-              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-fr>✏️ Message sur le gâteau :</div>
-              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-en>✏️ Message on the cake:</div>
-              <input type="text" class="gateau-message" placeholder="Ex: Joyeux Anniversaire Sophie !" onclick="event.stopPropagation()"
-                style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;padding:2px 4px;outline:none;color:var(--text)">
-            </div>
-          </div>
-          <div class="carte-qty"><input type="number" min="0" value="0" placeholder="Parts" onclick="event.stopPropagation()" oninput="recalc()" title="Nombre de portions"></div>
-          <div class="carte-item-price">60 DH<span style="font-size:9px;display:block;color:var(--text-light)">/portion</span></div>
-        </div>
-
-        <div class="carte-item" data-id="ga2" data-prix="60" onclick="toggleItem(this)">
-          <input type="checkbox">
-          <div class="carte-item-name">
-            <strong data-fr>🎂 Gâteau d'anniversaire — Base Chocolat</strong>
-            <strong data-en>🎂 Birthday Cake — Chocolate Base</strong>
-            <br>
-            <span class="carte-item-desc" data-fr>Ganache chocolat noir, copeaux de chocolat — 60 DH / portion</span>
-            <span class="carte-item-desc" data-en>Dark chocolate ganache, chocolate shavings — 60 MAD / portion</span>
-            <div class="gateau-options" style="display:none;margin-top:6px;padding:6px 0;border-top:1px dashed var(--border)">
-              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-fr>✏️ Message sur le gâteau :</div>
-              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-en>✏️ Message on the cake:</div>
-              <input type="text" class="gateau-message" placeholder="Ex: Joyeux Anniversaire Sophie !" onclick="event.stopPropagation()"
-                style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;padding:2px 4px;outline:none;color:var(--text)">
-            </div>
-          </div>
-          <div class="carte-qty"><input type="number" min="0" value="0" placeholder="Parts" onclick="event.stopPropagation()" oninput="recalc()" title="Nombre de portions"></div>
-          <div class="carte-item-price">60 DH<span style="font-size:9px;display:block;color:var(--text-light)">/portion</span></div>
-        </div>
-
-        <div class="carte-section-title" style="margin-top:8px" data-fr>— Glaces &amp; Sorbets — 30 DH / boule —</div>
-        <div class="carte-section-title" style="margin-top:8px" data-en>— Ice Creams &amp; Sorbets — 30 MAD / scoop —</div>
-        <div class="carte-item" data-id="g1" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Vanille</strong><strong data-en>Vanilla Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g2" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Corne de Gazelle</strong><strong data-en>Gazelle Horn Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g3" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Café "Nes Nes"</strong><strong data-en>"Nes Nes" Coffee Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g4" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Chocolat</strong><strong data-en>Chocolate Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g5" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Pistache</strong><strong data-en>Pistachio Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g6" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Caramel</strong><strong data-en>Caramel Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g7" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Noix de Coco</strong><strong data-en>Coconut Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g8" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Framboise</strong><strong data-en>Raspberry Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g9" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Citron</strong><strong data-en>Lemon Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g10" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Mangue</strong><strong data-en>Mango Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g11" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Orange-Cannelle</strong><strong data-en>Orange &amp; Cinnamon Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-      </div>
-
-      <!-- Récap à la carte — impression uniquement -->
-      <table class="recap-table print-only-recap" id="recap-carte" style="table-layout:fixed;margin-top:8px">
-        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
-        <thead><tr>
-          <th>Désignation</th>
-          <th class="r">P.U. TTC</th>
-          <th class="r">Nb.</th>
-          <th class="r">Total TTC</th>
-        </tr></thead>
-        <tbody id="recap-carte-body"></tbody>
-      </table>
-    </div><!-- /block-carte -->
-
-
-      <div id="sec-bar">
-      <div class="section-title">Bar &amp; Boissons</div>
-      <!-- /dernier accordéon -->
-      <table class="recap-table print-only-recap" id="recap-bar" style="margin-top:8px;table-layout:fixed">
-        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
-        <thead><tr>
-          <th>Bar &amp; Boissons</th>
-          <th class="r">P.U. TTC</th>
-          <th class="r">Nb.</th>
-          <th class="r">Total TTC</th>
-        </tr></thead>
-        <tbody id="recap-bar-body"></tbody>
-      </table>
-
-      <table class="totaux-table">
-        <tr><td data-fr>Sous-total HT</td><td data-en>Subtotal excl. VAT</td><td id="ht">— DH</td></tr>
-        <tr><td data-fr>TVA (10%)</td><td data-en>VAT (10%)</td><td id="tva">— DH</td></tr>
-        <tr class="grand-total"><td data-fr>TOTAL TTC</td><td data-en>TOTAL INCL. VAT</td><td id="ttc">— DH</td></tr>
-        <tr class="acompte-row"><td data-fr>Acompte demandé (50%)</td><td data-en>Deposit required (50%)</td><td id="acompte">— DH</td></tr>
-        <tr class="acompte-row"><td data-fr>Déjà versé</td><td data-en>Already paid</td><td style="text-align:right"><input type="number" min="0" id="deja-verse" placeholder="0" value="0" style="width:90px;border:none;border-bottom:1px dashed var(--border);font-family:'Cormorant Garamond',serif;font-size:12.5px;text-align:right;outline:none;background:transparent;font-weight:600" oninput="recalc()"> DH</td></tr>
-        <tr class="acompte-row" id="solde-ant-row" style="display:none">
-          <td data-fr style="color:var(--burgundy)">+ Solde antérieur dû</td>
-          <td data-en style="color:var(--burgundy)">+ Previous balance due</td>
-          <td style="text-align:right">
-            <input type="number" min="0" id="solde-anterieur" placeholder="0" value="0"
-              style="width:90px;border:none;border-bottom:1px dashed var(--burgundy);font-family:'Cormorant Garamond',serif;font-size:12.5px;text-align:right;outline:none;background:transparent;font-weight:600;color:var(--burgundy)"
-              oninput="toggleSoldeAnt();recalc()">
-            <span style="color:var(--burgundy)"> DH</span>
-          </td>
-        </tr>
-        <tr class="reste-row"><td data-fr>Reste à régler</td><td data-en>Balance due</td><td id="reste">— DH</td></tr>
-      </table>
-    </div>
-
-    <!-- RÉGIMES ALIMENTAIRES -->
-    <div class="regimes-box">
-      <h3 data-fr>⚠ Régimes alimentaires — sans porc, viande halal — à préciser au minimum 72h avant</h3>
-      <h3 data-en>⚠ Dietary requirements — no pork, halal meat — at least 72h before</h3>
-      <div class="regimes-grid">
-        <div class="regime-item"><input type="checkbox"><label data-fr>🥦 Végétarien</label><label data-en>🥦 Vegetarian</label><input class="regime-nb" placeholder="nb"></div>
-        <div class="regime-item"><input type="checkbox"><label>🌱 Vegan</label><input class="regime-nb" placeholder="nb"></div>
-        <div class="regime-item"><input type="checkbox"><label data-fr>🌾 Sans gluten</label><label data-en>🌾 Gluten-free</label><input class="regime-nb" placeholder="nb"></div>
-        <div class="regime-item"><input type="checkbox"><label data-fr>🐟 Pescétarien</label><label data-en>🐟 Pescatarian</label><input class="regime-nb" placeholder="nb"></div>
-        <div class="regime-item"><input type="checkbox"><label data-fr>⚠️ Allergie alimentaire</label><label data-en>⚠️ Food allergy</label><input class="regime-nb" placeholder="nb"></div>
-        <div class="regime-item"><input type="checkbox"><label data-fr>🦐 Sans fruits de mer</label><label data-en>🦐 No seafood</label><input class="regime-nb" placeholder="nb"></div>
-        <div class="regime-item"><input type="checkbox"><label data-fr>🥛 Sans lactose</label><label data-en>🥛 Dairy-free</label><input class="regime-nb" placeholder="nb"></div>
-        <div class="regime-item"><input type="checkbox"><label data-fr>🥜 Sans noix</label><label data-en>🥜 Nut-free</label><input class="regime-nb" placeholder="nb"></div>
-        <div class="regime-item"><input type="checkbox"><label data-fr>📝 Autre régime</label><label data-en>📝 Other</label><input class="regime-nb" placeholder="nb"></div>
-      </div>
-      <div class="regime-detail">
-        <label data-fr>Précisions / allergènes à détailler :</label><label data-en>Details / allergens to specify:</label>
-        <textarea placeholder="Ex: 2 personnes végétariennes, 1 allergie aux noix…"></textarea>
-      </div>
-      <div class="regime-note" data-fr>⚠ À transmettre <strong>72h avant</strong> la prestation — passé ce délai le restaurant ne peut garantir la prise en compte des régimes spéciaux. Tous nos plats peuvent être préparés <strong>sans porc</strong> et avec <strong>viande halal</strong> sur demande.</div>
-      <div class="regime-note" data-en>⚠ Must be sent <strong>72h before</strong> — after this the restaurant cannot guarantee special arrangements. All dishes can be prepared <strong>pork-free</strong> and with <strong>halal meat</strong> on request.</div>
-    </div>
-
-    <!-- OBSERVATIONS -->
-    <div class="section-title" data-fr>Observations</div>
-    <div class="section-title" data-en>Notes</div>
-    <div class="notes-area">
-      <textarea placeholder="Informations complémentaires, référence voucher…"></textarea>
-    </div>
-
-    <!-- RÈGLEMENT -->
-    <div class="section-title" data-fr>Mode de Règlement</div>
-    <div class="section-title" data-en>Payment Method</div>
-    <div class="reglement-box screen-only">
-      <p class="regl-hint" data-fr>Sélectionnez le mode retenu — seul ce bloc apparaîtra à l'impression.</p>
-      <div class="regl-options">
-        <label class="regl-opt"><input type="radio" name="reglement" value="virement" onchange="showReglement(this.value)"><span data-fr>💳 Virement bancaire</span><span data-en>💳 Bank transfer</span></label>
-        <label class="regl-opt"><input type="radio" name="reglement" value="lien" onchange="showReglement(this.value)"><span data-fr>🔗 Lien de paiement</span><span data-en>🔗 Payment link</span></label>
-        <label class="regl-opt"><input type="radio" name="reglement" value="especes" onchange="showReglement(this.value)"><span data-fr>💵 Espèces</span><span data-en>💵 Cash</span></label>
-        <label class="regl-opt"><input type="radio" name="reglement" value="cheque" onchange="showReglement(this.value)"><span data-fr>📄 Chèque</span><span data-en>📄 Cheque</span></label>
-      </div>
-    </div>
-    <div class="regl-bloc" id="regl-virement" style="display:none">
-      <div class="rib-box"><div class="rib-header"><span class="rib-bank">🏦</span><span class="rib-title" data-fr>Coordonnées Bancaires — Virement</span><span class="rib-title" data-en>Bank Details — Wire Transfer</span></div>
-        <div class="rib-grid">
-          <div class="rib-field"><span class="rib-label" data-fr>Titulaire</span><span class="rib-label" data-en>Account holder</span><span class="rib-val">NYX</span></div>
-          <div class="rib-field"><span class="rib-label" data-fr>Banque</span><span class="rib-label" data-en>Bank</span><span class="rib-val">AttijariWafa Bank — Ag. Marrakech Plaza (1509)</span></div>
-          <div class="rib-field"><span class="rib-label" data-fr>Domiciliation</span><span class="rib-label" data-en>Branch</span><span class="rib-val">02, Rue Imam Malik, Guéliz — Marrakech</span></div>
-          <div class="rib-field"><span class="rib-label">Banque / Ville / N° / Clé</span><span class="rib-val rib-mono">007 — 450 — 0015095000000196 — 27</span></div>
-          <div class="rib-field"><span class="rib-label">IBAN</span><span class="rib-val rib-iban">MA64 007 450 0015095000000196 27</span></div>
-          <div class="rib-field"><span class="rib-label">BIC / SWIFT</span><span class="rib-val rib-mono">BCMAMAMC</span></div>
-        </div>
-        <div class="rib-warning" data-fr>⚠ Le virement doit être effectué <strong>au minimum 15 jours avant</strong> la date de la prestation. La réservation n'est confirmée qu'à réception des fonds.</div>
-        <div class="rib-warning" data-en>⚠ Bank transfer must be completed at least <strong>15 days before</strong> the event.</div>
-      </div>
-    </div>
-    <div class="regl-bloc" id="regl-lien" style="display:none">
-      <div class="rib-box"><div class="rib-header"><span class="rib-bank">🔗</span><span class="rib-title" data-fr>Règlement par Lien de Paiement</span><span class="rib-title" data-en>Payment by Link</span></div>
-        <div class="rib-grid">
-          <div class="rib-field"><span class="rib-label" data-fr>Transmission du lien</span><span class="rib-label" data-en>Link delivery</span><span class="rib-val" data-fr>Par mail ou WhatsApp après signature et « bon pour accord »</span><span class="rib-val" data-en>By email or WhatsApp after signature and "agreement confirmed"</span></div>
-          <div class="rib-field"><span class="rib-label">WhatsApp</span><span class="rib-val">+212 6 11078244</span></div>
-          <div class="rib-field"><span class="rib-label" data-fr>Acompte (50%)</span><span class="rib-label" data-en>Deposit (50%)</span><span class="rib-val" id="lien-montant">—</span></div>
-        </div>
-        <div class="rib-warning" data-fr>⚠ Lien valable <strong>48h</strong>. Réservation confirmée après validation du paiement.</div>
-        <div class="rib-warning" data-en>⚠ Link valid <strong>48 hours</strong>. Reservation confirmed after payment.</div>
-      </div>
-    </div>
-    <div class="regl-bloc" id="regl-especes" style="display:none">
-      <div class="rib-box"><div class="rib-header"><span class="rib-bank">💵</span><span class="rib-title" data-fr>Règlement en Espèces</span><span class="rib-title" data-en>Cash Payment</span></div>
-        <div class="rib-grid">
-          <div class="rib-field"><span class="rib-label" data-fr>Lieu</span><span class="rib-label" data-en>Location</span><span class="rib-val" data-fr>Sur place — Le Grand Bazar, Place Jemaa El Fna</span><span class="rib-val" data-en>On site — Le Grand Bazar, Place Jemaa El Fna</span></div>
-          <div class="rib-field"><span class="rib-label" data-fr>Acompte (50%)</span><span class="rib-label" data-en>Deposit (50%)</span><span class="rib-val" id="especes-montant">—</span></div>
-        </div>
-        <div class="rib-warning" data-fr>⚠ L'acompte doit être remis <strong>au minimum 15 jours avant</strong>. Un reçu vous sera délivré.</div>
-        <div class="rib-warning" data-en>⚠ Deposit due at least <strong>15 days before</strong>. A receipt will be issued.</div>
-      </div>
-    </div>
-    <div class="regl-bloc" id="regl-cheque" style="display:none">
-      <div class="rib-box"><div class="rib-header"><span class="rib-bank">📄</span><span class="rib-title" data-fr>Règlement par Chèque</span><span class="rib-title" data-en>Cheque Payment</span></div>
-        <div class="rib-grid">
-          <div class="rib-field"><span class="rib-label" data-fr>À l'ordre de</span><span class="rib-label" data-en>Payable to</span><span class="rib-val">NYX</span></div>
-          <div class="rib-field"><span class="rib-label" data-fr>Acompte (50%)</span><span class="rib-label" data-en>Deposit (50%)</span><span class="rib-val" id="cheque-montant">—</span></div>
-        </div>
-        <div class="rib-warning" data-fr>⚠ Chèque à remettre <strong>au minimum 15 jours avant</strong>. Tout chèque sans provision entraîne l'annulation.</div>
-        <div class="rib-warning" data-en>⚠ Cheque due at least <strong>15 days before</strong>. Bounced cheques result in automatic cancellation.</div>
-      </div>
-    </div>
-
-    <div class="signatures">
-      <div class="sig-block">
-        <strong data-fr>Bon pour accord — Client / Agence</strong><strong data-en>Agreement — Client / Agency</strong>
-        <div style="font-size:9px;color:var(--text-light);margin:3px 0" data-fr>Cachet + signature + mention « Bon pour accord »</div>
-        <div style="font-size:9px;color:var(--text-light);margin:3px 0" data-en>Stamp + signature + "Agreement confirmed"</div>
-        <div class="sig-zone"></div>
-      </div>
-      <div class="sig-block">
-        <strong>Le Grand Bazar Marrakech — Direction</strong>
-        <div style="font-size:9px;color:var(--text-light);margin:3px 0">Renaud Fabien</div>
-        <div style="margin:4px 0 2px">
-          <img src="data:image/png;base64,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" alt="Signature Renaud Fabien" style="height:55px;display:block;opacity:.9;">
-        </div>
-        <div class="sig-zone" style="margin-top:2px"></div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="cgv-section">
-    <h2 data-fr>Conditions Générales de Vente</h2>
-    <h2 data-en>General Terms and Conditions</h2>
-    <div class="cgv-text" data-fr>
-      <p>Les présentes conditions s'appliquent à toutes les prestations. Toute réservation implique leur acceptation.</p>
-      <h4>Tarifs</h4><p>Exprimés en dirhams TTC, par personne. Si la réservation a lieu plus de 10 mois avant, Le Grand Bazar peut appliquer ses tarifs en vigueur au moment de l'événement.</p>
-      <h4>Confirmation</h4><p>Effective après réception d'un acompte de 50% et du proforma signé « bon pour accord ».</p>
-      <h4>Menu &amp; Régimes</h4><p>Choix définitif du menu : 6 jours avant. Régimes spéciaux : 72h avant minimum.</p>
-      <h4>Annulation des convives</h4><p>Nombre définitif : 1 semaine avant. J-7 à J-3 : 50% facturé. J-3 ou moins : 100% facturé.</p>
-      <h4>Convives supplémentaires</h4><p>Facturés à l'unité. Dépassement de capacité : Le Grand Bazar peut refuser l'accueil.</p>
-      <h4>Prestations supplémentaires</h4><p>Toute prestation non incluse est facturée le jour de l'événement.</p>
-      <h4>Paiement par voucher</h4><p>Pour entreprises sous contrat uniquement. Extras réglés sur place.</p>
-      <h4>Responsabilité</h4><p>Le client assume la responsabilité des dommages causés par ses convives.</p>
-      <h4>Règlement</h4><p>Pénalités de retard : taux légal × 1,5. Contestation dans les 8 jours.</p>
-      <h4>Annulation par Le Grand Bazar</h4><p>Remboursement de l'acompte uniquement, sauf force majeure.</p>
-      <h4>Juridiction</h4><p>Tribunal de Commerce de Marrakech.</p>
-    </div>
-    <div class="cgv-text" data-en>
-      <p>These terms apply to all services. Any reservation implies acceptance.</p>
-      <h4>Pricing</h4><p>All prices in MAD incl. VAT, per person. If booked more than 10 months prior, current rates at event time may apply.</p>
-      <h4>Confirmation</h4><p>Only confirmed upon receipt of 50% deposit and signed proforma.</p>
-      <h4>Menu &amp; Dietary</h4><p>Final menu: 6 days before. Dietary requirements: 72h minimum.</p>
-      <h4>Guest Changes</h4><p>Final count: 1 week before. J-7 to J-3: 50% charged. J-3 or less: 100% charged.</p>
-      <h4>Additional Guests</h4><p>Charged at unit rate. Capacity exceeded: Le Grand Bazar may refuse entry.</p>
-      <h4>Additional Services</h4><p>Any service not included will be billed on the day.</p>
-      <h4>Voucher Payments</h4><p>For contracted companies only. Extras settled on-site.</p>
-      <h4>Liability</h4><p>Client assumes responsibility for damages caused by guests.</p>
-      <h4>Payment Terms</h4><p>Late fees: 1.5× legal rate. Disputes within 8 days.</p>
-      <h4>Cancellation by Le Grand Bazar</h4><p>Deposit refunded only, except force majeure.</p>
-      <h4>Jurisdiction</h4><p>Commercial Court of Marrakech.</p>
-    </div>
-  </div>
-
-  <!-- FOOTER : numérotation uniquement -->
-  <div class="doc-footer">
-    <strong>SARL NYX</strong> — Capital social : 4 000 000,00 DH<br>
-    Domaine Royal Palm, villa n°16, route d'Amizmiz, km12, Tamesloht, 40000 Marrakech<br>
-    <strong>ICE :</strong> 002282634000063 &nbsp;|&nbsp; <strong>RC :</strong> 97273 &nbsp;|&nbsp; <strong>TP :</strong> 45103536 &nbsp;|&nbsp; <strong>IF :</strong> 3763702 &nbsp;|&nbsp; <strong>CNSS :</strong> 155549<br>
-    <span style="opacity:.6">Restaurant · Rooftop · Marrakech &nbsp;|&nbsp; Page <span id="pg-num">1</span></span>
-  </div>
-
-</div>
-
-
-
-</html        </div>
-        ></body>
+</html
+</html>
