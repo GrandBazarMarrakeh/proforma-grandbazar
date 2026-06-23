@@ -1566,17 +1566,89 @@ function genererDocument(){
     catch(e){ alert('❌ Connexion impossible\n\n'+e.message+'\n\nÀ vérifier : déploiement « Application Web » en accès « Tout le monde », et URL terminant par /exec.'); }
   };
 
+  // ── Génération du PDF (vue impression fidèle) ──────────────────
+  function gbLoadHtml2pdf(){
+    return new Promise(function(resolve,reject){
+      if(window.html2pdf) return resolve(window.html2pdf);
+      var s=document.createElement('script');
+      s.src='https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+      s.onload=function(){ resolve(window.html2pdf); };
+      s.onerror=function(){ reject(new Error('Chargement du générateur PDF échoué (connexion ?)')); };
+      document.head.appendChild(s);
+    });
+  }
+
+  function gbInjectCaptureStyle(){
+    if(document.getElementById('gb-capture-style')) return;
+    var css=''
+      +'.gb-capturing .controls-bar,.gb-capturing .mode-bar,.gb-capturing .menu-selector,.gb-capturing .reglement-box,.gb-capturing .screen-only{display:none!important}'
+      +'.gb-capturing .document{box-shadow:none!important;width:100%!important}'
+      +'.gb-capturing .carte-section,.gb-capturing .carte-section-title,.gb-capturing .carte-item,.gb-capturing .bar-item{display:none!important}'
+      +'.gb-capturing #sec-bar > .section-title,.gb-capturing #sec-anim > .section-title{display:block!important}'
+      +'.gb-capturing .hide-print{display:none!important}'
+      +'.gb-capturing .print-only-recap{display:table!important}'
+      +'.gb-capturing input[type=checkbox]{display:none!important}'
+      +'.gb-capturing .carte-qty{display:none!important}'
+      +'.gb-capturing #bloc-guide button,.gb-capturing #nb-guides-display,.gb-capturing #guides-container,.gb-capturing #guide-panel-fixe-global,.gb-capturing #guide-panel-carte-global,.gb-capturing #bloc-guide label,.gb-capturing #bloc-guide select,.gb-capturing #bloc-guide input[type="text"]{display:none!important}'
+      +'.gb-capturing .regl-bloc{display:none!important}'
+      +'.gb-capturing .regl-bloc.active-regl{display:block!important}'
+      +'.gb-capturing .header{background:#3d1a35!important}'
+      +'.gb-capturing .title-band{background:#c9a84c!important}'
+      +'.gb-capturing .doc-footer{background:#3d1a35!important}'
+      +'.gb-capturing .totaux-table tr.grand-total{background:#3d1a35!important}'
+      +'.gb-capturing .recap-table thead tr{background:#3d1a35!important}'
+      +'.gb-capturing .recap-table tbody tr.cat-row{background:#2a0f2b!important}'
+      +'.gb-capturing .rib-box{background:#faf7f0!important}'
+      +'.gb-capturing .regimes-box{background:#fff9ee!important}';
+    var st=document.createElement('style'); st.id='gb-capture-style'; st.textContent=css;
+    document.head.appendChild(st);
+  }
+
+  async function gbGeneratePdf(){
+    await gbLoadHtml2pdf();
+    gbInjectCaptureStyle();
+    var origTitle=document.title;
+    // Prépare la vue impression (construit les récaps) SANS lancer l'impression
+    var realPrint=window.print; window.print=function(){};
+    try{ if(typeof genererDocument==='function') genererDocument(); }catch(e){}
+    window.print=realPrint;
+    var fileBase=(document.title||'').trim();
+    try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
+    document.body.classList.add('gb-capturing');
+    await new Promise(function(r){ setTimeout(r,400); });
+    var el=document.querySelector('.document');
+    var opt={margin:[8,8,8,8],image:{type:'jpeg',quality:0.96},
+      html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},
+      jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
+      pagebreak:{mode:['css','legacy']}};
+    var b64='';
+    try{
+      var uri=await window.html2pdf().set(opt).from(el).outputPdf('datauristring');
+      b64=(uri.split(',')[1])||'';
+    } finally {
+      document.body.classList.remove('gb-capturing');
+      document.title=origTitle;
+    }
+    return { b64:b64, fileBase:fileBase };
+  }
+
   window.gbEnregistrer=async function(){
     try{
       if(typeof recalc==='function') recalc();
       const type=(document.getElementById('gb-doctype')||{}).value||'proforma';
       const statut=(document.getElementById('gb-statut')||{}).value||'Brouillon';
-      const payload=Object.assign({statut:statut,type:type,formData:gbCollectState()},gbMeta());
+      const meta=gbMeta();
+      const formData=gbCollectState();
+      // PDF
+      let pdf={b64:'',fileBase:''};
+      try{ pdf=await gbGeneratePdf(); }
+      catch(e){ if(!confirm('⚠️ Le PDF n\'a pas pu être généré ('+e.message+').\nEnregistrer quand même les données (sans le PDF) ?')) return; }
+      const payload=Object.assign({statut:statut,type:type,formData:formData,pdfBase64:pdf.b64,fileBase:pdf.fileBase},meta);
       let j;
       if(window.GB_currentId){ payload.action='update'; payload.id=window.GB_currentId; j=await gbApi(payload); }
       else { payload.action='save'; j=await gbApi(payload); window.GB_currentId=j.id; }
       const refn=document.getElementById('ref-num'); if(refn&&j.numero) refn.value=j.numero;
-      alert('✅ Enregistré\nN° '+j.numero+'\nStatut : '+statut);
+      alert('✅ Enregistré\nN° '+j.numero+'\nStatut : '+statut+(j.driveUrl?'\n📄 PDF rangé dans le Drive ✔':'\n(données seules, sans PDF)'));
     }catch(e){ alert('❌ Enregistrement impossible\n'+e.message); }
   };
 
