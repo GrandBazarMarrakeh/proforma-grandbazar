@@ -612,7 +612,7 @@ body.lang-fr [data-en]{display:none!important}
 
       <div id="sec-bar">
       <div class="section-title">Bar &amp; Boissons</div>
-      <div class="bar-accordion section-title" onclick="toggleAccordion('acc-forfaits')">— 💧 Forfaits — À partir de 15 personnes —</div>
+      <div class="bar-accordion carte-section-title" onclick="toggleAccordion('acc-forfaits')">— 💧 Forfaits — À partir de 15 personnes —</div>
       <div class="bar-accordion-body" id="acc-forfaits">
       <div class="bar-item" data-prix="20" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait eau simple (½ bouteille d'eau)</span><span class="bar-item-name" data-en>Still water (½ bottle)</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">20 DH</span></div>
       <div class="bar-item" data-prix="90" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait soft (soft + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Soft drinks package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">90 DH</span></div>
@@ -620,7 +620,7 @@ body.lang-fr [data-en]{display:none!important}
       <div class="bar-item" data-prix="220" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin standard (½ vin blanc/rouge/gris/rosé + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Standard wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">220 DH</span></div>
       <div class="bar-item" data-prix="250" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin Grand Bazar (½ vin rouge ou blanc + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Grand Bazar wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
       </div><!-- /acc-forfaits -->
-      <div class="bar-accordion section-title" onclick="toggleAccordion('acc-openbar')">— 🍾 Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
+      <div class="bar-accordion carte-section-title" onclick="toggleAccordion('acc-openbar')">— 🍾 Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
       <div class="bar-accordion-body" id="acc-openbar">
       <div class="carte-section-title openbar-title" data-fr>— Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
       <div class="carte-section-title openbar-title" data-en>— Open Bar — From 30 guests — 30 min rounds —</div>
@@ -785,7 +785,7 @@ body.lang-fr [data-en]{display:none!important}
 
     <!-- ══ ANIMATIONS ══ -->
     <div id="sec-anim">
-      <div class="bar-accordion section-title anim-title" onclick="toggleAccordion('acc-animations')">🎭 Animations &amp; Extras (optionnel)</div>
+      <div class="bar-accordion carte-section-title" onclick="toggleAccordion('acc-animations')">— 🎭 Animations &amp; Extras (optionnel) —</div>
       <div class="bar-accordion-body" id="acc-animations">
       <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Gnawa — 4 musiciens</span><span class="bar-item-name" data-en>Gnawa — 4 musicians</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
       <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Danseuses orientales — 2 danseuses, 1 passage 15 min</span><span class="bar-item-name" data-en>Oriental dancers — 2 dancers, 15 min set</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
@@ -1147,7 +1147,7 @@ function buildMenuCards(){
         <strong>${isFr?'Entrée':'Starter'}</strong>${isFr?m.entree_fr:m.entree_en}
         <strong>${isFr?'Plat':'Main'}</strong>${isFr?m.plat_fr:m.plat_en}
         <strong>Dessert</strong>${isFr?m.dessert_fr:m.dessert_en}
-        <span style="font-size:9px;color:var(--text-light);margin-top:3px;display:block">Partenaire: ${m.prix_p} DH | Particulier: ${m.prix_c} DH</span>
+        <span style="font-size:9px;color:var(--text-light);margin-top:3px;display:block">${isFr?'À partir de 15 personnes':'From 15 guests'}</span>
       </div>`;
     // Ajouter le bloc accompagnement HORS de menu-card-detail pour qu'il soit toujours visible
     if(acc){
