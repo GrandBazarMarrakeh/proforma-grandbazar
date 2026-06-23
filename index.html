@@ -769,7 +769,7 @@ body.lang-fr [data-en]{display:none!important}
     <div id="sec-anim" style="display:block;width:100%;clear:both">
       <div class="bar-accordion carte-section-title" onclick="toggleAccordion('acc-animations')">— 🎭 Animations &amp; Extras (optionnel) —</div>
       <div class="bar-accordion-body" id="acc-animations">
-<div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Gnawa — 4 musiciens</span><span class="bar-item-name" data-en>Gnawa — 4 musicians</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
+<div class="bar-item" data-prix="1500" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Gnawa — 4 musiciens</span><span class="bar-item-name" data-en>Gnawa — 4 musicians</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">1 500 DH</span></div>
       <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Danseuses orientales — 2 danseuses, 1 passage 15 min</span><span class="bar-item-name" data-en>Oriental dancers — 2 dancers, 15 min set</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
       <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Groupe de musique — 3 musiciens + chanteur</span><span class="bar-item-name" data-en>Live band — 3 musicians + singer</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
       <div class="bar-item" data-prix="1000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Joueur de saxophone</span><span class="bar-item-name" data-en>Saxophone player</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">1 000 DH</span></div>
@@ -980,7 +980,7 @@ body.lang-fr [data-en]{display:none!important}
         <label class="regl-opt"><input type="radio" name="reglement" value="virement" onchange="showReglement(this.value)"><span data-fr>💳 Virement bancaire</span><span data-en>💳 Bank transfer</span></label>
         <label class="regl-opt"><input type="radio" name="reglement" value="lien" onchange="showReglement(this.value)"><span data-fr>🔗 Lien de paiement</span><span data-en>🔗 Payment link</span></label>
         <label class="regl-opt"><input type="radio" name="reglement" value="especes" onchange="showReglement(this.value)"><span data-fr>💵 Espèces</span><span data-en>💵 Cash</span></label>
-        <label class="regl-opt"><input type="radio" name="reglement" value="cheque" onchange="showReglement(this.value)"><span data-fr>📄 Chèque</span><span data-en>📄 Cheque</span></label>
+
       </div>
     </div>
     <div class="regl-bloc" id="regl-virement" style="display:none">
@@ -1038,16 +1038,7 @@ body.lang-fr [data-en]{display:none!important}
         <div class="rib-warning" data-en>⚠ Deposit due at least <strong>15 days before</strong>. A receipt will be issued.</div>
       </div>
     </div>
-    <div class="regl-bloc" id="regl-cheque" style="display:none">
-      <div class="rib-box"><div class="rib-header"><span class="rib-bank">📄</span><span class="rib-title" data-fr>Règlement par Chèque</span><span class="rib-title" data-en>Cheque Payment</span></div>
-        <div class="rib-grid">
-          <div class="rib-field"><span class="rib-label" data-fr>À l'ordre de</span><span class="rib-label" data-en>Payable to</span><span class="rib-val">NYX</span></div>
-          <div class="rib-field"><span class="rib-label" data-fr>Acompte (50%)</span><span class="rib-label" data-en>Deposit (50%)</span><span class="rib-val" id="cheque-montant">—</span></div>
-        </div>
-        <div class="rib-warning" data-fr>⚠ Chèque à remettre <strong>au minimum 15 jours avant</strong>. Tout chèque sans provision entraîne l'annulation.</div>
-        <div class="rib-warning" data-en>⚠ Cheque due at least <strong>15 days before</strong>. Bounced cheques result in automatic cancellation.</div>
-      </div>
-    </div>
+    >
 
     <div class="signatures">
       <div class="sig-block">
@@ -1314,9 +1305,14 @@ function setSushiPrix(inp){
 function setPrix(inp){const item=inp.closest('.carte-item');if(item)item.dataset.prix=inp.value||'0';}
 function setPrixBar(inp){const item=inp.closest('.bar-item');if(item)item.dataset.prix=inp.value||'0';}
 function fmt(n){if(!n&&n!==0)return'— DH';return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' DH';}
-function recalc(){let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'){document.querySelectorAll('.carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});}document.querySelectorAll('.bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});const ht=total/1.1,tva=total-ht;document.getElementById('ht').textContent=fmt(ht);document.getElementById('tva').textContent=fmt(tva);document.getElementById('ttc').textContent=fmt(total);document.getElementById('acompte').textContent=fmt(total*0.5);const dejaVerse=parseFloat(document.getElementById('deja-verse')?.value)||0;const soldeAnt=parseFloat(document.getElementById('solde-anterieur')?.value)||0;const reste=total-dejaVerse+soldeAnt;document.getElementById('reste').textContent=fmt(reste>0?reste:0);
+function recalc(){let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'){
+    // Items cuisine (seulement en mode à la carte)
+    document.querySelectorAll('#block-carte .carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});
+  }
+  // Items bar à la carte (bières, vins, cocktails) - comptés dans TOUS les modes
+  document.querySelectorAll('#sec-bar .carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});document.querySelectorAll('.bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});const ht=total/1.1,tva=total-ht;document.getElementById('ht').textContent=fmt(ht);document.getElementById('tva').textContent=fmt(tva);document.getElementById('ttc').textContent=fmt(total);document.getElementById('acompte').textContent=fmt(total*0.5);const dejaVerse=parseFloat(document.getElementById('deja-verse')?.value)||0;const soldeAnt=parseFloat(document.getElementById('solde-anterieur')?.value)||0;const reste=total-dejaVerse+soldeAnt;document.getElementById('reste').textContent=fmt(reste>0?reste:0);
   // Mettre à jour le montant dans les blocs règlement
-  const acompteVal=document.getElementById('reste').textContent;['lien-montant','especes-montant','cheque-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=acompteVal;});
+  const acompteVal=document.getElementById('acompte').textContent;['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=acompteVal;});
 }
 function toggleSoldeAnt(){
   const row = document.getElementById('solde-ant-row');
@@ -1350,7 +1346,7 @@ function updateLienPaiement(){
   });
 }
 
-function showReglement(val){document.querySelectorAll('.regl-bloc').forEach(b=>b.style.display='none');const bloc=document.getElementById('regl-'+val);if(bloc)bloc.style.display='block';const a=document.getElementById('reste').textContent;['lien-montant','especes-montant','cheque-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=a;});}
+function showReglement(val){document.querySelectorAll('.regl-bloc').forEach(b=>b.style.display='none');const bloc=document.getElementById('regl-'+val);if(bloc)bloc.style.display='block';const a=document.getElementById('acompte').textContent;['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=a;});}
 
 function genererDocument(){
   recalc(); // S'assurer que les totaux sont à jour
@@ -1414,6 +1410,8 @@ function genererDocument(){
   // Recap bar
   const bB=document.getElementById('recap-bar-body');if(bB)bB.innerHTML='';
   document.querySelectorAll('#sec-bar .bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`.bar-item-name[data-${lang}]`)||item.querySelector('.bar-item-name'))?.textContent||'';if(bB)bB.innerHTML+=`<tr><td><strong>${name}</strong></td><td class="r">${prix.toLocaleString('fr-FR')} DH</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${(prix*qty).toLocaleString('fr-FR')} DH</strong></td></tr>`;});
+  // Items bar à la carte (bières, vins, cocktails)
+  document.querySelectorAll('#sec-bar .carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';if(bB)bB.innerHTML+=`<tr><td><strong>${name}</strong>${desc?'<br><small style="color:var(--text-light);font-style:italic">'+desc+'</small>':''}</td><td class="r">${prix.toLocaleString('fr-FR')} DH</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${(prix*qty).toLocaleString('fr-FR')} DH</strong></td></tr>`;});
   // Recap anim
   const bA=document.getElementById('recap-anim-body');if(bA)bA.innerHTML='';
   document.querySelectorAll('#sec-anim .bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`.bar-item-name[data-${lang}]`)||item.querySelector('.bar-item-name'))?.textContent||'';if(bA)bA.innerHTML+=`<tr><td><strong>${name}</strong></td><td class="r">${prix>0?prix.toLocaleString('fr-FR')+' DH':'—'}</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${prix>0?(prix*qty).toLocaleString('fr-FR')+' DH':'—'}</strong></td></tr>`;});
