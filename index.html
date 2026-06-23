@@ -195,6 +195,13 @@ body.lang-fr [data-en]{display:none!important}
   @page{margin:10mm;margin-top:8mm;margin-bottom:8mm}
 }
 .print-only-recap{display:none}
+
+/* ── Accordéons bar ── */
+.bar-accordion{cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between}
+.bar-accordion::after{content:"▶";font-size:10px;color:var(--gold);transition:transform .25s;margin-left:8px;flex-shrink:0}
+.bar-accordion.open::after{transform:rotate(90deg)}
+.bar-accordion-body{display:none}
+.bar-accordion-body.open{display:block}
 </style>
 </head>
 <body class="lang-fr">
@@ -362,125 +369,180 @@ body.lang-fr [data-en]{display:none!important}
 
     <!-- ══ BLOC À LA CARTE ══ -->
     <div id="block-carte" style="display:none">
-      <p class="screen-only" style="font-size:11px;color:var(--text-light);margin-bottom:10px" data-fr>Cochez les plats et indiquez la quantité. Seuls les articles cochés apparaîtront à l'impression.</p>
 
-
-
-      <!-- TAPAS -->
       <div class="carte-section" id="sec-tapas">
-        <div class="carte-section-title" data-fr>— Tapas (4 pièces) —</div>
-        <div class="carte-section-title" data-en>— Tapas (4 pieces) —</div>
-        <div class="carte-item" data-id="t1" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Nems Végétariens</strong><strong data-en>Vegetable Spring Rolls</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
-        <div class="carte-item" data-id="t2" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Cromesquis de Bœuf</strong><strong data-en>Beef Cromesquis</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
-        <div class="carte-item" data-id="t3" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Mini Brochettes de Poulet</strong><strong data-en>Mini Chicken Skewers</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
-        <div class="carte-item" data-id="t4" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Guacamole</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
-        <div class="carte-item" data-id="t5" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Ailes de Poulet Panées</strong><strong data-en>Breaded Chicken Wings</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
-        <div class="carte-item" data-id="t6" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Ailes de Poulet à la Coréenne</strong><strong data-en>Korean-style Chicken Wings</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
-        <div class="carte-item" data-id="t7" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Bâtonnets de Poulet</strong><strong data-en>Chicken Fingers</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
-        <div class="carte-item" data-id="t8" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Chèvre Chaud</strong><strong data-en>Warm Goat Cheese</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
-        <div class="carte-item" data-id="t9" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Crevettes Pil Pil</strong><strong data-en>Pil Pil Shrimp</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="t10" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Briouate au Fromage</strong><strong data-en>Cheese Briouate</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="t11" data-prix="160" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Ardoise de Fromages</strong><strong data-en>Cheese Board</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">160 DH</div></div>
+        <div class="bar-accordion carte-section-title" style="margin-top:4px" onclick="toggleAccordion('acc-tapas')">— 🍢 Tapas (4 Pièces) —</div>
+        <div class="bar-accordion-body" id="acc-tapas">
+<div class="carte-item" data-id="t1" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Nems Végétariens</strong><strong data-en>Vegetable Spring Rolls</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
+<div class="carte-item" data-id="t2" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Cromesquis de Bœuf</strong><strong data-en>Beef Cromesquis</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
+<div class="carte-item" data-id="t3" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Mini Brochettes de Poulet</strong><strong data-en>Mini Chicken Skewers</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
+<div class="carte-item" data-id="t4" data-prix="60" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Guacamole</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
+<div class="carte-item" data-id="t5" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Ailes de Poulet Panées</strong><strong data-en>Breaded Chicken Wings</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
+<div class="carte-item" data-id="t6" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Ailes de Poulet à la Coréenne</strong><strong data-en>Korean-style Chicken Wings</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
+<div class="carte-item" data-id="t7" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Bâtonnets de Poulet</strong><strong data-en>Chicken Fingers</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
+<div class="carte-item" data-id="t8" data-prix="80" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Chèvre Chaud</strong><strong data-en>Warm Goat Cheese</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
+<div class="carte-item" data-id="t9" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Crevettes Pil Pil</strong><strong data-en>Pil Pil Shrimp</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="t10" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Briouate au Fromage</strong><strong data-en>Cheese Briouate</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="t11" data-prix="160" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Ardoise de Fromages</strong><strong data-en>Cheese Board</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">160 DH</div></div>
+        </div>
       </div>
 
-      <!-- ENTRÉES — carte site uniquement avec prix -->
       <div class="carte-section" id="sec-entrees">
-        <div class="carte-section-title" data-fr>— Entrées —</div>
-        <div class="carte-section-title" data-en>— Starters —</div>
-        <div class="carte-item" data-id="e1" data-prix="60" onclick="toggleItem(this)">
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-entrees')">— 🥗 Entrées —</div>
+        <div class="bar-accordion-body" id="acc-entrees">
+<div class="carte-item" data-id="e1" data-prix="60" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong>Zaalouk</strong><br><span class="carte-item-desc" data-fr>Caviar d'aubergines fondant à la marocaine</span><span class="carte-item-desc" data-en>Creamy Moroccan eggplant dip</span></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
-        <div class="carte-item" data-id="e2" data-prix="60" onclick="toggleItem(this)">
+<div class="carte-item" data-id="e2" data-prix="60" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong data-fr>Soupe Harira</strong><strong data-en>Soup Harira</strong><br><span class="carte-item-desc" data-fr>Soupe traditionnelle servie avec des dattes et des pâtisseries au miel de Ramadan</span><span class="carte-item-desc" data-en>Traditional soup served with dates and honey pastries during Ramadan</span></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">60 DH</div></div>
-        <div class="carte-item" data-id="e3" data-prix="80" onclick="toggleItem(this)">
+<div class="carte-item" data-id="e3" data-prix="80" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong data-fr>Tomates Mozzarella</strong><strong data-en>Tomato &amp; Mozzarella</strong><br><span class="carte-item-desc" data-fr>Tomates, mozzarella, sauce pistou</span><span class="carte-item-desc" data-en>Tomatoes and mozzarella with pistou sauce</span></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">80 DH</div></div>
-        <div class="carte-item" data-id="e4" data-prix="90" onclick="toggleItem(this)">
+<div class="carte-item" data-id="e4" data-prix="90" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong data-fr>Salade César</strong><strong data-en>Caesar Salad</strong><br><span class="carte-item-desc" data-fr>Salade, poulet, croûtons, œuf, sauce César, tomates cerises</span><span class="carte-item-desc" data-en>Lettuce, chicken, croutons, egg, Caesar dressing, cherry tomatoes</span></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="e5" data-prix="95" onclick="toggleItem(this)">
+<div class="carte-item" data-id="e5" data-prix="95" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong data-fr>Assortiment de Salades Marocaines</strong><strong data-en>Moroccan Salads Assortment</strong><br><span class="carte-item-desc" data-fr>Cinq petits ramequins de salades traditionnelles marocaines</span><span class="carte-item-desc" data-en>Five small ramekins with traditional Moroccan salads</span></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">95 DH</div></div>
-        <div class="carte-item" data-id="e6" data-prix="100" onclick="toggleItem(this)">
+<div class="carte-item" data-id="e6" data-prix="100" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong data-fr>Pockebowl Saumon</strong><strong data-en>Salmon Poke Bowl</strong><br><span class="carte-item-desc" data-fr>Saumon, riz, salade verte, avocat, mangue, raisins secs, petits pois, ananas, concombre</span><span class="carte-item-desc" data-en>Salmon, rice, green salad, avocado, mango, raisins, peas, pineapple, cucumber</span></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">100 DH</div></div>
-        <div class="carte-item" data-id="e7" data-prix="100" onclick="toggleItem(this)">
+<div class="carte-item" data-id="e7" data-prix="100" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong data-fr>Carpaccio Filet</strong><strong data-en>Fillet Carpaccio</strong><br><span class="carte-item-desc" data-fr>Filet, moutarde, huile d'olive, parmesan</span><span class="carte-item-desc" data-en>Fillet, mustard, olive oil, Parmesan</span></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">100 DH</div></div>
-        <div class="carte-item" data-id="e8" data-prix="120" onclick="toggleItem(this)">
+<div class="carte-item" data-id="e8" data-prix="120" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong data-fr>Huîtres de Dakhla</strong><strong data-en>Dakhla Oysters</strong></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
-        <div class="carte-item" data-id="e9" data-prix="130" onclick="toggleItem(this)">
+<div class="carte-item" data-id="e9" data-prix="130" onclick="toggleItem(this)">
           <input type="checkbox"><div class="carte-item-name"><strong data-fr>Burrata sur Lit de Tomates</strong><strong data-en>Burrata on a Bed of Tomatoes</strong><br><span class="carte-item-desc" data-fr>Burrata, tomates cerises, sauce pistou</span><span class="carte-item-desc" data-en>Burrata with cherry tomatoes and pistou sauce</span></div>
           <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
-
         </div>
-      <!-- PLATS -->
-            <div class="carte-section" id="sec-plats">
-        <div class="carte-section-title" data-fr>— Plats Traditionnels —</div>
-        <div class="carte-section-title" data-en>— Traditional Dishes —</div>
-        <div class="carte-item" data-id="p1" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pastilla au Poulet</strong><strong data-en>Chicken Pastilla</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="p2" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine Végétarien</strong><strong data-en>Vegetarian Tajine</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
-        <div class="carte-item" data-id="p3" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Couscous Végétarien</strong><strong data-en>Vegetarian Couscous</strong><br><span class="carte-item-desc" data-fr>Des légumes frais cuits et de la semoule finement aromatisée</span><span class="carte-item-desc" data-en>Fresh cooked vegetables and delicately seasoned semolina</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
-        <div class="carte-item" data-id="p4" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine de Poulet</strong><strong data-en>Chicken Tajine</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
-        <div class="carte-item" data-id="p5" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine de Kefta</strong><strong data-en>Kefta Tajine</strong><br><span class="carte-item-desc" data-fr>Viande hachée, œufs, coriandre</span><span class="carte-item-desc" data-en>Minced meat, eggs, coriander</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
-        <div class="carte-item" data-id="p6" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine de Poisson</strong><strong data-en>Fish Tajine</strong><br><span class="carte-item-desc" data-fr>Poisson du jour : pageot ou ombrine, selon l'arrivage</span><span class="carte-item-desc" data-en>Fish of the day: red bream or red rump, depending on availability</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
-        <div class="carte-item" data-id="p7" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Rfissa</strong><br><span class="carte-item-desc" data-fr>Msemen, poulet, lentilles, sauce et 5 épices</span><span class="carte-item-desc" data-en>Msemen with chicken, lentils, sauce and 5 spice</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
-        <div class="carte-item" data-id="p8" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Couscous Royal</strong><strong data-en>Royal Couscous</strong><br><span class="carte-item-desc" data-fr>Légumes, poulet, bœuf, agneau, merguez, jus pour la semoule, oignons confits, noix</span><span class="carte-item-desc" data-en>Vegetables, chicken, beef, lamb, merguez, broth, caramelized onions, walnuts</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
-        <div class="carte-item" data-id="p9" data-prix="180" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine de Bœuf</strong><strong data-en>Beef Tajine</strong><br><span class="carte-item-desc" data-fr>Pruneau — Signature</span><span class="carte-item-desc" data-en>With prunes — Signature</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">180 DH</div></div>
-        <div class="carte-item" data-id="p10" data-prix="180" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Tanjia</strong><br><span class="carte-item-desc" data-fr>La spécialité de Marrakech : bœuf cuit à basse température, oignons, safran, huile d'olive, curcuma, beurre salé</span><span class="carte-item-desc" data-en>Marrakech specialty: slow-cooked beef, onions, saffron, olive oil, turmeric and salted butter</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">180 DH</div></div>
-        <div class="carte-section-title intl-title" data-fr>— Plats Internationaux —</div>
-        <div class="carte-section-title intl-title" data-en>— International Dishes —</div>
-        <div class="carte-item" data-id="pi1" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Burger Maison</strong><strong data-en>Homemade Burger</strong><br><span class="carte-item-desc" data-fr>Pain maison, viande haché minute</span><span class="carte-item-desc" data-en>Homemade bread, freshly ground meat</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="pi2" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Linguine Arrabbiata</strong><strong data-en>Arrabbiata Linguine</strong><br><span class="carte-item-desc" data-fr>Sauce tomate, piment fort</span><span class="carte-item-desc" data-en>Tomato sauce, hot chili</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="pi3" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Linguine Alfredo</strong><strong data-en>Linguine Alfredo</strong><br><span class="carte-item-desc" data-fr>Crème, poulet, champignons</span><span class="carte-item-desc" data-en>Cream, chicken, mushrooms</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="pi4" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Linguine Bolognaise</strong><strong data-en>Linguine Bolognese</strong><br><span class="carte-item-desc" data-fr>Carotte, oignon, viande hachée, sauce tomate</span><span class="carte-item-desc" data-en>Carrot, onion, minced beef, tomato sauce</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="pi5" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Brochette de Poulet</strong><strong data-en>Chicken Skewer</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="pi6" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Brochette de Kefta</strong><strong data-en>Kefta Skewer</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="pi7" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pavé de Saumon</strong><strong data-en>Salmon Steak</strong><br><span class="carte-item-desc" data-fr>Sauce aux champignons</span><span class="carte-item-desc" data-en>Mushroom sauce</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
-        <div class="carte-item" data-id="pi8" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Mhamsa à la Truffe</strong><strong data-en>Truffle Mhamsa</strong><br><span class="carte-item-desc" data-fr>Pâtes plombs au safran, champignons de Paris, jus de réduction de champignon, truffe et parmesan</span><span class="carte-item-desc" data-en>Saffron fregola pasta, button mushrooms, reduced mushroom jus, truffle and Parmesan</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
-        <div class="carte-item" data-id="pi9" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pâte Sans Gluten</strong><strong data-en>Gluten-Free Pasta</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
-        <div class="carte-item" data-id="pi10" data-prix="200" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Filet de Bœuf</strong><strong data-en>Beef Fillet</strong><br><span class="carte-item-desc" data-fr>Sauce roquefort / sauce au poivre / sauce aux champignons</span><span class="carte-item-desc" data-en>Roquefort sauce / pepper sauce / mushroom sauce</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">200 DH</div></div>
-        <div class="carte-item" data-id="pi11" data-prix="250" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Côtelette d'Agneau</strong><strong data-en>Lamb Chops</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">250 DH</div></div>
-        <div class="carte-item" data-id="pi12" data-prix="270" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Entrecôte</strong><strong data-en>Ribeye Steak</strong><br><span class="carte-item-desc" data-fr>Servi avec les sauces poivre, champignons et béarnaise</span><span class="carte-item-desc" data-en>Served with pepper, mushroom and béarnaise sauces</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">270 DH</div></div>
-        <div class="carte-item" data-id="pi13" data-prix="270" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Poisson Grillé du Jour</strong><strong data-en>Grilled Fish of the Day</strong><br><span class="carte-item-desc" data-fr>Selon l'arrivage</span><span class="carte-item-desc" data-en>Subject to availability</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">270 DH</div></div>
-        <div class="carte-item" data-id="pi14" data-prix="290" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Souris d'Agneau</strong><strong data-en>Lamb Shank</strong><br><span class="carte-item-desc" data-fr>Purée, sauce d'agneau</span><span class="carte-item-desc" data-en>Mashed potatoes, lamb gravy</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">290 DH</div></div>
+      </div>
 
-        <!-- Accompagnements -->
-        <div style="padding:8px 12px;background:rgba(201,168,76,.08);border:1px dashed var(--gold);margin:6px 0;border-radius:3px;" class="screen-only">
-          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px" data-fr>🥗 Accompagnement (à préciser)</div>
-          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px" data-en>🥗 Side dish (to specify)</div>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:11.5px">
-            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="accompagnement" value="legumes" style="accent-color:var(--navy)"><span data-fr>Légumes</span><span data-en>Vegetables</span></label>
-            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="accompagnement" value="semoule" style="accent-color:var(--navy)"><span data-fr>Semoule</span><span data-en>Semolina</span></label>
-            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="accompagnement" value="salade" style="accent-color:var(--navy)"><span data-fr>Salade verte</span><span data-en>Green salad</span></label>
-            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="accompagnement" value="puree" style="accent-color:var(--navy)"><span data-fr>Purée</span><span data-en>Mashed potato</span></label>
-            <label style="display:flex;align-items:center;gap:5px;cursor:pointer"><input type="radio" name="accompagnement" value="frites" style="accent-color:var(--navy)"><span data-fr>Frites</span><span data-en>Fries</span></label>
+      <div class="carte-section" id="sec-sushis">
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-sushis')">— 🍱 Sushis &amp; Makis —</div>
+        <div class="bar-accordion-body" id="acc-sushis">
+<div class="carte-item" data-id="su1" data-prix="0" onclick="toggleItem(this)">
+            <input type="checkbox">
+            <div class="carte-item-name">
+              <strong data-fr>🍱 Plateau Sushis / Makis — Prix à définir</strong>
+              <strong data-en>🍱 Sushi / Maki Platter — Price to define</strong>
+              <br>
+              <span class="carte-item-desc" data-fr>Composition et prix à préciser avec la direction</span>
+              <span class="carte-item-desc" data-en>Composition and price to confirm with management</span>
+              <div style="margin-top:5px">
+                <input type="text" class="sushi-detail" placeholder="Ex: 48 pièces — Salmon, Thon, Crevette... — 180 DH/pers." onclick="event.stopPropagation()"
+                  style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;padding:2px 4px;outline:none;color:var(--text)"
+                  oninput="setSushiPrix(this)">
+              </div>
+            </div>
+            <div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div>
+            <div class="carte-item-price" id="sushi-price-display">— DH</div>
           </div>
-          <div id="accomp-note" style="font-size:10px;color:var(--text-light);font-style:italic;margin-top:5px"></div>
         </div>
-        <div class="hide-print" id="accomp-print" style="font-size:11px;color:var(--text-light);padding:4px 12px;font-style:italic"></div>
+      </div>
+
+      <div class="carte-section" id="sec-pizzas">
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-pizzas')">— 🍕 Pizzas —</div>
+        <div class="bar-accordion-body" id="acc-pizzas">
+<div class="carte-item" data-id="pz1" data-prix="85" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Végétarienne</strong><strong data-en>Vegetarian</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">85 DH</div></div>
+<div class="carte-item" data-id="pz2" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Margherita</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="pz3" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Thon</strong><strong data-en>Tuna</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="pz4" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Burrata</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="pz5" data-prix="100" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Grand Bazar</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">100 DH</div></div>
+<div class="carte-item" data-id="pz6" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Quatre Fromages</strong><strong data-en>Four Cheese</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
+<div class="carte-item" data-id="pz7" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Truffe</strong><strong data-en>Truffle</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
+        </div>
+      </div>
+
+      <div class="carte-section" id="sec-plats">
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-trad')">— 🍽 Plats Traditionnels —</div>
+        <div class="bar-accordion-body" id="acc-trad">
+        <!-- Accompagnements multi avec compteur -->
+        <div style="padding:10px 12px;background:rgba(201,168,76,.08);border:1px dashed var(--gold);margin:6px 0;border-radius:3px;" class="screen-only">
+          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-fr>🥗 Accompagnements — nombre par option</div>
+          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-en>🥗 Side dishes — quantity per option</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center">
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Légumes</div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Vegetables</div>
+              <input type="number" min="0" value="0" id="acc-legumes" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px">Semoule</div>
+              <input type="number" min="0" value="0" id="acc-semoule" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Salade verte</div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Green salad</div>
+              <input type="number" min="0" value="0" id="acc-salade" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Purée</div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Mashed potato</div>
+              <input type="number" min="0" value="0" id="acc-puree" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Frites</div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Fries</div>
+              <input type="number" min="0" value="0" id="acc-frites" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+          </div>
+          <div id="accomp-note" style="font-size:10px;color:var(--text-light);font-style:italic;margin-top:6px"></div>
+        </div>
+        <div id="accomp-print" style="font-size:11px;color:var(--text-light);padding:4px 12px;font-style:italic;display:none"></div>
+
+<div class="carte-item" data-id="p1" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pastilla au Poulet</strong><strong data-en>Chicken Pastilla</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="p2" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine Végétarien</strong><strong data-en>Vegetarian Tajine</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
+<div class="carte-item" data-id="p3" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Couscous Végétarien</strong><strong data-en>Vegetarian Couscous</strong><br><span class="carte-item-desc" data-fr>Des légumes frais cuits et de la semoule finement aromatisée</span><span class="carte-item-desc" data-en>Fresh cooked vegetables and delicately seasoned semolina</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
+<div class="carte-item" data-id="p4" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine de Poulet</strong><strong data-en>Chicken Tajine</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
+<div class="carte-item" data-id="p5" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine de Kefta</strong><strong data-en>Kefta Tajine</strong><br><span class="carte-item-desc" data-fr>Viande hachée, œufs, coriandre</span><span class="carte-item-desc" data-en>Minced meat, eggs, coriander</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
+<div class="carte-item" data-id="p6" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine de Poisson</strong><strong data-en>Fish Tajine</strong><br><span class="carte-item-desc" data-fr>Poisson du jour : pageot ou ombrine, selon l'arrivage</span><span class="carte-item-desc" data-en>Fish of the day: red bream or red rump, depending on availability</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
+<div class="carte-item" data-id="p7" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Rfissa</strong><br><span class="carte-item-desc" data-fr>Msemen, poulet, lentilles, sauce et 5 épices</span><span class="carte-item-desc" data-en>Msemen with chicken, lentils, sauce and 5 spice</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
+<div class="carte-item" data-id="p8" data-prix="140" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Couscous Royal</strong><strong data-en>Royal Couscous</strong><br><span class="carte-item-desc" data-fr>Légumes, poulet, bœuf, agneau, merguez, jus pour la semoule, oignons confits, noix</span><span class="carte-item-desc" data-en>Vegetables, chicken, beef, lamb, merguez, broth, caramelized onions, walnuts</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">140 DH</div></div>
+<div class="carte-item" data-id="p9" data-prix="180" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine de Bœuf</strong><strong data-en>Beef Tajine</strong><br><span class="carte-item-desc" data-fr>Pruneau — Signature</span><span class="carte-item-desc" data-en>With prunes — Signature</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">180 DH</div></div>
+<div class="carte-item" data-id="p10" data-prix="180" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Tanjia</strong><br><span class="carte-item-desc" data-fr>La spécialité de Marrakech : bœuf cuit à basse température, oignons, safran, huile d'olive, curcuma, beurre salé</span><span class="carte-item-desc" data-en>Marrakech specialty: slow-cooked beef, onions, saffron, olive oil, turmeric and salted butter</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">180 DH</div></div>
+        </div>
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-intl')">— 🌍 Plats Internationaux —</div>
+        <div class="bar-accordion-body" id="acc-intl">
+<div class="carte-item" data-id="i1" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Burger Maison</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="i2" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Linguine Arrabbiata</strong><br><span class="carte-item-desc">Tomates cerises, ail, piment, basilic</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="i3" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Linguine Alfredo</strong><br><span class="carte-item-desc">Crème, poulet, champignons</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="i4" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Linguine Bolognaise</strong><br><span class="carte-item-desc">Viande hachée, sauce tomate, herbes</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="i5" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Brochette de Poulet</strong><strong data-en>Chicken Skewer</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="i6" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Brochette de Kefta</strong><strong data-en>Kefta Skewer</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="i7" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pavé de Saumon</strong><strong data-en>Salmon Fillet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
+<div class="carte-item" data-id="i8" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Mhamsa à la Truffe</strong><strong data-en>Truffle Mhamsa</strong><br><span class="carte-item-desc" data-fr>Pâtes plombs au safran, champignons, truffe, parmesan</span><span class="carte-item-desc" data-en>Saffron pasta, mushrooms, truffle, parmesan</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
+<div class="carte-item" data-id="i9" data-prix="130" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pâte Sans Gluten</strong><strong data-en>Gluten-Free Pasta</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">130 DH</div></div>
+<div class="carte-item" data-id="i10" data-prix="200" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Filet de Bœuf</strong><strong data-en>Beef Fillet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">200 DH</div></div>
+<div class="carte-item" data-id="i11" data-prix="250" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Côtelette d'Agneau</strong><strong data-en>Lamb Cutlet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">250 DH</div></div>
+<div class="carte-item" data-id="i12" data-prix="270" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Entrecôte</strong><strong data-en>Ribeye Steak</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">270 DH</div></div>
+<div class="carte-item" data-id="i13" data-prix="270" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Poisson Grillé du Jour</strong><strong data-en>Grilled Fish of the Day</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">270 DH</div></div>
+<div class="carte-item" data-id="i14" data-prix="290" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Souris d'Agneau</strong><strong data-en>Lamb Shank</strong><br><span class="carte-item-desc" data-fr>Purée, sauce d'agneau</span><span class="carte-item-desc" data-en>Mashed potato, lamb jus</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">290 DH</div></div>
+        </div>
       </div>
 
       <div class="carte-section" id="sec-desserts">
-        <div class="carte-section-title" data-fr>— Nos Douceurs Revisitées —</div>
-        <div class="carte-section-title" data-en>— Our Revisited Sweets —</div>
-        <div class="carte-item" data-id="d1" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Moelleux au Chocolat</strong><strong data-en>Chocolate Moelleux</strong><br><span class="carte-item-desc" data-fr>Signature — cœur d'amlou et glace corne de gazelle</span><span class="carte-item-desc" data-en>Signature — amlou heart and corne de gazelle ice cream</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="d2" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Coco Trompe-l'œil</strong><strong data-en>Coconut Trompe-l'œil</strong><br><span class="carte-item-desc" data-fr>Chocolat noir et blanc, confit de mangue, crumble, sorbet glace coco</span><span class="carte-item-desc" data-en>Dark and white chocolate, mango confit, crumble, coconut sorbet/ice cream</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="d3" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tiramisu Revisité</strong><strong data-en>Tiramisu Revisited</strong><br><span class="carte-item-desc" data-fr>By Grand Bazar — aux café épices marocaines</span><span class="carte-item-desc" data-en>By Grand Bazar — Moroccan spiced coffee</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
-        <div class="carte-item" data-id="d4" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sablé Breton aux Framboises</strong><strong data-en>Breton Shortbread</strong><br><span class="carte-item-desc" data-fr>Coulis et sorbet framboise à la rose</span><span class="carte-item-desc" data-en>Raspberry coulis and rose-infused raspberry sorbet</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="d5" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Profiteroles</strong><br><span class="carte-item-desc" data-fr>Pâte à choux, glace vanille, chocolat noir chaud</span><span class="carte-item-desc" data-en>Choux pastry, vanilla ice cream and hot dark chocolate</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="d6" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pastilla Pralinée</strong><strong data-en>Praline Pastilla</strong><br><span class="carte-item-desc" data-fr>En 3 feuilles traditionnelles de pastilla caramélisées et amlou de noisette</span><span class="carte-item-desc" data-en>Three traditional caramelized pastilla sheets with hazelnut amlou</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="d7" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Café / Thé Gourmand</strong><strong data-en>Gourmet Coffee / Tea</strong><br><span class="carte-item-desc" data-fr>Assortiment de pâtisseries marocaines</span><span class="carte-item-desc" data-en>Assortment of Moroccan pastries</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-        <div class="carte-item" data-id="d8" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Assiette de Fruits</strong><strong data-en>Fruit Platter</strong><br><span class="carte-item-desc" data-fr>Fruits de saison</span><span class="carte-item-desc" data-en>Seasonal fruits</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
-
-        <!-- Glaces & Sorbets -->
-        <!-- Gâteaux d'anniversaire -->
-        <div class="carte-section-title" style="margin-top:8px" data-fr>— Gâteaux d'Anniversaire — 60 DH / portion —</div>
-        <div class="carte-section-title" style="margin-top:8px" data-en>— Birthday Cakes — 60 MAD / portion —</div>
-
-        <div class="carte-item" data-id="ga1" data-prix="60" onclick="toggleItem(this)">
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-desserts')">— 🍮 Nos Douceurs Revisitées —</div>
+        <div class="bar-accordion-body" id="acc-desserts">
+<div class="carte-item" data-id="d1" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Moelleux au Chocolat</strong><strong data-en>Chocolate Moelleux</strong><br><span class="carte-item-desc" data-fr>Signature — cœur d'amlou et glace corne de gazelle</span><span class="carte-item-desc" data-en>Signature — amlou heart and corne de gazelle ice cream</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="d2" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Coco Trompe-l'œil</strong><strong data-en>Coconut Trompe-l'œil</strong><br><span class="carte-item-desc" data-fr>Chocolat noir et blanc, confit de mangue, crumble, sorbet glace coco</span><span class="carte-item-desc" data-en>Dark and white chocolate, mango confit, crumble, coconut sorbet/ice cream</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="d3" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tiramisu Revisité</strong><strong data-en>Tiramisu Revisited</strong><br><span class="carte-item-desc" data-fr>By Grand Bazar — aux café épices marocaines</span><span class="carte-item-desc" data-en>By Grand Bazar — Moroccan spiced coffee</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+<div class="carte-item" data-id="d4" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sablé Breton aux Framboises</strong><strong data-en>Breton Shortbread</strong><br><span class="carte-item-desc" data-fr>Coulis et sorbet framboise à la rose</span><span class="carte-item-desc" data-en>Raspberry coulis and rose-infused raspberry sorbet</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="d5" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Profiteroles</strong><br><span class="carte-item-desc" data-fr>Pâte à choux, glace vanille, chocolat noir chaud</span><span class="carte-item-desc" data-en>Choux pastry, vanilla ice cream and hot dark chocolate</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="d6" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pastilla Pralinée</strong><strong data-en>Praline Pastilla</strong><br><span class="carte-item-desc" data-fr>En 3 feuilles traditionnelles de pastilla caramélisées et amlou de noisette</span><span class="carte-item-desc" data-en>Three traditional caramelized pastilla sheets with hazelnut amlou</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="d7" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Café / Thé Gourmand</strong><strong data-en>Gourmet Coffee / Tea</strong><br><span class="carte-item-desc" data-fr>Assortiment de pâtisseries marocaines</span><span class="carte-item-desc" data-en>Assortment of Moroccan pastries</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+<div class="carte-item" data-id="d8" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Assiette de Fruits</strong><strong data-en>Fruit Platter</strong><br><span class="carte-item-desc" data-fr>Fruits de saison</span><span class="carte-item-desc" data-en>Seasonal fruits</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+        </div>
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-gateaux')">— 🎂 Gâteaux d'Anniversaire — 60 DH / portion —</div>
+        <div class="bar-accordion-body" id="acc-gateaux">
+<div class="carte-item" data-id="ga1" data-prix="60" onclick="toggleItem(this)">
           <input type="checkbox">
           <div class="carte-item-name">
             <strong data-fr>🎂 Gâteau d'anniversaire — Base Fruit</strong>
@@ -499,8 +561,7 @@ body.lang-fr [data-en]{display:none!important}
           <div class="carte-qty"><input type="number" min="0" value="0" placeholder="Parts" onclick="event.stopPropagation()" oninput="recalc()" title="Nombre de portions"></div>
           <div class="carte-item-price">60 DH<span style="font-size:9px;display:block;color:var(--text-light)">/portion</span></div>
         </div>
-
-        <div class="carte-item" data-id="ga2" data-prix="60" onclick="toggleItem(this)">
+<div class="carte-item" data-id="ga2" data-prix="60" onclick="toggleItem(this)">
           <input type="checkbox">
           <div class="carte-item-name">
             <strong data-fr>🎂 Gâteau d'anniversaire — Base Chocolat</strong>
@@ -518,20 +579,21 @@ body.lang-fr [data-en]{display:none!important}
           <div class="carte-qty"><input type="number" min="0" value="0" placeholder="Parts" onclick="event.stopPropagation()" oninput="recalc()" title="Nombre de portions"></div>
           <div class="carte-item-price">60 DH<span style="font-size:9px;display:block;color:var(--text-light)">/portion</span></div>
         </div>
-
-        <div class="carte-section-title" style="margin-top:8px" data-fr>— Glaces &amp; Sorbets — 30 DH / boule —</div>
-        <div class="carte-section-title" style="margin-top:8px" data-en>— Ice Creams &amp; Sorbets — 30 MAD / scoop —</div>
-        <div class="carte-item" data-id="g1" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Vanille</strong><strong data-en>Vanilla Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g2" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Corne de Gazelle</strong><strong data-en>Gazelle Horn Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g3" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Café "Nes Nes"</strong><strong data-en>"Nes Nes" Coffee Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g4" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Chocolat</strong><strong data-en>Chocolate Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g5" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Pistache</strong><strong data-en>Pistachio Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g6" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Caramel</strong><strong data-en>Caramel Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g7" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Noix de Coco</strong><strong data-en>Coconut Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g8" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Framboise</strong><strong data-en>Raspberry Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g9" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Citron</strong><strong data-en>Lemon Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g10" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Mangue</strong><strong data-en>Mango Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
-        <div class="carte-item" data-id="g11" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Orange-Cannelle</strong><strong data-en>Orange &amp; Cinnamon Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        </div>
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-glaces')">— 🍦 Glaces &amp; Sorbets — 30 DH / boule —</div>
+        <div class="bar-accordion-body" id="acc-glaces">
+<div class="carte-item" data-id="g1" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Vanille</strong><strong data-en>Vanilla Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g2" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Corne de Gazelle</strong><strong data-en>Gazelle Horn Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g3" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Café "Nes Nes"</strong><strong data-en>"Nes Nes" Coffee Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g4" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Chocolat</strong><strong data-en>Chocolate Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g5" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Pistache</strong><strong data-en>Pistachio Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g6" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Caramel</strong><strong data-en>Caramel Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g7" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Noix de Coco</strong><strong data-en>Coconut Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g8" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Framboise</strong><strong data-en>Raspberry Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g9" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Citron</strong><strong data-en>Lemon Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g10" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Mangue</strong><strong data-en>Mango Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+<div class="carte-item" data-id="g11" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Orange-Cannelle</strong><strong data-en>Orange &amp; Cinnamon Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        </div>
       </div>
 
       <!-- Récap à la carte — impression uniquement -->
@@ -550,13 +612,16 @@ body.lang-fr [data-en]{display:none!important}
 
       <div id="sec-bar">
       <div class="section-title">Bar &amp; Boissons</div>
-      <div class="carte-section-title" data-fr>— Forfaits — À partir de 15 personnes — Alcool en salle uniquement —</div>
-      <div class="carte-section-title" data-en>— Packages — From 15 guests — Alcohol in dining room only —</div>
+      <div class="bar-accordion section-title" onclick="toggleAccordion('acc-forfaits')">— 💧 Forfaits — À partir de 15 personnes —</div>
+      <div class="bar-accordion-body" id="acc-forfaits">
       <div class="bar-item" data-prix="20" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait eau simple (½ bouteille d'eau)</span><span class="bar-item-name" data-en>Still water (½ bottle)</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">20 DH</span></div>
       <div class="bar-item" data-prix="90" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait soft (soft + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Soft drinks package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">90 DH</span></div>
       <div class="bar-item" data-prix="180" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin de base (½ vin + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Basic wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">180 DH</span></div>
       <div class="bar-item" data-prix="220" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin standard (½ vin blanc/rouge/gris/rosé + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Standard wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">220 DH</span></div>
       <div class="bar-item" data-prix="250" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Forfait vin Grand Bazar (½ vin rouge ou blanc + ½ eau + thé ou café)</span><span class="bar-item-name" data-en>Grand Bazar wine package</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
+      </div><!-- /acc-forfaits -->
+      <div class="bar-accordion section-title" onclick="toggleAccordion('acc-openbar')">— 🍾 Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
+      <div class="bar-accordion-body" id="acc-openbar">
       <div class="carte-section-title openbar-title" data-fr>— Open Bar — À partir de 30 personnes — 30 min/tranche —</div>
       <div class="carte-section-title openbar-title" data-en>— Open Bar — From 30 guests — 30 min rounds —</div>
       <div class="bar-item" data-prix="170" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar Standard (vin + bière + soft + thé + café + eau)</span><span class="bar-item-name" data-en>Open bar Standard</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">170 DH</span></div>
@@ -564,6 +629,7 @@ body.lang-fr [data-en]{display:none!important}
       <div class="bar-item" data-prix="250" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar complet de Base (alcool fort + vin base + soft)</span><span class="bar-item-name" data-en>Full Open bar Base</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">250 DH</span></div>
       <div class="bar-item" data-prix="350" data-is-openbar="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Open bar complet Royal (alcool fort haut de gamme + vin luxe + soft)</span><span class="bar-item-name" data-en>Full Open bar Royal</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">350 DH</span></div>
       </div><!-- /dernier accordéon -->
+      </div><!-- /acc-openbar -->
       <table class="recap-table print-only-recap" id="recap-bar" style="margin-top:8px;table-layout:fixed">
         <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
         <thead><tr>
@@ -719,7 +785,8 @@ body.lang-fr [data-en]{display:none!important}
 
     <!-- ══ ANIMATIONS ══ -->
     <div id="sec-anim">
-      <div class="section-title anim-title">Animations &amp; Extras (optionnel)</div>
+      <div class="bar-accordion section-title anim-title" onclick="toggleAccordion('acc-animations')">🎭 Animations &amp; Extras (optionnel)</div>
+      <div class="bar-accordion-body" id="acc-animations">
       <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Gnawa — 4 musiciens</span><span class="bar-item-name" data-en>Gnawa — 4 musicians</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
       <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Danseuses orientales — 2 danseuses, 1 passage 15 min</span><span class="bar-item-name" data-en>Oriental dancers — 2 dancers, 15 min set</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
       <div class="bar-item" data-prix="2000" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Groupe de musique — 3 musiciens + chanteur</span><span class="bar-item-name" data-en>Live band — 3 musicians + singer</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">2 000 DH</span></div>
@@ -728,6 +795,7 @@ body.lang-fr [data-en]{display:none!important}
       <div class="bar-item" data-prix="5" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Flyer personnalisé recto — par personne</span><span class="bar-item-name" data-en>Custom flyer single-sided — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">5 DH</span></div>
       <div class="bar-item" data-prix="10" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name" data-fr>Flyer personnalisé recto-verso — par personne</span><span class="bar-item-name" data-en>Custom flyer double-sided — per person</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price">10 DH</span></div>
       <div class="bar-item" data-prix="0" data-is-anim="1" onclick="toggleBar(this)"><input type="checkbox"><span class="bar-item-name">DJ</span><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><span class="bar-item-price"><input type="number" min="0" placeholder="1500–4000" class="prix-libre" onclick="event.stopPropagation()" oninput="setPrixBar(this);recalc()"> DH</span></div>
+      </div><!-- /acc-animations -->
       <table class="recap-table print-only-recap" id="recap-anim" style="margin-top:8px;table-layout:fixed">
         <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
         <thead><tr>
@@ -1207,18 +1275,41 @@ function toggleItem(el){
   recalc();
 }
 function toggleBar(el){const cb=el.querySelector('input[type="checkbox"]');cb.checked=!cb.checked;el.classList.toggle('selected',cb.checked);if(cb.checked){const q=el.querySelector('.carte-qty input');if(q&&parseInt(q.value)===0)q.value=1;}recalc();}
-function setAccomp(){
-  const val=document.querySelector('input[name="accompagnement"]:checked')?.value||'';
-  const labels={legumes:'Légumes',semoule:'Semoule',puree:'Purée',salade:'Salade verte',frites:'Frites'};
-  const labelsEn={legumes:'Vegetables',semoule:'Semolina',puree:'Mashed potato',salade:'Green salad',frites:'Fries'};
-  const note=document.getElementById('accomp-note');
-  const print=document.getElementById('accomp-print');
-  const isFr=lang==='fr';
-  if(val&&note) note.textContent=isFr?`Accompagnement sélectionné : ${labels[val]}`:`Selected side: ${labelsEn[val]}`;
-  if(print){print.textContent=isFr?`↳ Accompagnement : ${labels[val]||'—'}`:`↳ Side dish: ${labelsEn[val]||'—'}`;print.classList.toggle('hide-print',!val);}
+function updateAccomp(){
+  const opts = [
+    {id:'acc-legumes', fr:'Légumes', en:'Vegetables'},
+    {id:'acc-semoule', fr:'Semoule', en:'Semolina'},
+    {id:'acc-salade',  fr:'Salade verte', en:'Green salad'},
+    {id:'acc-puree',   fr:'Purée', en:'Mashed potato'},
+    {id:'acc-frites',  fr:'Frites', en:'Fries'},
+  ];
+  const isFr = lang==='fr';
+  const lines = [];
+  let total = 0;
+  opts.forEach(o=>{
+    const v = parseInt(document.getElementById(o.id)?.value)||0;
+    if(v>0){ lines.push(`${v} ${isFr?o.fr:o.en}`); total+=v; }
+  });
+  const note = document.getElementById('accomp-note');
+  const print = document.getElementById('accomp-print');
+  if(note) note.textContent = lines.length ? (isFr?'Récap : ':'Summary: ') + lines.join(' + ') : '';
+  if(print){
+    if(lines.length){
+      print.textContent = '↳ ' + (isFr?'Accompagnements':'Side dishes') + ' : ' + lines.join(' + ');
+      print.style.display='block';
+    } else {
+      print.style.display='none';
+    }
+  }
 }
-// Écouter les radio accompagnements
-document.addEventListener('change',e=>{if(e.target.name==='accompagnement')setAccomp();});
+
+function setSushiPrix(inp){
+  // Extraire le prix depuis le texte saisi (ex: "180 DH/pers.")
+  const match = inp.value.match(/(\d+)\s*DH/i);
+  const display = document.getElementById('sushi-price-display');
+  if(match){ const p=parseInt(match[1]); inp.closest('.carte-item').dataset.prix=p; if(display) display.textContent=p+' DH'; recalc(); }
+  else { inp.closest('.carte-item').dataset.prix=0; if(display) display.textContent='— DH'; recalc(); }
+}
 
 function setPrix(inp){const item=inp.closest('.carte-item');if(item)item.dataset.prix=inp.value||'0';}
 function setPrixBar(inp){const item=inp.closest('.bar-item');if(item)item.dataset.prix=inp.value||'0';}
@@ -1290,7 +1381,12 @@ function genererDocument(){
   document.getElementById('sec-anim')?.classList.toggle('hide-print',!hasAnim);
   // Recap fixe
   const bF=document.getElementById('recap-fixe-body');if(bF)bF.innerHTML='';
-  if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;const total=prix*nb;bF.innerHTML=`<tr class="cat-row"><td colspan="4">${isFr?'🍽 Menu Fixe Groupe':'🍽 Fixed Group Menu'}</td></tr><tr><td><strong>Menu ${m.id}</strong></td><td class="r">${prix} DH</td><td class="r">${nb}</td><td class="r total-cell">${total.toLocaleString('fr-FR')} DH</td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Entrée':'Starter'} : ${isFr?m.entree_fr:m.entree_en}</td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Plat':'Main'} : ${isFr?m.plat_fr:m.plat_en}</td></tr><tr class="detail-row"><td colspan="4">↳ Dessert : ${isFr?m.dessert_fr:m.dessert_en}</td></tr>`;}
+  if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;const total=prix*nb;
+  // Accompagnements multi
+  const accOpts=[{id:'acc-legumes',fr:'Légumes',en:'Vegetables'},{id:'acc-semoule',fr:'Semoule',en:'Semolina'},{id:'acc-salade',fr:'Salade verte',en:'Green salad'},{id:'acc-puree',fr:'Purée',en:'Mashed potato'},{id:'acc-frites',fr:'Frites',en:'Fries'}];
+  const accLines=[];accOpts.forEach(o=>{const v=parseInt(document.getElementById(o.id)?.value)||0;if(v>0)accLines.push(`${v} ${isFr?o.fr:o.en}`);});
+  const accStr=accLines.join(' + ');
+  if(bF)bF.innerHTML=`<tr class="cat-row"><td colspan="4">${isFr?'🍽 Menu Fixe Groupe':'🍽 Fixed Group Menu'}</td></tr><tr><td><strong>Menu ${m.id}</strong></td><td class="r"><strong>${prix.toLocaleString('fr-FR')} DH</strong></td><td class="r"><strong>${nb}</strong></td><td class="r total-cell"><strong>${total.toLocaleString('fr-FR')} DH</strong></td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Entrée':'Starter'} : ${isFr?m.entree_fr:m.entree_en}</td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Plat':'Main'} : ${isFr?m.plat_fr:m.plat_en}${accStr?' ('+accStr+')':''}</td></tr><tr class="detail-row"><td colspan="4">↳ Dessert : ${isFr?m.dessert_fr:m.dessert_en}</td></tr>`;}
   // Recap carte
   const bC=document.getElementById('recap-carte-body');if(bC)bC.innerHTML='';
   if(bC&&mode==='carte'){[{label:isFr?'🍢 Tapas':'🍢 Tapas',id:'sec-tapas'},{label:isFr?'🥗 Entrées':'🥗 Starters',id:'sec-entrees'},{label:isFr?'🍽 Plats':'🍽 Main Courses',id:'sec-plats'},{label:isFr?'🍮 Desserts':'🍮 Desserts',id:'sec-desserts'}].forEach(sec=>{const items=[];document.querySelectorAll(`#${sec.id} .carte-item.selected`).forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';const gMsg=item.querySelector('.gateau-message')?.value||'';
@@ -1360,4 +1456,277 @@ function genererDocument(){
 </script>
 </body>
 
-</html>
+</html        </div>
+        <div class="carte-section" id="sec-desserts">
+        <div class="carte-section-title" data-fr>— Nos Douceurs Revisitées —</div>
+        <div class="carte-section-title" data-en>— Our Revisited Sweets —</div>
+        <div class="carte-item" data-id="d1" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Moelleux au Chocolat</strong><strong data-en>Chocolate Moelleux</strong><br><span class="carte-item-desc" data-fr>Signature — cœur d'amlou et glace corne de gazelle</span><span class="carte-item-desc" data-en>Signature — amlou heart and corne de gazelle ice cream</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+        <div class="carte-item" data-id="d2" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Coco Trompe-l'œil</strong><strong data-en>Coconut Trompe-l'œil</strong><br><span class="carte-item-desc" data-fr>Chocolat noir et blanc, confit de mangue, crumble, sorbet glace coco</span><span class="carte-item-desc" data-en>Dark and white chocolate, mango confit, crumble, coconut sorbet/ice cream</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+        <div class="carte-item" data-id="d3" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tiramisu Revisité</strong><strong data-en>Tiramisu Revisited</strong><br><span class="carte-item-desc" data-fr>By Grand Bazar — aux café épices marocaines</span><span class="carte-item-desc" data-en>By Grand Bazar — Moroccan spiced coffee</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
+        <div class="carte-item" data-id="d4" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sablé Breton aux Framboises</strong><strong data-en>Breton Shortbread</strong><br><span class="carte-item-desc" data-fr>Coulis et sorbet framboise à la rose</span><span class="carte-item-desc" data-en>Raspberry coulis and rose-infused raspberry sorbet</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+        <div class="carte-item" data-id="d5" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong>Profiteroles</strong><br><span class="carte-item-desc" data-fr>Pâte à choux, glace vanille, chocolat noir chaud</span><span class="carte-item-desc" data-en>Choux pastry, vanilla ice cream and hot dark chocolate</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+        <div class="carte-item" data-id="d6" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pastilla Pralinée</strong><strong data-en>Praline Pastilla</strong><br><span class="carte-item-desc" data-fr>En 3 feuilles traditionnelles de pastilla caramélisées et amlou de noisette</span><span class="carte-item-desc" data-en>Three traditional caramelized pastilla sheets with hazelnut amlou</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+        <div class="carte-item" data-id="d7" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Café / Thé Gourmand</strong><strong data-en>Gourmet Coffee / Tea</strong><br><span class="carte-item-desc" data-fr>Assortiment de pâtisseries marocaines</span><span class="carte-item-desc" data-en>Assortment of Moroccan pastries</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+        <div class="carte-item" data-id="d8" data-prix="90" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Assiette de Fruits</strong><strong data-en>Fruit Platter</strong><br><span class="carte-item-desc" data-fr>Fruits de saison</span><span class="carte-item-desc" data-en>Seasonal fruits</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">90 DH</div></div>
+
+        <!-- Glaces & Sorbets -->
+        <!-- Gâteaux d'anniversaire -->
+        <div class="carte-section-title" style="margin-top:8px" data-fr>— Gâteaux d'Anniversaire — 60 DH / portion —</div>
+        <div class="carte-section-title" style="margin-top:8px" data-en>— Birthday Cakes — 60 MAD / portion —</div>
+
+        <div class="carte-item" data-id="ga1" data-prix="60" onclick="toggleItem(this)">
+          <input type="checkbox">
+          <div class="carte-item-name">
+            <strong data-fr>🎂 Gâteau d'anniversaire — Base Fruit</strong>
+            <strong data-en>🎂 Birthday Cake — Fruit Base</strong>
+            <br>
+            <span class="carte-item-desc" data-fr>Fraises, framboises, fruits frais — 60 DH / portion</span>
+            <span class="carte-item-desc" data-en>Strawberries, raspberries, fresh fruits — 60 MAD / portion</span>
+            <!-- Champs supplémentaires visibles quand coché -->
+            <div class="gateau-options" style="display:none;margin-top:6px;padding:6px 0;border-top:1px dashed var(--border)">
+              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-fr>✏️ Message sur le gâteau :</div>
+              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-en>✏️ Message on the cake:</div>
+              <input type="text" class="gateau-message" placeholder="Ex: Joyeux Anniversaire Sophie !" onclick="event.stopPropagation()"
+                style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;padding:2px 4px;outline:none;color:var(--text)">
+            </div>
+          </div>
+          <div class="carte-qty"><input type="number" min="0" value="0" placeholder="Parts" onclick="event.stopPropagation()" oninput="recalc()" title="Nombre de portions"></div>
+          <div class="carte-item-price">60 DH<span style="font-size:9px;display:block;color:var(--text-light)">/portion</span></div>
+        </div>
+
+        <div class="carte-item" data-id="ga2" data-prix="60" onclick="toggleItem(this)">
+          <input type="checkbox">
+          <div class="carte-item-name">
+            <strong data-fr>🎂 Gâteau d'anniversaire — Base Chocolat</strong>
+            <strong data-en>🎂 Birthday Cake — Chocolate Base</strong>
+            <br>
+            <span class="carte-item-desc" data-fr>Ganache chocolat noir, copeaux de chocolat — 60 DH / portion</span>
+            <span class="carte-item-desc" data-en>Dark chocolate ganache, chocolate shavings — 60 MAD / portion</span>
+            <div class="gateau-options" style="display:none;margin-top:6px;padding:6px 0;border-top:1px dashed var(--border)">
+              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-fr>✏️ Message sur le gâteau :</div>
+              <div style="font-size:10px;color:var(--navy);font-weight:600;margin-bottom:3px" data-en>✏️ Message on the cake:</div>
+              <input type="text" class="gateau-message" placeholder="Ex: Joyeux Anniversaire Sophie !" onclick="event.stopPropagation()"
+                style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;padding:2px 4px;outline:none;color:var(--text)">
+            </div>
+          </div>
+          <div class="carte-qty"><input type="number" min="0" value="0" placeholder="Parts" onclick="event.stopPropagation()" oninput="recalc()" title="Nombre de portions"></div>
+          <div class="carte-item-price">60 DH<span style="font-size:9px;display:block;color:var(--text-light)">/portion</span></div>
+        </div>
+
+        <div class="carte-section-title" style="margin-top:8px" data-fr>— Glaces &amp; Sorbets — 30 DH / boule —</div>
+        <div class="carte-section-title" style="margin-top:8px" data-en>— Ice Creams &amp; Sorbets — 30 MAD / scoop —</div>
+        <div class="carte-item" data-id="g1" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Vanille</strong><strong data-en>Vanilla Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g2" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Corne de Gazelle</strong><strong data-en>Gazelle Horn Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g3" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Café "Nes Nes"</strong><strong data-en>"Nes Nes" Coffee Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g4" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Chocolat</strong><strong data-en>Chocolate Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g5" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Pistache</strong><strong data-en>Pistachio Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g6" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Caramel</strong><strong data-en>Caramel Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g7" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Noix de Coco</strong><strong data-en>Coconut Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g8" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Framboise</strong><strong data-en>Raspberry Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g9" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Citron</strong><strong data-en>Lemon Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g10" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Mangue</strong><strong data-en>Mango Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+        <div class="carte-item" data-id="g11" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Sorbet Orange-Cannelle</strong><strong data-en>Orange &amp; Cinnamon Sorbet</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
+      </div>
+
+      <!-- Récap à la carte — impression uniquement -->
+      <table class="recap-table print-only-recap" id="recap-carte" style="table-layout:fixed;margin-top:8px">
+        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
+        <thead><tr>
+          <th>Désignation</th>
+          <th class="r">P.U. TTC</th>
+          <th class="r">Nb.</th>
+          <th class="r">Total TTC</th>
+        </tr></thead>
+        <tbody id="recap-carte-body"></tbody>
+      </table>
+    </div><!-- /block-carte -->
+
+
+      <div id="sec-bar">
+      <div class="section-title">Bar &amp; Boissons</div>
+      <!-- /dernier accordéon -->
+      <table class="recap-table print-only-recap" id="recap-bar" style="margin-top:8px;table-layout:fixed">
+        <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
+        <thead><tr>
+          <th>Bar &amp; Boissons</th>
+          <th class="r">P.U. TTC</th>
+          <th class="r">Nb.</th>
+          <th class="r">Total TTC</th>
+        </tr></thead>
+        <tbody id="recap-bar-body"></tbody>
+      </table>
+
+      <table class="totaux-table">
+        <tr><td data-fr>Sous-total HT</td><td data-en>Subtotal excl. VAT</td><td id="ht">— DH</td></tr>
+        <tr><td data-fr>TVA (10%)</td><td data-en>VAT (10%)</td><td id="tva">— DH</td></tr>
+        <tr class="grand-total"><td data-fr>TOTAL TTC</td><td data-en>TOTAL INCL. VAT</td><td id="ttc">— DH</td></tr>
+        <tr class="acompte-row"><td data-fr>Acompte demandé (50%)</td><td data-en>Deposit required (50%)</td><td id="acompte">— DH</td></tr>
+        <tr class="acompte-row"><td data-fr>Déjà versé</td><td data-en>Already paid</td><td style="text-align:right"><input type="number" min="0" id="deja-verse" placeholder="0" value="0" style="width:90px;border:none;border-bottom:1px dashed var(--border);font-family:'Cormorant Garamond',serif;font-size:12.5px;text-align:right;outline:none;background:transparent;font-weight:600" oninput="recalc()"> DH</td></tr>
+        <tr class="acompte-row" id="solde-ant-row" style="display:none">
+          <td data-fr style="color:var(--burgundy)">+ Solde antérieur dû</td>
+          <td data-en style="color:var(--burgundy)">+ Previous balance due</td>
+          <td style="text-align:right">
+            <input type="number" min="0" id="solde-anterieur" placeholder="0" value="0"
+              style="width:90px;border:none;border-bottom:1px dashed var(--burgundy);font-family:'Cormorant Garamond',serif;font-size:12.5px;text-align:right;outline:none;background:transparent;font-weight:600;color:var(--burgundy)"
+              oninput="toggleSoldeAnt();recalc()">
+            <span style="color:var(--burgundy)"> DH</span>
+          </td>
+        </tr>
+        <tr class="reste-row"><td data-fr>Reste à régler</td><td data-en>Balance due</td><td id="reste">— DH</td></tr>
+      </table>
+    </div>
+
+    <!-- RÉGIMES ALIMENTAIRES -->
+    <div class="regimes-box">
+      <h3 data-fr>⚠ Régimes alimentaires — sans porc, viande halal — à préciser au minimum 72h avant</h3>
+      <h3 data-en>⚠ Dietary requirements — no pork, halal meat — at least 72h before</h3>
+      <div class="regimes-grid">
+        <div class="regime-item"><input type="checkbox"><label data-fr>🥦 Végétarien</label><label data-en>🥦 Vegetarian</label><input class="regime-nb" placeholder="nb"></div>
+        <div class="regime-item"><input type="checkbox"><label>🌱 Vegan</label><input class="regime-nb" placeholder="nb"></div>
+        <div class="regime-item"><input type="checkbox"><label data-fr>🌾 Sans gluten</label><label data-en>🌾 Gluten-free</label><input class="regime-nb" placeholder="nb"></div>
+        <div class="regime-item"><input type="checkbox"><label data-fr>🐟 Pescétarien</label><label data-en>🐟 Pescatarian</label><input class="regime-nb" placeholder="nb"></div>
+        <div class="regime-item"><input type="checkbox"><label data-fr>⚠️ Allergie alimentaire</label><label data-en>⚠️ Food allergy</label><input class="regime-nb" placeholder="nb"></div>
+        <div class="regime-item"><input type="checkbox"><label data-fr>🦐 Sans fruits de mer</label><label data-en>🦐 No seafood</label><input class="regime-nb" placeholder="nb"></div>
+        <div class="regime-item"><input type="checkbox"><label data-fr>🥛 Sans lactose</label><label data-en>🥛 Dairy-free</label><input class="regime-nb" placeholder="nb"></div>
+        <div class="regime-item"><input type="checkbox"><label data-fr>🥜 Sans noix</label><label data-en>🥜 Nut-free</label><input class="regime-nb" placeholder="nb"></div>
+        <div class="regime-item"><input type="checkbox"><label data-fr>📝 Autre régime</label><label data-en>📝 Other</label><input class="regime-nb" placeholder="nb"></div>
+      </div>
+      <div class="regime-detail">
+        <label data-fr>Précisions / allergènes à détailler :</label><label data-en>Details / allergens to specify:</label>
+        <textarea placeholder="Ex: 2 personnes végétariennes, 1 allergie aux noix…"></textarea>
+      </div>
+      <div class="regime-note" data-fr>⚠ À transmettre <strong>72h avant</strong> la prestation — passé ce délai le restaurant ne peut garantir la prise en compte des régimes spéciaux. Tous nos plats peuvent être préparés <strong>sans porc</strong> et avec <strong>viande halal</strong> sur demande.</div>
+      <div class="regime-note" data-en>⚠ Must be sent <strong>72h before</strong> — after this the restaurant cannot guarantee special arrangements. All dishes can be prepared <strong>pork-free</strong> and with <strong>halal meat</strong> on request.</div>
+    </div>
+
+    <!-- OBSERVATIONS -->
+    <div class="section-title" data-fr>Observations</div>
+    <div class="section-title" data-en>Notes</div>
+    <div class="notes-area">
+      <textarea placeholder="Informations complémentaires, référence voucher…"></textarea>
+    </div>
+
+    <!-- RÈGLEMENT -->
+    <div class="section-title" data-fr>Mode de Règlement</div>
+    <div class="section-title" data-en>Payment Method</div>
+    <div class="reglement-box screen-only">
+      <p class="regl-hint" data-fr>Sélectionnez le mode retenu — seul ce bloc apparaîtra à l'impression.</p>
+      <div class="regl-options">
+        <label class="regl-opt"><input type="radio" name="reglement" value="virement" onchange="showReglement(this.value)"><span data-fr>💳 Virement bancaire</span><span data-en>💳 Bank transfer</span></label>
+        <label class="regl-opt"><input type="radio" name="reglement" value="lien" onchange="showReglement(this.value)"><span data-fr>🔗 Lien de paiement</span><span data-en>🔗 Payment link</span></label>
+        <label class="regl-opt"><input type="radio" name="reglement" value="especes" onchange="showReglement(this.value)"><span data-fr>💵 Espèces</span><span data-en>💵 Cash</span></label>
+        <label class="regl-opt"><input type="radio" name="reglement" value="cheque" onchange="showReglement(this.value)"><span data-fr>📄 Chèque</span><span data-en>📄 Cheque</span></label>
+      </div>
+    </div>
+    <div class="regl-bloc" id="regl-virement" style="display:none">
+      <div class="rib-box"><div class="rib-header"><span class="rib-bank">🏦</span><span class="rib-title" data-fr>Coordonnées Bancaires — Virement</span><span class="rib-title" data-en>Bank Details — Wire Transfer</span></div>
+        <div class="rib-grid">
+          <div class="rib-field"><span class="rib-label" data-fr>Titulaire</span><span class="rib-label" data-en>Account holder</span><span class="rib-val">NYX</span></div>
+          <div class="rib-field"><span class="rib-label" data-fr>Banque</span><span class="rib-label" data-en>Bank</span><span class="rib-val">AttijariWafa Bank — Ag. Marrakech Plaza (1509)</span></div>
+          <div class="rib-field"><span class="rib-label" data-fr>Domiciliation</span><span class="rib-label" data-en>Branch</span><span class="rib-val">02, Rue Imam Malik, Guéliz — Marrakech</span></div>
+          <div class="rib-field"><span class="rib-label">Banque / Ville / N° / Clé</span><span class="rib-val rib-mono">007 — 450 — 0015095000000196 — 27</span></div>
+          <div class="rib-field"><span class="rib-label">IBAN</span><span class="rib-val rib-iban">MA64 007 450 0015095000000196 27</span></div>
+          <div class="rib-field"><span class="rib-label">BIC / SWIFT</span><span class="rib-val rib-mono">BCMAMAMC</span></div>
+        </div>
+        <div class="rib-warning" data-fr>⚠ Le virement doit être effectué <strong>au minimum 15 jours avant</strong> la date de la prestation. La réservation n'est confirmée qu'à réception des fonds.</div>
+        <div class="rib-warning" data-en>⚠ Bank transfer must be completed at least <strong>15 days before</strong> the event.</div>
+      </div>
+    </div>
+    <div class="regl-bloc" id="regl-lien" style="display:none">
+      <div class="rib-box"><div class="rib-header"><span class="rib-bank">🔗</span><span class="rib-title" data-fr>Règlement par Lien de Paiement</span><span class="rib-title" data-en>Payment by Link</span></div>
+        <div class="rib-grid">
+          <div class="rib-field"><span class="rib-label" data-fr>Transmission du lien</span><span class="rib-label" data-en>Link delivery</span><span class="rib-val" data-fr>Par mail ou WhatsApp après signature et « bon pour accord »</span><span class="rib-val" data-en>By email or WhatsApp after signature and "agreement confirmed"</span></div>
+          <div class="rib-field"><span class="rib-label">WhatsApp</span><span class="rib-val">+212 6 11078244</span></div>
+          <div class="rib-field"><span class="rib-label" data-fr>Acompte (50%)</span><span class="rib-label" data-en>Deposit (50%)</span><span class="rib-val" id="lien-montant">—</span></div>
+        </div>
+        <div class="rib-warning" data-fr>⚠ Lien valable <strong>48h</strong>. Réservation confirmée après validation du paiement.</div>
+        <div class="rib-warning" data-en>⚠ Link valid <strong>48 hours</strong>. Reservation confirmed after payment.</div>
+      </div>
+    </div>
+    <div class="regl-bloc" id="regl-especes" style="display:none">
+      <div class="rib-box"><div class="rib-header"><span class="rib-bank">💵</span><span class="rib-title" data-fr>Règlement en Espèces</span><span class="rib-title" data-en>Cash Payment</span></div>
+        <div class="rib-grid">
+          <div class="rib-field"><span class="rib-label" data-fr>Lieu</span><span class="rib-label" data-en>Location</span><span class="rib-val" data-fr>Sur place — Le Grand Bazar, Place Jemaa El Fna</span><span class="rib-val" data-en>On site — Le Grand Bazar, Place Jemaa El Fna</span></div>
+          <div class="rib-field"><span class="rib-label" data-fr>Acompte (50%)</span><span class="rib-label" data-en>Deposit (50%)</span><span class="rib-val" id="especes-montant">—</span></div>
+        </div>
+        <div class="rib-warning" data-fr>⚠ L'acompte doit être remis <strong>au minimum 15 jours avant</strong>. Un reçu vous sera délivré.</div>
+        <div class="rib-warning" data-en>⚠ Deposit due at least <strong>15 days before</strong>. A receipt will be issued.</div>
+      </div>
+    </div>
+    <div class="regl-bloc" id="regl-cheque" style="display:none">
+      <div class="rib-box"><div class="rib-header"><span class="rib-bank">📄</span><span class="rib-title" data-fr>Règlement par Chèque</span><span class="rib-title" data-en>Cheque Payment</span></div>
+        <div class="rib-grid">
+          <div class="rib-field"><span class="rib-label" data-fr>À l'ordre de</span><span class="rib-label" data-en>Payable to</span><span class="rib-val">NYX</span></div>
+          <div class="rib-field"><span class="rib-label" data-fr>Acompte (50%)</span><span class="rib-label" data-en>Deposit (50%)</span><span class="rib-val" id="cheque-montant">—</span></div>
+        </div>
+        <div class="rib-warning" data-fr>⚠ Chèque à remettre <strong>au minimum 15 jours avant</strong>. Tout chèque sans provision entraîne l'annulation.</div>
+        <div class="rib-warning" data-en>⚠ Cheque due at least <strong>15 days before</strong>. Bounced cheques result in automatic cancellation.</div>
+      </div>
+    </div>
+
+    <div class="signatures">
+      <div class="sig-block">
+        <strong data-fr>Bon pour accord — Client / Agence</strong><strong data-en>Agreement — Client / Agency</strong>
+        <div style="font-size:9px;color:var(--text-light);margin:3px 0" data-fr>Cachet + signature + mention « Bon pour accord »</div>
+        <div style="font-size:9px;color:var(--text-light);margin:3px 0" data-en>Stamp + signature + "Agreement confirmed"</div>
+        <div class="sig-zone"></div>
+      </div>
+      <div class="sig-block">
+        <strong>Le Grand Bazar Marrakech — Direction</strong>
+        <div style="font-size:9px;color:var(--text-light);margin:3px 0">Renaud Fabien</div>
+        <div style="margin:4px 0 2px">
+          <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFsAAAA3CAYAAABjADa4AAAN9UlEQVR4nO1c228bV37+fufM8E5dTUqUKClWZGQhtImTsa6RM7upgxpFkD4RWGCBfdun/hGC3vvQv6FAHwo99KmJATcXxo4tOyGSeBt6nSpa636zqRulIWfmnNMHkfSIphxJlmyq6AcIoHiu881vftczJPw/CID6XceVtxyFPzGFf6e3wt+n02kBQJ3mQuw0J3tNoKq/446FmTAuuMAnIPqMRPghHkM77U3+X8axhOh633V/CuBntZkyjisJdYex7r9t5o6PC2ItBGXdWvpu/qRzjWOcTWBClv4lnLIaOa9ks+HksD8EtNhKtUoligykGFRYKrpCXP54ayFz/2UWSCHFZ4wZlslknNPa9LnTTR+1vR1ebHUdZ9nx+VpjT76YvrHobR9LDIeUwPDvuoynX85nfsEJJXQmMeMPLOECgLkTzOEVYkohRZOYlIf2rkeMtI3ETZjVAlLTQH7QOXTp7zoGWj19jgWzxwyMxa/0HmH8kQ3zeZBsAqDG2i/HttXu7l3cdb3f43mJYwCUTbSgQCMAvjjJovnZvGjuxVOsATXW8Ep6pc0wDL3Xsmhxx39BKj9Fnb1NiwV/AxKXoOF+vZNNANQ7Pe80cSjnweyDXU/bYY+1BEBTC1PW+51D/rH2y7HbKz+s4wTqJG/r9iFNahzj7KvYZAihcERYKsS58okltK654V+gq6gunMZd7osQiTjAfBoVc/VOtjJ7zIBdtBvTK3dncXTCCIAiLh4x4u0Ajk12BBEF/vxTM9o6GtZ87uWvtE+tovJv+m25KUV+/fbao53h5HDQ5U6fJvibxFRIMn5/amHqs/LgeiZ7n5xCob3RUbljjpUAwK29NamF3x8Hfpo4plTHEVebhUc8hRRf61nTsbeuIaRrlu5KWWDfTc1PWcC+68lU9L2xhNFBwtkjYA8O/RRqapn7evpGEQDGATYBqHp3/WgoPhS/t3Zv9SRjAagPEsZHfuncubl6QAWV25/7bMJkem8+7OxqzS5zZUeztbKWjck00mVbgcGWwQafny5BqV5iKgyJGQXn4e2VH57g4E098DTVs2QjhRTDGp7cw72TTkFCUTTH9OA4YE0cNKheUiqfrRYr4uzh/UAIGSFse20j2FBMFv0jzpVmpqkLXFFUQoYByjPF/vvrpfsPq9ZkeLbOgaeprsmexKQ45pDnLpSApzrX/RMl1WLA0JGA3kQsWARahZJMF9CFzsPMFVJpVFAS205R/BHSv6ygcpoUjDG2xZmYL+751u48vbPzgnUP9afrXY0cFc8ZPyNhhBq53uxId0wpNBJji1IqHylYRFBE2JaK2RzuLqRWEFz6CMpymLYrpKAgOS1PGu3ZbDZbyyOhcYAmakjvr23yPKO8f/VxwghtMH6JQAGCCsMVeUU8D8j3iLMNBvxouwX77uqDdRyBIMMw9FKozsYBTJTWOcrYw1DPaqQcmdV6LCskA8Bo12jHtrTfUa4oMPDHNkgFoAH+wIqw881KSC298t1CjfE13cFUf78+swQNgANATpziBdUl+tHv6+7rphsl98mDCkFD8aE2nbt9iugTIrVCkq0pvfBpYu7P2zO9RsQKWFbzRtBkxN5kRD8IKTiYtnN78d6DX1neq4NPDXVbPMgiKyzHqhYGAqCutg1eHOu48nu/Jns58JTZ6l8A+bki/JEc38AkIDIzma2Svn1EkqXTi/engtL5Qbluy1jnYMrsMQM4JK9hGMaZ5LbrVo2MY1zd0/+t2mfF1W4joQSuuKTdmlqY8mb8ls3Y8D8pzvSRtrfjGvf5A8LObRX5JtfcRgAYXX1gTQBfjXQOfqjs/FUAN8sBh3ftTCZzXC/oSKhbNVILKYAvt18Zs1bUnQz2jRdq+MvX+/r8eSv6lpSsnQNBxaiNa+F/Tc+mC+WOY53GELfZbHr921XvWADcNE1Kp58FMaeFupXsKhAAtdA+ktQ0ZWUwVSa62ngyAOrG9HQRwAMAD8a6r/RCIOo4uz1jHQNJTvRI94udgoWEVHIOVRHf9b4+bW59/VR1dRnnimxOdlIS23xBPy/5BAB8LjzntDrrd57e2TF6jZWIcGlvR7ug6exNqRNGu969z8i1chGxm81m7aHpPzg3npXGDsyFlzSY50WN7BvGxOA/Fov48n7u/jYOcduq8VHb2+FN6Y9+u68uKv3NmBmBz2oqElPcEU0MtOdy2cQUvaFB3kovZ3J4OY/kuf2dF8kGACgGHwsxDUfLARIApcK6pjt6WbdXCEivp3cB5Et9FwHgw/hQm6vZAe76+EDHQLPOZVPYdlYsf4OPOxaPN1vbk9msM5wcDjQFnsg5n08dEmECz98kOl9kC5lXkvSjdgcAjW0VpLpQduWU2TmYlK7ouLWauZ8C+GSp2ABAOgGXfTj3yT1Phf0pANbf3+902zYhOy0AIOpQNM+CTucO2VnABSBTSPGZxIw/AWB5GU6kxw0Dm4X47KBTyvGoc0F2OQ9BDI5G7iUAq57cxGEgACqHFn9UikrEGAy2rLtP13cAYBIou3jKhKkJe8udwMSBJwCAzGazdtYz8c3Vu2vVi01iUmIZhRRSFMEaFUWR+XkT5pPzvms+w+cUefRckF0mlTvaY8Gdy0ccpgCgcacgdvRQ5TpLEWl1VAr0IxBY5jaOpqOrDWYlOKpkKhf2lZ3Z805ToeAzmKSluo0gq6AA0G/Xp2YYSPbheiVl+mvIJXU76uyVyfWS4wWx3Hbrf21kto6xJxp/FoGXU6sSAK4mjPfe73xv+IPOoUvKDcS4Hvrm65V7D8+FZJcxAchRXUy1xjeaptewiiN4JC0Ljm+T+wMAdj39vaSrkbaRmMMLjd7vakxFVeNVKUHFRmPGRa5TG0CXlFJ9IFWEy/9jN+k+9hzyOVcGUgHAnfnvl8zOwSSO6PrtuhGmuyh7DDX7c+422Zb+uKqPN28i4blJw8nhFh1OH7mUVMS6FZQgkr9I8O8lt2/emf9+CQCwWplH4bwYSA8IgCpSfm+0691E6aJeSDoLM41f5DtI12xWRsIIccHs+7l72zioFirkjgPsiwtGGwLoki5+w4TToBhtCdBDpltf3p7780aNfXrnAXDO/GyUdPfUQjY31j3WPNI2Er9bwzMoYf84g1uI+P5i29h30Z5rDxO9VVAo37SKHRhtHY1qweIbSrCOL0i2k6ImV6iHnNGXNQ5vlis35T3WvPnnJYKsBRrrGLjkMj4/tbB/rKC6HYAyYwPtCIU2vUkolCT4Wq8RtXZZ8pvVb38CgLH2yzHS+EWS9DcK5FNSPSTF5lgguFw1vnziFThGlHmeyQYwzkZbb4ZrFGArMJqNRithWdls1kGV9JodA5fB3Lx0tQ5FuEyQu0QsS0Tz64v5tSwORIcnqjt6cc7JBgDQcHI4UEO6y28VtMaXezc8lXq62m20S8E/IiG6AJqTXC2QxC/fLGfmquY41YrNedPZtaCizh4zTVMr5aDLqVcFAHoBzg52tOHkcCMXjkHgYbIlI8J2JLL1z6V0rBdHOpZwEpx3ya5Y/Wu91xqdGWc3jbQ7DrDPWgYjvoBqB9HbEDLAGH5yuVgtumwzs5zZq5rjsBOxp4rzKNk13SpnxxGqY/cfRtVg4XOGBl3SCoPcJVJ/KWqi0LXQ99elztk/MFL/CcDCM/195iSXUe9kVz95FWL2Dzz+HBUu62ZSbxQsbytFioHtWtK57ZXeofhQ23zy53au/D+HlkJbeIUEe1GPauTQqoiRMEJBpvUp6TZwYsJ15JogLc8F36vySMpq4UyOJJwU9UB2TXINGDpv4UEtIBPMFX5iWpNgcJRQOz5JT+Lrb6xXnwUsV8rNHtOfn82LUlHYi1p1y1eGV0V2LXVwACmk+GLrYkhwEQoQggVCUCO0EmCRVDnltzZ/JSyuYBxgX8X6Q79dz+4dNTv4KvDaJNuEqTmtTlBnThiabAIAqViccZrRlLI+X/p2A7WJOpJquN7X50euxX9jv15ZF3glZJuxgXabu35ygrkAFyHFWKCoFxzmKMe2fcVgNGinZ9NF1Kjb4ZCXhY4CwzD0jzMfi4nnq+WvBWfhjZAJk6MHWt7OR5oLcBy/G9GE3suY82DPx7e6Fu4+8ZSk4Cngem9+zQPlx0Emk3H0pB7EAgovM89p4aXJNk1TQxpAbD2wHoPdsRwMkm/Dzdm6spqt7Ug2JtMb6S0A08PJ4Zauhm3hIbo6PXrqhHQtdNnb/dv6C6rgrwzHVSOUQoqtYY2KyWIDKzrNaPGvNYgG25q2RBqH/mxExZBd77vuz+Vy/paWXLFGqHwWoLH2yxcSK5dyJ3iT4ZWhUpHu7+/3lX61gKWQ4imkKp9PMrHZYwZG2kbi4xg/6xooAcC1XqPRjJmRM17rWCAAZBiGDoAZCSNU/q5E6lkYU9aPfh8OHl2ueYz3hCAANNo6Gh3sG2w4pTlPjMpFGoahASBkAACyFO4qAKp8yOQM1pdBI6iGk8P+VH+/r3SjqwuyJyW+4snoQatN7IpTP5V6kg3VC9hAbCDu97G4tefOZjYy26g6Yer5/KLqN+Atb3W926FJX/jrxXv/gyMWic8K9UQ2AMCM9UdgxzQR3oszRW02ZzN/vzC1fNxI8Grb4EXF5ZsEPHqZH3w5TdQd2R7wqx1XOpRkUXBHkwphJvUtoQpPfIHm7fxsXvQiIycBdb2vT7e3W5tcnxsXCq1QFOWkhE36j1VvJ7xW1DPZFYxjnH3e8WkfESUhlKuIWpjEFkgEJZgElxElSDJieaGpnM7s6fTsj5ul4a9VdXjxv7UbT0WMRRiiAAAAAElFTkSuQmCC" alt="Signature Renaud Fabien" style="height:55px;display:block;opacity:.9;">
+        </div>
+        <div class="sig-zone" style="margin-top:2px"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="cgv-section">
+    <h2 data-fr>Conditions Générales de Vente</h2>
+    <h2 data-en>General Terms and Conditions</h2>
+    <div class="cgv-text" data-fr>
+      <p>Les présentes conditions s'appliquent à toutes les prestations. Toute réservation implique leur acceptation.</p>
+      <h4>Tarifs</h4><p>Exprimés en dirhams TTC, par personne. Si la réservation a lieu plus de 10 mois avant, Le Grand Bazar peut appliquer ses tarifs en vigueur au moment de l'événement.</p>
+      <h4>Confirmation</h4><p>Effective après réception d'un acompte de 50% et du proforma signé « bon pour accord ».</p>
+      <h4>Menu &amp; Régimes</h4><p>Choix définitif du menu : 6 jours avant. Régimes spéciaux : 72h avant minimum.</p>
+      <h4>Annulation des convives</h4><p>Nombre définitif : 1 semaine avant. J-7 à J-3 : 50% facturé. J-3 ou moins : 100% facturé.</p>
+      <h4>Convives supplémentaires</h4><p>Facturés à l'unité. Dépassement de capacité : Le Grand Bazar peut refuser l'accueil.</p>
+      <h4>Prestations supplémentaires</h4><p>Toute prestation non incluse est facturée le jour de l'événement.</p>
+      <h4>Paiement par voucher</h4><p>Pour entreprises sous contrat uniquement. Extras réglés sur place.</p>
+      <h4>Responsabilité</h4><p>Le client assume la responsabilité des dommages causés par ses convives.</p>
+      <h4>Règlement</h4><p>Pénalités de retard : taux légal × 1,5. Contestation dans les 8 jours.</p>
+      <h4>Annulation par Le Grand Bazar</h4><p>Remboursement de l'acompte uniquement, sauf force majeure.</p>
+      <h4>Juridiction</h4><p>Tribunal de Commerce de Marrakech.</p>
+    </div>
+    <div class="cgv-text" data-en>
+      <p>These terms apply to all services. Any reservation implies acceptance.</p>
+      <h4>Pricing</h4><p>All prices in MAD incl. VAT, per person. If booked more than 10 months prior, current rates at event time may apply.</p>
+      <h4>Confirmation</h4><p>Only confirmed upon receipt of 50% deposit and signed proforma.</p>
+      <h4>Menu &amp; Dietary</h4><p>Final menu: 6 days before. Dietary requirements: 72h minimum.</p>
+      <h4>Guest Changes</h4><p>Final count: 1 week before. J-7 to J-3: 50% charged. J-3 or less: 100% charged.</p>
+      <h4>Additional Guests</h4><p>Charged at unit rate. Capacity exceeded: Le Grand Bazar may refuse entry.</p>
+      <h4>Additional Services</h4><p>Any service not included will be billed on the day.</p>
+      <h4>Voucher Payments</h4><p>For contracted companies only. Extras settled on-site.</p>
+      <h4>Liability</h4><p>Client assumes responsibility for damages caused by guests.</p>
+      <h4>Payment Terms</h4><p>Late fees: 1.5× legal rate. Disputes within 8 days.</p>
+      <h4>Cancellation by Le Grand Bazar</h4><p>Deposit refunded only, except force majeure.</p>
+      <h4>Jurisdiction</h4><p>Commercial Court of Marrakech.</p>
+    </div>
+  </div>
+
+  <!-- FOOTER : numérotation uniquement -->
+  <div class="doc-footer">
+    <strong>SARL NYX</strong> — Capital social : 4 000 000,00 DH<br>
+    Domaine Royal Palm, villa n°16, route d'Amizmiz, km12, Tamesloht, 40000 Marrakech<br>
+    <strong>ICE :</strong> 002282634000063 &nbsp;|&nbsp; <strong>RC :</strong> 97273 &nbsp;|&nbsp; <strong>TP :</strong> 45103536 &nbsp;|&nbsp; <strong>IF :</strong> 3763702 &nbsp;|&nbsp; <strong>CNSS :</strong> 155549<br>
+    <span style="opacity:.6">Restaurant · Rooftop · Marrakech &nbsp;|&nbsp; Page <span id="pg-num">1</span></span>
+  </div>
+
+</div>
+
+
+
+</html        </div>
+        ></body>
