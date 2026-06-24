@@ -1551,12 +1551,25 @@ function genererDocument(){
   };
 
   // text/plain => requête "simple" => pas de pré-vol CORS bloquant
+  // + réessais auto si Google renvoie une page de connexion (incident intermittent)
   async function gbApi(payload){
-    const res=await fetch(GB_API,{method:'POST',body:JSON.stringify(payload)});
-    const txt=await res.text();
-    let j; try{ j=JSON.parse(txt); }catch(e){ throw new Error('Réponse inattendue du serveur : '+txt.slice(0,180)); }
-    if(!j.ok) throw new Error(j.error||'Erreur serveur');
-    return j;
+    for(var attempt=0; attempt<3; attempt++){
+      if(attempt>0) await new Promise(function(r){ setTimeout(r, 600); });
+      var txt='';
+      try{
+        var res=await fetch(GB_API,{method:'POST',body:JSON.stringify(payload)});
+        txt=await res.text();
+      }catch(e){ continue; } // erreur réseau → on réessaie
+      var t=(txt||'').trim();
+      if(t.charAt(0)==='{' || t.charAt(0)==='['){
+        var j;
+        try{ j=JSON.parse(t); }catch(e){ continue; } // JSON incomplet → on réessaie
+        if(j.ok===false) throw new Error(j.error||'Erreur serveur');
+        return j;
+      }
+      // réponse = page HTML (login Google intermittent) → on réessaie
+    }
+    throw new Error('Réponse inattendue (page de connexion Google intermittente). Réessaie dans un instant ; si ça persiste, redéploie une « Nouvelle version » en accès « Tout le monde ».');
   }
 
   function gbNum(t){ return parseFloat(String(t||'').replace(/[^0-9.,-]/g,'').replace(/\s/g,'').replace(',','.'))||0; }
