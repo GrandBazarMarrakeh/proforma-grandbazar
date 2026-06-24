@@ -221,6 +221,9 @@ body.lang-fr [data-en]{display:none!important}
   </div>
   <button class="print-btn" onclick="genererDocument()">🖨 Générer &amp; Imprimer</button>
   <div class="ctrl-group" id="gb-engine-group" style="border-left:2px solid var(--gold);padding-left:10px">
+    <select id="gb-partner" class="ctrl-btn" style="padding:8px 10px;cursor:pointer;max-width:200px" onchange="gbPickPartner(this.value)" title="Remplir le bloc client depuis un partenaire enregistré">
+      <option value="">👥 Partenaire connu…</option>
+    </select>
     <select id="gb-doctype" class="ctrl-btn" style="padding:8px 10px;cursor:pointer" onchange="gbSetTitleByType(this.value)">
       <option value="proforma">📄 Proforma</option>
       <option value="devis">📝 Devis</option>
@@ -1510,7 +1513,42 @@ function genererDocument(){
   // Appliquer au chargement selon la valeur par défaut du sélecteur
   document.addEventListener('DOMContentLoaded',function(){
     var dt=document.getElementById('gb-doctype'); if(dt) window.gbSetTitleByType(dt.value);
+    gbLoadPartners();
   });
+
+  // ── Mémoire partenaires (depuis l'historique des documents) ────
+  async function gbLoadPartners(){
+    try{
+      const j=await gbApi({action:'list'});
+      const seen={}, opts=[];
+      (j.docs||[]).forEach(function(d){
+        const name=String(d.client||'').trim(); if(!name) return;
+        const key=name.toLowerCase(); if(seen[key]) return; seen[key]=1;
+        opts.push({id:d.id,label:name+(d.contact?(' — '+d.contact):'')});
+      });
+      const sel=document.getElementById('gb-partner'); if(!sel) return;
+      const esc=function(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+      sel.innerHTML='<option value="">👥 Partenaire connu…</option>'
+        + opts.map(function(o){ return '<option value="'+o.id+'">'+esc(o.label)+'</option>'; }).join('');
+    }catch(e){ /* silencieux : pas de partenaires si le moteur ne répond pas */ }
+  }
+
+  window.gbPickPartner=async function(id){
+    if(!id) return;
+    try{
+      const j=await gbApi({action:'get',id:id});
+      const fd=j.doc&&j.doc.formData;
+      if(!fd||!fd.fields){ alert('Aucune info client mémorisée pour ce partenaire.'); return; }
+      const box=document.querySelectorAll('.info-box')[0]; if(!box) return;
+      const els=box.querySelectorAll('.field-value'); // [Société, Contact, Email, Tél, Adresse, ICE]
+      for(var i=0;i<els.length;i++){ if(fd.fields[i]!=null) els[i].value=fd.fields[i]; }
+      const c=document.getElementById('inp-contact'); if(c&&fd.byId&&fd.byId['inp-contact']!=null) c.value=fd.byId['inp-contact'];
+      // c'est un NOUVEAU document pour ce partenaire
+      window.GB_currentId=null;
+      const sel=document.getElementById('gb-partner'); if(sel) sel.value='';
+      alert('👥 Bloc client rempli depuis le partenaire.\nComplète la prestation du jour puis clique 💾 Enregistrer (nouveau document).');
+    }catch(e){ alert('❌ '+e.message); }
+  };
 
   // text/plain => requête "simple" => pas de pré-vol CORS bloquant
   async function gbApi(payload){
@@ -1678,6 +1716,7 @@ function genererDocument(){
       const numero=(j2&&j2.numero)||(j&&j.numero)||'';
       const driveUrl=(j2&&j2.driveUrl)||'';
       const refn=document.getElementById('ref-num'); if(refn&&numero) refn.value=numero;
+      gbLoadPartners(); // mémorise le partenaire pour la prochaine fois
       alert('✅ Enregistré\nN° '+numero+'\nStatut : '+statut+(driveUrl?'\n📄 PDF rangé dans le Drive ✔':'\n(données seules, sans PDF)'));
     }catch(e){ alert('❌ Enregistrement impossible\n'+e.message); }
   };
