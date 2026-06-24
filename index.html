@@ -221,7 +221,7 @@ body.lang-fr [data-en]{display:none!important}
   </div>
   <button class="print-btn" onclick="genererDocument()">🖨 Générer &amp; Imprimer</button>
   <div class="ctrl-group" id="gb-engine-group" style="border-left:2px solid var(--gold);padding-left:10px">
-    <select id="gb-doctype" class="ctrl-btn" style="padding:8px 10px;cursor:pointer">
+    <select id="gb-doctype" class="ctrl-btn" style="padding:8px 10px;cursor:pointer" onchange="gbSetTitleByType(this.value)">
       <option value="proforma">📄 Proforma</option>
       <option value="devis">📝 Devis</option>
       <option value="facture">🧾 Facture</option>
@@ -1495,6 +1495,23 @@ function genererDocument(){
   const GB_API="https://script.google.com/macros/s/AKfycbySx3ep7P7nyxfMgz4pHFSbrQP2wj9DLWzpTHtp4-aiE-0AsFyMUMWAlV8Q7Q-0-mzCEw/exec";
   window.GB_currentId=null;
 
+  // Titre du document selon le type sélectionné
+  window.gbSetTitleByType=function(type){
+    var T={ proforma:{fr:'Facture Proforma',en:'Proforma Invoice'},
+            devis:{fr:'Devis',en:'Quote'},
+            facture:{fr:'Facture',en:'Invoice'},
+            recu:{fr:'Reçu',en:'Receipt'} };
+    var t=T[type]||T.proforma;
+    var band=document.querySelector('.title-band'); if(!band) return;
+    var hFr=band.querySelector('h1[data-fr]'), hEn=band.querySelector('h1[data-en]');
+    if(hFr) hFr.textContent=t.fr;
+    if(hEn) hEn.textContent=t.en;
+  };
+  // Appliquer au chargement selon la valeur par défaut du sélecteur
+  document.addEventListener('DOMContentLoaded',function(){
+    var dt=document.getElementById('gb-doctype'); if(dt) window.gbSetTitleByType(dt.value);
+  });
+
   // text/plain => requête "simple" => pas de pré-vol CORS bloquant
   async function gbApi(payload){
     const res=await fetch(GB_API,{method:'POST',body:JSON.stringify(payload)});
@@ -1639,16 +1656,29 @@ function genererDocument(){
       const statut=(document.getElementById('gb-statut')||{}).value||'Brouillon';
       const meta=gbMeta();
       const formData=gbCollectState();
-      // PDF
+      gbSetTitleByType(type); // titre du document selon le type
+
+      let j;
+      if(!window.GB_currentId){
+        // Phase 1 : enregistrer les données → obtenir le numéro AVANT le PDF
+        j=await gbApi(Object.assign({action:'save',type:type,statut:statut,formData:formData},meta));
+        window.GB_currentId=j.id;
+        const refn=document.getElementById('ref-num'); if(refn&&j.numero) refn.value=j.numero;
+      }else{
+        const refn=document.getElementById('ref-num'); // numéro déjà présent sur le doc
+      }
+
+      // PDF (le numéro et le titre corrects sont maintenant sur le document)
       let pdf={b64:'',fileBase:''};
       try{ pdf=await gbGeneratePdf(); }
-      catch(e){ if(!confirm('⚠️ Le PDF n\'a pas pu être généré ('+e.message+').\nEnregistrer quand même les données (sans le PDF) ?')) return; }
-      const payload=Object.assign({statut:statut,type:type,formData:formData,pdfBase64:pdf.b64,fileBase:pdf.fileBase},meta);
-      let j;
-      if(window.GB_currentId){ payload.action='update'; payload.id=window.GB_currentId; j=await gbApi(payload); }
-      else { payload.action='save'; j=await gbApi(payload); window.GB_currentId=j.id; }
-      const refn=document.getElementById('ref-num'); if(refn&&j.numero) refn.value=j.numero;
-      alert('✅ Enregistré\nN° '+j.numero+'\nStatut : '+statut+(j.driveUrl?'\n📄 PDF rangé dans le Drive ✔':'\n(données seules, sans PDF)'));
+      catch(e){ alert('⚠️ Données enregistrées (N° '+(j?j.numero:'')+'), mais le PDF n\'a pas pu être généré : '+e.message); return; }
+
+      // Phase 2 : joindre le PDF (et mettre à jour client/montant/statut)
+      const j2=await gbApi(Object.assign({action:'update',id:window.GB_currentId,type:type,statut:statut,formData:formData,pdfBase64:pdf.b64,fileBase:pdf.fileBase},meta));
+      const numero=(j2&&j2.numero)||(j&&j.numero)||'';
+      const driveUrl=(j2&&j2.driveUrl)||'';
+      const refn=document.getElementById('ref-num'); if(refn&&numero) refn.value=numero;
+      alert('✅ Enregistré\nN° '+numero+'\nStatut : '+statut+(driveUrl?'\n📄 PDF rangé dans le Drive ✔':'\n(données seules, sans PDF)'));
     }catch(e){ alert('❌ Enregistrement impossible\n'+e.message); }
   };
 
@@ -1663,6 +1693,7 @@ function genererDocument(){
       if(!j.doc){ alert('Document introuvable'); return; }
       window.GB_currentId=j.doc.id;
       const dt=document.getElementById('gb-doctype'); if(dt&&j.doc.type) dt.value=j.doc.type;
+      if(j.doc.type) gbSetTitleByType(j.doc.type);
       const st=document.getElementById('gb-statut'); if(st&&j.doc.statut) st.value=j.doc.statut;
       const refn=document.getElementById('ref-num'); if(refn) refn.value=j.doc.numero;
       gbApplyState(j.doc.formData);
