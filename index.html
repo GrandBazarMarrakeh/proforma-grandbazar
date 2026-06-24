@@ -239,6 +239,7 @@ body.lang-fr [data-en]{display:none!important}
     </select>
     <button class="ctrl-btn" onclick="gbEnregistrer()" title="Attribue un numéro auto et enregistre dans le registre">💾 Enregistrer</button>
     <button class="ctrl-btn" onclick="gbOuvrirListe()" title="Rouvrir / modifier un document existant">📂 Mes documents</button>
+    <button class="ctrl-btn" onclick="gbEnvoyer()" title="Envoyer le document par email au client">📧 Envoyer</button>
     <button class="ctrl-btn" onclick="gbTestConnexion()" title="Vérifier la liaison Google">🔌 Test</button>
   </div>
 </div>
@@ -1629,6 +1630,53 @@ function genererDocument(){
     if(typeof recalc==='function') recalc();
   }
 
+  // ── Envoi par email ───────────────────────────────────────────
+  function gbClientEmail(){
+    var box=document.querySelectorAll('.info-box')[0]; if(!box) return '';
+    var els=box.querySelectorAll('.field-value'); // [Société, Contact, Email, Tél, Adresse, ICE]
+    return els[2]?String(els[2].value||'').trim():'';
+  }
+
+  function gbDefaultMail(type,numero){
+    var L={ proforma:{t:'votre facture proforma',n:'Facture proforma'},
+            devis:{t:'votre devis',n:'Devis'},
+            facture:{t:'votre facture',n:'Facture'},
+            recu:{t:'votre reçu',n:'Reçu'} };
+    var x=L[type]||{t:'votre document',n:'Document'};
+    var subject='Le Grand Bazar Marrakech — '+x.n+(numero?(' n° '+numero):'');
+    var body='Bonjour,\n\n'
+      +'Veuillez trouver ci-joint '+x.t+(numero?(' n° '+numero):'')+' pour Le Grand Bazar Marrakech.\n'
+      +'Nous restons à votre disposition pour toute question.\n\n'
+      +'Bien cordialement,\n'
+      +'Le Grand Bazar — Restaurant Rooftop\n'
+      +'Place Jemaa El Fna, Marrakech\n'
+      +'+212 6 11078244\n'
+      +'com.legrandbazardemarrakech@gmail.com';
+    return { subject:subject, body:body };
+  }
+
+  // Envoie le document courant ; régénère le PDF si besoin
+  async function gbSendCurrent(pdf){
+    var email=gbClientEmail();
+    if(!email){ alert('📧 Aucune adresse email dans le bloc client (champ « Email »).'); return false; }
+    var type=(document.getElementById('gb-doctype')||{}).value||'proforma';
+    var numero=(document.getElementById('ref-num')||{}).value||'';
+    var mail=gbDefaultMail(type,numero);
+    if(!confirm('📧 Envoyer à :\n'+email+'\n\nObjet : '+mail.subject+'\n\nLe PDF sera joint. Confirmer l\'envoi ?')) return false;
+    if(!pdf||!pdf.b64){ pdf=await gbGeneratePdf(); }
+    await gbApi({action:'send',id:window.GB_currentId,email:email,subject:mail.subject,message:mail.body,pdfBase64:pdf.b64,filename:pdf.fileBase});
+    var st=document.getElementById('gb-statut'); if(st) st.value='Envoyé';
+    alert('📧 Envoyé à '+email);
+    return true;
+  }
+
+  window.gbEnvoyer=async function(){
+    try{
+      if(!window.GB_currentId){ alert('Enregistre d\'abord le document (💾 Enregistrer), puis envoie-le.'); return; }
+      await gbSendCurrent(null);
+    }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
+  };
+
   window.gbTestConnexion=async function(){
     try{ const j=await gbApi({action:'ping'}); alert('✅ Connexion au moteur OK\n'+(j.msg||'')); }
     catch(e){ alert('❌ Connexion impossible\n\n'+e.message+'\n\nÀ vérifier : déploiement « Application Web » en accès « Tout le monde », et URL terminant par /exec.'); }
@@ -1731,6 +1779,10 @@ function genererDocument(){
       const refn=document.getElementById('ref-num'); if(refn&&numero) refn.value=numero;
       gbLoadPartners(); // mémorise le partenaire pour la prochaine fois
       alert('✅ Enregistré\nN° '+numero+'\nStatut : '+statut+(driveUrl?'\n📄 PDF rangé dans le Drive ✔':'\n(données seules, sans PDF)'));
+      // Envoi proposé si une adresse email est renseignée
+      if(gbClientEmail() && pdf && pdf.b64){
+        try{ await gbSendCurrent(pdf); }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
+      }
     }catch(e){ alert('❌ Enregistrement impossible\n'+e.message); }
   };
 
