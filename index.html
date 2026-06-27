@@ -42,6 +42,7 @@ body{font-family:'Cormorant Garamond',Georgia,serif;background:#e8e0d0;min-heigh
 .field-label{color:var(--text-light);font-size:10px;min-width:85px;flex-shrink:0}
 .field-value{border:none;border-bottom:1px dashed var(--border);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--text);flex:1;padding:1px 4px;outline:none}
 .field-value:focus{border-bottom-color:var(--navy);background:rgba(61,26,53,.04)}
+textarea.field-value{resize:none;overflow:hidden;line-height:1.4;min-height:1.4em;white-space:pre-wrap;word-break:break-word}
 .field-select{border:none;border-bottom:1px dashed var(--border);background:transparent;font-family:'Cormorant Garamond',serif;font-size:12px;color:var(--text);flex:1;padding:1px 4px;outline:none;cursor:pointer}
 .section-title{font-family:'Playfair Display',serif;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:4px;margin:16px 0 10px;font-weight:700}
 .mode-bar{background:linear-gradient(90deg,var(--navy),#5a1a4a);padding:9px 14px;border-radius:4px;margin-bottom:14px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
@@ -230,7 +231,7 @@ body.lang-fr [data-en]{display:none!important}
       <option value="facture">🧾 Facture</option>
       <option value="recu">🧾 Reçu</option>
     </select>
-    <select id="gb-statut" class="ctrl-btn" style="padding:8px 10px;cursor:pointer" title="Statut du document">
+    <select id="gb-statut" class="ctrl-btn" style="padding:8px 10px;cursor:pointer" title="Statut du document" onchange="gbStatutChange(this.value)">
       <option>Brouillon</option>
       <option>Envoyé</option>
       <option>Acompte reçu</option>
@@ -240,7 +241,6 @@ body.lang-fr [data-en]{display:none!important}
     <button class="ctrl-btn" onclick="gbEnregistrer()" title="Attribue un numéro auto et enregistre dans le registre">💾 Enregistrer</button>
     <button class="ctrl-btn" onclick="gbOuvrirListe()" title="Rouvrir / modifier un document existant">📂 Mes documents</button>
     <button class="ctrl-btn" onclick="gbEnvoyer()" title="Envoyer le document par email au client">📧 Envoyer</button>
-    <button class="ctrl-btn" onclick="gbTestConnexion()" title="Vérifier la liaison Google">🔌 Test</button>
   </div>
 </div>
 
@@ -280,12 +280,12 @@ body.lang-fr [data-en]{display:none!important}
       <div class="info-box">
         <h3 data-fr>Informations Client / Agence</h3>
         <h3 data-en>Client / Agency Information</h3>
-        <div class="field-row"><span class="field-label" data-fr>Société</span><span class="field-label" data-en>Company</span><input class="field-value" placeholder="…"></div>
-        <div class="field-row"><span class="field-label">Contact</span><input class="field-value" id="inp-contact" placeholder="…"></div>
-        <div class="field-row"><span class="field-label">Email</span><input class="field-value" type="email" placeholder="…"></div>
-        <div class="field-row"><span class="field-label" data-fr>Téléphone</span><span class="field-label" data-en>Phone</span><input class="field-value" placeholder="…"></div>
-        <div class="field-row"><span class="field-label" data-fr>Adresse</span><span class="field-label" data-en>Address</span><input class="field-value" placeholder="…"></div>
-        <div class="field-row"><span class="field-label">ICE / TVA</span><input class="field-value" placeholder="…"></div>
+        <div class="field-row"><span class="field-label" data-fr>Société</span><span class="field-label" data-en>Company</span><textarea class="field-value" placeholder="…" rows="1"></textarea></div>
+        <div class="field-row"><span class="field-label">Contact</span><textarea class="field-value" id="inp-contact" placeholder="…" rows="1"></textarea></div>
+        <div class="field-row"><span class="field-label">Email</span><textarea class="field-value" placeholder="…" rows="1"></textarea></div>
+        <div class="field-row"><span class="field-label" data-fr>Téléphone</span><span class="field-label" data-en>Phone</span><textarea class="field-value" placeholder="…" rows="1"></textarea></div>
+        <div class="field-row"><span class="field-label" data-fr>Adresse</span><span class="field-label" data-en>Address</span><textarea class="field-value" placeholder="…" rows="1"></textarea></div>
+        <div class="field-row"><span class="field-label">ICE / TVA</span><textarea class="field-value" placeholder="…" rows="1"></textarea></div>
       </div>
       <div class="info-box">
         <h3 data-fr>Détails de la Prestation</h3>
@@ -343,8 +343,8 @@ body.lang-fr [data-en]{display:none!important}
 <option value="23:30">23:30</option></select>
         </div>
         <div class="field-row"><span class="field-label" data-fr>Nb. convives</span><span class="field-label" data-en>Guests</span><input class="field-value" id="nb-convives" placeholder="0" oninput="recalc()"></div>
-        <div class="field-row"><span class="field-label" data-fr>Espace</span><span class="field-label" data-en>Venue</span><input class="field-value" placeholder="Salle / Rooftop / Privatisation"></div>
-        <div class="field-row"><span class="field-label" data-fr>Référence</span><span class="field-label" data-en>Reference</span><input class="field-value" placeholder="Voucher / Dossier…"></div>
+        <div class="field-row"><span class="field-label" data-fr>Espace</span><span class="field-label" data-en>Venue</span><textarea class="field-value" placeholder="Salle / Rooftop / Privatisation" rows="1"></textarea></div>
+        <div class="field-row"><span class="field-label" data-fr>Référence</span><span class="field-label" data-en>Reference</span><textarea class="field-value" placeholder="Voucher / Dossier…" rows="1"></textarea></div>
         <div class="field-row" id="guide-field-row"><span class="field-label" data-fr>Guide</span><span class="field-label" data-en>Guide</span>
           <select class="field-select" id="guide-statut" onchange="updateGuide()">
             <option value="">— Sélectionner —</option>
@@ -479,12 +479,10 @@ body.lang-fr [data-en]{display:none!important}
       </div>
 
       <div class="carte-section" id="sec-plats">
-        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-trad')">— 🍽 Plats Traditionnels —</div>
-        <div class="bar-accordion-body" id="acc-trad">
         <!-- Accompagnements multi avec compteur -->
         <div style="padding:10px 12px;background:rgba(201,168,76,.08);border:1px dashed var(--gold);margin:6px 0;border-radius:3px;" class="screen-only">
-          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-fr>🥗 Accompagnements — nombre par option</div>
-          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-en>🥗 Side dishes — quantity per option</div>
+          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-fr>🥗 Accompagnements (plats traditionnels &amp; internationaux) — nombre par option</div>
+          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-en>🥗 Side dishes (traditional &amp; international mains) — quantity per option</div>
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center">
             <div>
               <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Légumes</div>
@@ -519,6 +517,9 @@ body.lang-fr [data-en]{display:none!important}
           <div id="accomp-note" style="font-size:10px;color:var(--text-light);font-style:italic;margin-top:6px"></div>
         </div>
         <div id="accomp-print" style="font-size:11px;color:var(--text-light);padding:4px 12px;font-style:italic;display:none"></div>
+        <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-trad')">— 🍽 Plats Traditionnels —</div>
+        <div class="bar-accordion-body" id="acc-trad">
+
 
 <div class="carte-item" data-id="p1" data-prix="110" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Pastilla au Poulet</strong><strong data-en>Chicken Pastilla</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">110 DH</div></div>
 <div class="carte-item" data-id="p2" data-prix="120" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Tajine Végétarien</strong><strong data-en>Vegetarian Tajine</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">120 DH</div></div>
@@ -962,6 +963,8 @@ body.lang-fr [data-en]{display:none!important}
         <tr class="reste-row"><td data-fr>Reste à régler</td><td data-en>Balance due</td><td id="reste">— DH</td></tr>
       </table>
     </div><!-- /totaux-block -->
+
+    <div id="gb-arrete" style="display:none;margin:6px 0 18px;padding:11px 16px;border:1.5px solid var(--gold);background:var(--cream);font-family:'Cormorant Garamond',serif;font-size:13px;color:var(--text);font-style:italic;text-align:justify"></div>
 
     <!-- RÉGIMES ALIMENTAIRES -->
     <div class="regimes-box">
@@ -1422,7 +1425,12 @@ function genererDocument(){
   const accOpts=[{id:'acc-legumes',fr:'Légumes',en:'Vegetables'},{id:'acc-semoule',fr:'Semoule',en:'Semolina'},{id:'acc-salade',fr:'Salade verte',en:'Green salad'},{id:'acc-puree',fr:'Purée',en:'Mashed potato'},{id:'acc-frites',fr:'Frites',en:'Fries'}];
   const accLines=[];accOpts.forEach(o=>{const v=parseInt(document.getElementById(o.id)?.value)||0;if(v>0)accLines.push(`${v} ${isFr?o.fr:o.en}`);});
   const accStr=accLines.join(' + ');
-  if(bF)bF.innerHTML=`<tr class="cat-row"><td colspan="4">${isFr?'🍽 Menu Fixe Groupe':'🍽 Fixed Group Menu'}</td></tr><tr><td><strong>Menu ${m.id}</strong></td><td class="r"><strong>${prix.toLocaleString('fr-FR')} DH</strong></td><td class="r"><strong>${nb}</strong></td><td class="r total-cell"><strong>${total.toLocaleString('fr-FR')} DH</strong></td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Entrée':'Starter'} : ${isFr?m.entree_fr:m.entree_en}</td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Plat':'Main'} : ${isFr?m.plat_fr:m.plat_en}${accStr?' ('+accStr+')':''}</td></tr><tr class="detail-row"><td colspan="4">↳ Dessert : ${isFr?m.dessert_fr:m.dessert_en}</td></tr>`;}
+  const accSel=document.querySelector('.menu-accompagnement[data-menu="'+selMenu+'"]');
+  const accChoice=accSel?String(accSel.value||'').trim():'';
+  const platTxt=(isFr?m.plat_fr:m.plat_en).replace(/\s*\([^)]*\)\s*$/,'');
+  let accDisplay=accChoice;
+  if(accStr) accDisplay=accDisplay?(accDisplay+' + '+accStr):accStr;
+  if(bF)bF.innerHTML=`<tr class="cat-row"><td colspan="4">${isFr?'🍽 Menu Fixe Groupe':'🍽 Fixed Group Menu'}</td></tr><tr><td><strong>Menu ${m.id}</strong></td><td class="r"><strong>${prix.toLocaleString('fr-FR')} DH</strong></td><td class="r"><strong>${nb}</strong></td><td class="r total-cell"><strong>${total.toLocaleString('fr-FR')} DH</strong></td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Entrée':'Starter'} : ${isFr?m.entree_fr:m.entree_en}</td></tr><tr class="detail-row"><td colspan="4">↳ ${isFr?'Plat':'Main'} : ${platTxt}${accDisplay?' ('+accDisplay+')':''}</td></tr><tr class="detail-row"><td colspan="4">↳ Dessert : ${isFr?m.dessert_fr:m.dessert_en}</td></tr>`;}
   // Recap carte
   const bC=document.getElementById('recap-carte-body');if(bC)bC.innerHTML='';
   if(bC&&mode==='carte'){[{label:isFr?'🍢 Tapas':'🍢 Tapas',id:'sec-tapas'},{label:isFr?'🥗 Entrées':'🥗 Starters',id:'sec-entrees'},{label:isFr?'🍽 Plats':'🍽 Main Courses',id:'sec-plats'},{label:isFr?'🍮 Desserts':'🍮 Desserts',id:'sec-desserts'}].forEach(sec=>{const items=[];document.querySelectorAll(`#${sec.id} .carte-item.selected`).forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';const gMsg=item.querySelector('.gateau-message')?.value||'';
@@ -1506,16 +1514,103 @@ function genererDocument(){
             facture:{fr:'Facture',en:'Invoice'},
             recu:{fr:'Reçu',en:'Receipt'} };
     var t=T[type]||T.proforma;
-    var band=document.querySelector('.title-band'); if(!band) return;
-    var hFr=band.querySelector('h1[data-fr]'), hEn=band.querySelector('h1[data-en]');
-    if(hFr) hFr.textContent=t.fr;
-    if(hEn) hEn.textContent=t.en;
+    var band=document.querySelector('.title-band');
+    if(band){
+      var hFr=band.querySelector('h1[data-fr]'), hEn=band.querySelector('h1[data-en]');
+      if(hFr) hFr.textContent=t.fr;
+      if(hEn) hEn.textContent=t.en;
+    }
+    gbApplyTypeVisibility(type);
   };
+
+  // ── Montant en toutes lettres (français) ──────────────────────
+  function gbEnLettres(n){
+    n=Math.floor(n);
+    if(n===0) return 'zéro';
+    var u=['','un','deux','trois','quatre','cinq','six','sept','huit','neuf','dix','onze','douze','treize','quatorze','quinze','seize','dix-sept','dix-huit','dix-neuf'];
+    var d=['','','vingt','trente','quarante','cinquante','soixante','','quatre-vingt',''];
+    function b100(x){
+      if(x<20) return u[x];
+      var diz=Math.floor(x/10), uni=x%10;
+      if(diz===7) return (uni===1?'soixante et onze':'soixante-'+u[10+uni]);
+      if(diz===9) return 'quatre-vingt-'+u[10+uni];
+      var mot=d[diz];
+      if(uni===0) return (diz===8?'quatre-vingts':mot);
+      if(uni===1 && diz>=2 && diz<=6) return mot+' et un';
+      return mot+'-'+u[uni];
+    }
+    function b1000(x){
+      var c=Math.floor(x/100), r=x%100, s='';
+      if(c>0){ s=(c===1?'cent':u[c]+' cent'); if(r===0 && c>1) s+='s'; }
+      if(r>0) s+=(s?' ':'')+b100(r);
+      return s;
+    }
+    var parts=[];
+    var md=Math.floor(n/1000000000); n%=1000000000;
+    var mi=Math.floor(n/1000000);    n%=1000000;
+    var ml=Math.floor(n/1000);       n%=1000;
+    if(md>0) parts.push(b1000(md)+' milliard'+(md>1?'s':''));
+    if(mi>0) parts.push(b1000(mi)+' million'+(mi>1?'s':''));
+    if(ml>0) parts.push(ml===1?'mille':b1000(ml)+' mille');
+    if(n>0)  parts.push(b1000(n));
+    return parts.join(' ').trim();
+  }
+
+  function gbArreteText(ttc){
+    var dh=Math.floor(ttc), cts=Math.round((ttc-dh)*100);
+    var s='Arrêté la présente facture à la somme de '+gbEnLettres(dh)+' dirham'+(dh>1?'s':'')+' marocain'+(dh>1?'s':'');
+    if(cts>0) s+=' et '+gbEnLettres(cts)+' centime'+(cts>1?'s':'');
+    s+=' toutes taxes comprises.';
+    return s;
+  }
+
+  // Masque un bloc + ses libellés (section-title) qui le précèdent
+  function gbHideWithLabels(el, hide){
+    if(!el) return;
+    function set(node){ if(hide) node.style.setProperty('display','none','important'); else node.style.removeProperty('display'); }
+    var p=el.previousElementSibling;
+    while(p && p.classList && p.classList.contains('section-title')){ set(p); p=p.previousElementSibling; }
+    set(el);
+  }
+
+  // Affiche/masque les blocs selon le type ; facture = épurée + mention légale
+  function gbApplyTypeVisibility(type){
+    var facture=(type==='facture');
+    gbHideWithLabels(document.querySelector('.regimes-box'), facture);   // régimes
+    gbHideWithLabels(document.querySelector('.notes-area'),  facture);   // observations
+    gbHideWithLabels(document.querySelector('.reglement-box'), facture); // mode de règlement (titres + sélecteur)
+    document.body.classList.toggle('gb-facture', facture); // masque .regl-bloc via CSS (sans toucher leur état inline)
+    gbHideWithLabels(document.querySelector('.cgv-section'), facture);   // CGV
+    gbHideWithLabels(document.querySelector('.signatures'), facture);    // bloc signature / bon pour accord
+    // Mention « Arrêté la présente facture… » (factures uniquement)
+    var box=document.getElementById('gb-arrete');
+    if(box){
+      if(facture){
+        var ttc=gbNum((document.getElementById('ttc')||{}).textContent);
+        box.textContent=gbArreteText(ttc);
+        box.style.setProperty('display','block','important');
+      }else{
+        box.style.setProperty('display','none','important');
+      }
+    }
+  }
   // Appliquer au chargement selon la valeur par défaut du sélecteur
   document.addEventListener('DOMContentLoaded',function(){
+    gbInjectCaptureStyle();
     var dt=document.getElementById('gb-doctype'); if(dt) window.gbSetTitleByType(dt.value);
+    gbInitAutoGrow();
     gbLoadPartners();
   });
+
+  // ── Champs texte auto-extensibles (plusieurs lignes) ──────────
+  function gbAutoGrow(el){ if(!el) return; el.style.height='auto'; el.style.height=(el.scrollHeight)+'px'; }
+  function gbGrowAll(){ document.querySelectorAll('textarea.field-value').forEach(gbAutoGrow); }
+  function gbInitAutoGrow(){
+    document.querySelectorAll('textarea.field-value').forEach(function(t){
+      t.addEventListener('input',function(){ gbAutoGrow(t); });
+      gbAutoGrow(t);
+    });
+  }
 
   // ── Mémoire partenaires (depuis l'historique des documents) ────
   async function gbLoadPartners(){
@@ -1534,6 +1629,28 @@ function genererDocument(){
     }catch(e){ /* silencieux : pas de partenaires si le moteur ne répond pas */ }
   }
 
+  // ── Statut → mise à jour acompte / solde ──────────────────────
+  window.gbStatutChange=function(statut){
+    if(typeof recalc==='function') recalc();
+    var dv=document.getElementById('deja-verse'); if(!dv) return;
+    if(statut==='Acompte reçu'){
+      var acompte=gbNum((document.getElementById('acompte')||{}).textContent); // 50% par défaut
+      var def=acompte?String(Math.round(acompte)):'';
+      var val=prompt('Montant de l\'acompte reçu (DH) :\n(par défaut 50 % = '+def+' DH — modifiable)', def);
+      if(val===null) return; // annulé : on ne touche à rien
+      dv.value=(parseFloat(String(val).replace(',','.'))||0);
+      if(typeof recalc==='function') recalc();
+      var reste=(document.getElementById('reste')||{}).textContent||'';
+      alert('✅ Acompte reçu : '+dv.value+' DH\nReste à régler : '+reste+'\n\nClique 💾 Enregistrer pour mettre à jour le document et le PDF.');
+    } else if(statut==='Soldé'){
+      if(confirm('Marquer comme soldé ?\nLe « déjà versé » passera au total TTC (reste à régler = 0).')){
+        var ttc=gbNum((document.getElementById('ttc')||{}).textContent);
+        dv.value=Math.round(ttc);
+        if(typeof recalc==='function') recalc();
+      }
+    }
+  };
+
   window.gbPickPartner=async function(id){
     if(!id) return;
     try{
@@ -1544,6 +1661,7 @@ function genererDocument(){
       const els=box.querySelectorAll('.field-value'); // [Société, Contact, Email, Tél, Adresse, ICE]
       for(var i=0;i<els.length;i++){ if(fd.fields[i]!=null) els[i].value=fd.fields[i]; }
       const c=document.getElementById('inp-contact'); if(c&&fd.byId&&fd.byId['inp-contact']!=null) c.value=fd.byId['inp-contact'];
+      gbGrowAll();
       // c'est un NOUVEAU document pour ce partenaire
       window.GB_currentId=null;
       const sel=document.getElementById('gb-partner'); if(sel) sel.value='';
@@ -1616,6 +1734,7 @@ function genererDocument(){
     if(fd.accomp) Object.keys(fd.accomp).forEach(k=>{ const s=document.querySelector('.menu-accompagnement[data-menu="'+k+'"]'); if(s) s.value=fd.accomp[k]; });
     if(fd.byId) Object.keys(fd.byId).forEach(id=>{ const el=document.getElementById(id); if(el&&fd.byId[id]!=null) el.value=fd.byId[id]; });
     if(fd.fields){ const els=document.querySelectorAll('.info-box .field-value'); fd.fields.forEach((v,i)=>{ if(els[i]&&v!=null) els[i].value=v; }); }
+    gbGrowAll();
     if(fd.items){ document.querySelectorAll('.carte-item[data-id],.bar-item[data-id]').forEach(el=>{
       const it=fd.items[el.dataset.id]; if(!it) return;
       el.classList.toggle('selected',!!it.s);
@@ -1708,6 +1827,8 @@ function genererDocument(){
       +'.gb-capturing #bloc-guide button,.gb-capturing #nb-guides-display,.gb-capturing #guides-container,.gb-capturing #guide-panel-fixe-global,.gb-capturing #guide-panel-carte-global,.gb-capturing #bloc-guide label,.gb-capturing #bloc-guide select,.gb-capturing #bloc-guide input[type="text"]{display:none!important}'
       +'.gb-capturing .regl-bloc{display:none!important}'
       +'.gb-capturing .regl-bloc.active-regl{display:block!important}'
+      +'body.gb-facture .regl-bloc{display:none!important}'
+      +'body.gb-facture.gb-capturing .regl-bloc{display:none!important}'
       +'.gb-capturing .header{background:#3d1a35!important}'
       +'.gb-capturing .title-band{background:#c9a84c!important}'
       +'.gb-capturing .doc-footer{background:#3d1a35!important}'
@@ -1728,6 +1849,8 @@ function genererDocument(){
     var realPrint=window.print; window.print=function(){};
     try{ if(typeof genererDocument==='function') genererDocument(); }catch(e){}
     window.print=realPrint;
+    // Réapplique le masquage facture + le montant en lettres à jour (après recalcul de genererDocument)
+    try{ gbApplyTypeVisibility((document.getElementById('gb-doctype')||{}).value||'proforma'); }catch(e){}
     var fileBase=(document.title||'').trim();
     try{ if(document.fonts&&document.fonts.ready) await document.fonts.ready; }catch(e){}
     document.body.classList.add('gb-capturing');
@@ -1824,7 +1947,8 @@ function genererDocument(){
     m.innerHTML='<div style="background:#fff;max-width:780px;width:93%;max-height:82vh;overflow:auto;border-radius:8px;padding:16px;box-shadow:0 8px 40px rgba(0,0,0,.3)">'
       +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">'
       +'<strong style="font-size:16px">📂 Mes documents</strong>'
-      +'<span><button onclick="gbNouveau()" style="margin-right:8px;padding:6px 12px;cursor:pointer">🆕 Nouveau</button>'
+      +'<span><button onclick="gbTestConnexion()" style="margin-right:8px;padding:6px 12px;cursor:pointer;font-size:11px;color:#888" title="Vérifier la liaison Google">🔌 Test connexion</button>'
+      +'<button onclick="gbNouveau()" style="margin-right:8px;padding:6px 12px;cursor:pointer">🆕 Nouveau</button>'
       +'<button onclick="gbCloseModal()" style="padding:6px 12px;cursor:pointer">✕ Fermer</button></span></div>'
       +'<table style="width:100%;border-collapse:collapse;font-size:13px">'
       +'<tr style="background:#f5f5f5;text-align:left"><th style="padding:8px 10px">N°</th><th style="padding:8px 10px">Type</th><th style="padding:8px 10px">Client</th><th style="padding:8px 10px">TTC</th><th style="padding:8px 10px">Statut</th><th style="padding:8px 10px">MAJ</th></tr>'
