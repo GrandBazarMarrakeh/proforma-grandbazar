@@ -1627,7 +1627,7 @@ function genererDocument(){
   ['sec-entrees','sec-tapas','sec-plats','sec-desserts'].forEach(id=>{const s=document.getElementById(id);if(!s)return;s.classList.toggle('hide-print',s.querySelectorAll('.carte-item.selected').length===0);});
   const hasIntl=document.querySelectorAll('#sec-plats .carte-item[data-id^="pi"].selected').length>0;
   document.querySelectorAll('.intl-title').forEach(t=>t.classList.toggle('hide-print',!hasIntl));
-  const hasBar=document.querySelectorAll('#sec-bar .bar-item.selected').length>0;
+  const hasBar=document.querySelectorAll('#sec-bar .bar-item.selected, #sec-bar .carte-item.selected').length>0;
   document.getElementById('sec-bar')?.classList.toggle('hide-print',!hasBar);
   const hasOpenBar=document.querySelectorAll('#sec-bar .bar-item[data-is-openbar].selected').length>0;
   document.querySelectorAll('.openbar-title').forEach(t=>t.classList.toggle('hide-print',!hasOpenBar));
