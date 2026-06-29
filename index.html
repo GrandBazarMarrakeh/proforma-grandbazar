@@ -1629,6 +1629,8 @@ function genererDocument(){
   document.querySelectorAll('.intl-title').forEach(t=>t.classList.toggle('hide-print',!hasIntl));
   const hasBar=document.querySelectorAll('#sec-bar .bar-item.selected, #sec-bar .carte-item.selected').length>0;
   document.getElementById('sec-bar')?.classList.toggle('hide-print',!hasBar);
+  const guideVal=document.getElementById('guide-statut')?.value||'';
+  document.getElementById('guide-field-row')?.classList.toggle('hide-print',guideVal==='');
   const hasOpenBar=document.querySelectorAll('#sec-bar .bar-item[data-is-openbar].selected').length>0;
   document.querySelectorAll('.openbar-title').forEach(t=>t.classList.toggle('hide-print',!hasOpenBar));
   const hasAnim=document.querySelectorAll('#sec-anim .bar-item.selected').length>0;
