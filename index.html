@@ -1198,7 +1198,7 @@ body.lang-fr [data-en]{display:none!important}
       </div>
       <div class="regime-detail">
         <label data-fr>Précisions / allergènes à détailler :</label><label data-en>Details / allergens to specify:</label>
-        <textarea placeholder="Ex: 2 personnes végétariennes, 1 allergie aux noix…"></textarea>
+        <textarea id="regime-detail" placeholder="Ex: 2 personnes végétariennes, 1 allergie aux noix…"></textarea>
       </div>
       <div class="regime-note" data-fr>⚠ À transmettre <strong>72h avant</strong> la prestation — passé ce délai le restaurant ne peut garantir la prise en compte des régimes spéciaux. Tous nos plats peuvent être préparés <strong>sans porc</strong> et avec <strong>viande halal</strong> sur demande.</div>
       <div class="regime-note" data-en>⚠ Must be sent <strong>72h before</strong> — after this the restaurant cannot guarantee special arrangements. All dishes can be prepared <strong>pork-free</strong> and with <strong>halal meat</strong> on request.</div>
@@ -1920,12 +1920,23 @@ function genererDocument(){
     const societe=f[0]?f[0].value.trim():'';
     const contact=(document.getElementById('inp-contact')||{}).value||'';
     const pax=(document.getElementById('nb-convives')||{}).value||'';
+    const _txt=id=>((document.getElementById(id)||{}).value||'').trim();
+    const _recap=id=>{const b=document.getElementById(id);if(!b)return'';return Array.from(b.querySelectorAll('tr')).map(tr=>tr.textContent.replace(/\s+/g,' ').trim()).filter(Boolean).join(' | ');};
     return {
       client:societe,
       contact:String(contact).trim(),
       pax:pax,
       montant:gbNum((document.getElementById('ttc')||{}).textContent),
-      acompte:gbNum((document.getElementById('acompte')||{}).textContent)
+      acompte:gbNum((document.getElementById('acompte')||{}).textContent),
+      dejaVerse:gbNum(_txt('deja-verse')),
+      dateP:_txt('inp-date-prestation'),
+      heure:_txt('inp-heure'),
+      email:(f[2]?f[2].value.trim():''),
+      telephone:(f[3]?f[3].value.trim():''),
+      espace:(f[8]?f[8].value.trim():''),
+      allergies:_txt('regime-detail'),
+      cuisineResume:(_recap('recap-fixe-body')+' '+_recap('recap-carte-body')).trim(),
+      barResume:_recap('recap-bar-body')
     };
   }
 
