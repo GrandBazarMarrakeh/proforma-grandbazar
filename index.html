@@ -1921,7 +1921,7 @@ function genererDocument(){
     const contact=(document.getElementById('inp-contact')||{}).value||'';
     const pax=(document.getElementById('nb-convives')||{}).value||'';
     const _txt=id=>((document.getElementById(id)||{}).value||'').trim();
-    const _recap=id=>{const b=document.getElementById(id);if(!b)return'';return Array.from(b.querySelectorAll('tr')).map(tr=>tr.textContent.replace(/\s+/g,' ').trim()).filter(Boolean).join(' | ');};
+    const _recap=id=>{const b=document.getElementById(id);if(!b)return'';return Array.from(b.querySelectorAll('tr')).map(tr=>Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.replace(/\s+/g,' ').trim()).filter(Boolean).join(' ')).filter(Boolean).join(' | ');};
     return {
       client:societe,
       contact:String(contact).trim(),
@@ -1935,6 +1935,7 @@ function genererDocument(){
       telephone:(f[3]?f[3].value.trim():''),
       espace:(f[8]?f[8].value.trim():''),
       allergies:_txt('regime-detail'),
+      observations:((document.querySelector('.notes-area textarea')||{}).value||'').trim(),
       cuisineResume:(_recap('recap-fixe-body')+' '+_recap('recap-carte-body')).trim(),
       barResume:_recap('recap-bar-body')
     };
