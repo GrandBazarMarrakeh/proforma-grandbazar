@@ -203,6 +203,15 @@ body.lang-fr [data-en]{display:none!important}
 .bar-accordion.open::after{transform:rotate(90deg)}
 .bar-accordion-body{display:none}
 .bar-accordion-body.open{display:block}
+
+/* ── Facture directe (sans détail) ── */
+body.gb-directe-mode .mode-bar,
+body.gb-directe-mode #block-fixe,
+body.gb-directe-mode #block-carte,
+body.gb-directe-mode #sec-bar,
+body.gb-directe-mode #sec-anim,
+body.gb-directe-mode #bloc-guide{display:none!important}
+body.gb-directe-mode #directe-block{display:block!important}
 </style>
 </head>
 <body class="lang-fr">
@@ -231,6 +240,9 @@ body.lang-fr [data-en]{display:none!important}
       <option value="facture">🧾 Facture</option>
       <option value="recu">🧾 Reçu</option>
     </select>
+    <label id="gb-directe-wrap" style="display:none;align-items:center;gap:5px;font-size:11.5px;cursor:pointer;padding:0 6px;border:1px solid var(--border);border-radius:3px;background:white" title="Facture/reçu sans détail : désignation libre + montant global, sans sélection plat par plat">
+      <input type="checkbox" id="gb-directe" onchange="gbToggleDirecte(this.checked)"> 🧾 Sans détail
+    </label>
     <select id="gb-statut" class="ctrl-btn" style="padding:8px 10px;cursor:pointer" title="Statut du document" onchange="gbStatutChange(this.value)">
       <option>Brouillon</option>
       <option>Envoyé</option>
@@ -370,6 +382,28 @@ body.lang-fr [data-en]{display:none!important}
         <button class="mode-btn screen-only" id="mb-carte" onclick="setMode('carte')" data-fr>🧾 À la Carte</button>
         <button class="mode-btn screen-only" id="mb-carte-en" onclick="setMode('carte')" data-en>🧾 À la Carte</button>
       </div>
+    </div>
+
+    <!-- ══ FACTURE DIRECTE (sans détail) ══ -->
+    <div id="directe-block" style="display:none">
+      <div class="screen-only" style="border:1.5px solid var(--gold);border-radius:4px;padding:12px 14px;background:var(--cream);margin-bottom:10px">
+        <label style="display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:6px" data-fr>Désignation</label>
+        <label style="display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--navy);font-weight:700;margin-bottom:6px" data-en>Description</label>
+        <textarea id="directe-designation" rows="2" style="width:100%;font-family:'Cormorant Garamond',serif;font-size:13px;padding:6px;border:1px solid var(--border);border-radius:3px;resize:vertical" placeholder="Ex : Prestation restauration événement du 12/08/2026 — 40 couverts" oninput="recalc()"></textarea>
+        <label style="display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--navy);font-weight:700;margin:10px 0 6px" data-fr>Montant TTC</label>
+        <label style="display:block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--navy);font-weight:700;margin:10px 0 6px" data-en>Total incl. VAT</label>
+        <div style="display:flex;align-items:center;gap:6px">
+          <input type="number" id="directe-montant" min="0" step="0.01" value="0" style="font-family:'Cormorant Garamond',serif;font-size:14px;padding:6px 8px;border:1px solid var(--border);border-radius:3px;width:160px" oninput="recalc()"> <span>DH</span>
+        </div>
+      </div>
+      <table class="recap-table print-only-recap" id="recap-directe" style="table-layout:fixed">
+        <colgroup><col style="width:70%"><col style="width:30%"></colgroup>
+        <thead><tr>
+          <th data-fr>Désignation</th><th data-en>Description</th>
+          <th class="r" data-fr>Montant TTC</th><th class="r" data-en>Total incl. VAT</th>
+        </tr></thead>
+        <tbody id="recap-directe-body"></tbody>
+      </table>
     </div>
 
     <!-- ══ BLOC MENU FIXE ══ -->
@@ -1546,7 +1580,23 @@ function setSushiPrix(inp){
 function setPrix(inp){const item=inp.closest('.carte-item');if(item)item.dataset.prix=inp.value||'0';}
 function setPrixBar(inp){const item=inp.closest('.bar-item');if(item)item.dataset.prix=inp.value||'0';}
 function fmt(n){if(!n&&n!==0)return'— DH';return n.toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' DH';}
-function recalc(){let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'){
+function recalc(){
+  if(document.body.classList.contains('gb-directe-mode')){
+    const total=parseFloat(document.getElementById('directe-montant')?.value)||0;
+    const ht=total/1.1,tva=total-ht;
+    document.getElementById('ht').textContent=fmt(ht);
+    document.getElementById('tva').textContent=fmt(tva);
+    document.getElementById('ttc').textContent=fmt(total);
+    document.getElementById('acompte').textContent=fmt(total*0.5);
+    const dejaVerse=parseFloat(document.getElementById('deja-verse')?.value)||0;
+    const soldeAnt=parseFloat(document.getElementById('solde-anterieur')?.value)||0;
+    const reste=total-dejaVerse+soldeAnt;
+    document.getElementById('reste').textContent=fmt(reste>0?reste:0);
+    const acompteVal=document.getElementById('acompte').textContent;
+    ['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=acompteVal;});
+    return;
+  }
+  let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'){
     // Items cuisine (seulement en mode à la carte)
     document.querySelectorAll('#block-carte .carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});
   }
@@ -1663,6 +1713,14 @@ function genererDocument(){
   // Recap anim
   const bA=document.getElementById('recap-anim-body');if(bA)bA.innerHTML='';
   document.querySelectorAll('#sec-anim .bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`.bar-item-name[data-${lang}]`)||item.querySelector('.bar-item-name'))?.textContent||'';if(bA)bA.innerHTML+=`<tr><td><strong>${name}</strong></td><td class="r">${prix>0?prix.toLocaleString('fr-FR')+' DH':'—'}</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${prix>0?(prix*qty).toLocaleString('fr-FR')+' DH':'—'}</strong></td></tr>`;});
+  // Recap facture directe (sans détail)
+  const bD=document.getElementById('recap-directe-body');if(bD)bD.innerHTML='';
+  if(document.body.classList.contains('gb-directe-mode')&&bD){
+    const desig=((document.getElementById('directe-designation')||{}).value||'').trim();
+    const mont=parseFloat(document.getElementById('directe-montant')?.value)||0;
+    const desigHtml=(desig?desig.replace(/\n/g,'<br>'):(isFr?'Prestation':'Service'));
+    bD.innerHTML=`<tr><td>${desigHtml}</td><td class="r"><strong>${mont.toLocaleString('fr-FR')} DH</strong></td></tr>`;
+  }
   // ── Note automatique régimes dans observations ──
   const obsTA = document.querySelector('.notes-area textarea');
   if(obsTA && obsTA.value.trim()===''){
@@ -1791,9 +1849,21 @@ function genererDocument(){
     set(el);
   }
 
+  // ── Facture directe (sans détail plat par plat) ──────────────
+  window.gbToggleDirecte=function(on){
+    document.body.classList.toggle('gb-directe-mode', !!on);
+    var chk=document.getElementById('gb-directe'); if(chk) chk.checked=!!on;
+    if(typeof recalc==='function') recalc();
+  };
+
   // Affiche/masque les blocs selon le type ; facture = épurée + mention légale
   function gbApplyTypeVisibility(type){
     var facture=(type==='facture');
+    // Mode "Sans détail" : uniquement pertinent pour Facture / Reçu
+    var directeApplicable=(type==='facture'||type==='recu');
+    var dwrap=document.getElementById('gb-directe-wrap');
+    if(dwrap) dwrap.style.display=directeApplicable?'inline-flex':'none';
+    if(!directeApplicable) window.gbToggleDirecte(false);
     gbHideWithLabels(document.querySelector('.regimes-box'), facture);   // régimes
     gbHideWithLabels(document.querySelector('.notes-area'),  facture);   // observations
     gbHideWithLabels(document.querySelector('.reglement-box'), facture); // mode de règlement (titres + sélecteur)
@@ -1953,7 +2023,7 @@ function genererDocument(){
     document.querySelectorAll('.menu-accompagnement[data-menu]').forEach(s=>{ fd.accomp[s.dataset.menu]=s.value; });
     const cr=document.querySelector('input[name="reglement"]:checked'); fd.reglement=cr?cr.value:null;
     const obs=document.querySelector('.notes-area textarea'); fd.observations=obs?obs.value:null;
-    try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,nbGuides:nbGuides}; }catch(e){ fd.globals={}; }
+    try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,nbGuides:nbGuides,directe:document.body.classList.contains('gb-directe-mode')}; }catch(e){ fd.globals={}; }
     return fd;
   }
 
@@ -1966,6 +2036,7 @@ function genererDocument(){
     try{ if(typeof g.selMenu!=='undefined') selMenu=g.selMenu; }catch(e){}
     if(g.mode&&typeof setMode==='function') setMode(g.mode);
     if(typeof buildMenuCards==='function') buildMenuCards();
+    if(typeof g.directe!=='undefined' && typeof window.gbToggleDirecte==='function') window.gbToggleDirecte(!!g.directe);
     if(fd.accomp) Object.keys(fd.accomp).forEach(k=>{ const s=document.querySelector('.menu-accompagnement[data-menu="'+k+'"]'); if(s) s.value=fd.accomp[k]; });
     if(fd.byId) Object.keys(fd.byId).forEach(id=>{ const el=document.getElementById(id); if(el&&fd.byId[id]!=null) el.value=fd.byId[id]; });
     if(fd.fields){ const els=document.querySelectorAll('.info-box .field-value'); fd.fields.forEach((v,i)=>{ if(els[i]&&v!=null) els[i].value=v; }); }
