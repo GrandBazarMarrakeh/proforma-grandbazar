@@ -2184,6 +2184,8 @@ function genererDocument(){
   window.gbEnregistrer=async function(){
     try{
       if(typeof recalc==='function') recalc();
+      // Construit les tableaux récap (cuisine/bar) AVANT de lire gbMeta(), sinon cuisineResume/barResume partent vides
+      if(typeof genererDocument==='function') genererDocument();
       const type=(document.getElementById('gb-doctype')||{}).value||'proforma';
       const statut=(document.getElementById('gb-statut')||{}).value||'Brouillon';
       const meta=gbMeta();
@@ -2206,7 +2208,9 @@ function genererDocument(){
       catch(e){ alert('⚠️ Données enregistrées (N° '+(j?j.numero:'')+'), mais le PDF n\'a pas pu être généré : '+e.message); return; }
 
       // Phase 2 : joindre le PDF (et mettre à jour client/montant/statut)
-      const j2=await gbApi(Object.assign({action:'update',id:window.GB_currentId,type:type,statut:statut,formData:formData,pdfBase64:pdf.b64,fileBase:pdf.fileBase},meta));
+      // Relit cuisine/bar au cas où gbGeneratePdf() aurait reconstruit les récaps entre-temps
+      const meta2=gbMeta();
+      const j2=await gbApi(Object.assign({action:'update',id:window.GB_currentId,type:type,statut:statut,formData:formData,pdfBase64:pdf.b64,fileBase:pdf.fileBase},meta2));
       const numero=(j2&&j2.numero)||(j&&j.numero)||'';
       const driveUrl=(j2&&j2.driveUrl)||'';
       const refn=document.getElementById('ref-num'); if(refn&&numero) refn.value=numero;
