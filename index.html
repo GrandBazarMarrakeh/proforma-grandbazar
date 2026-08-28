@@ -1995,6 +1995,8 @@ function genererDocument(){
     const pax=(document.getElementById('nb-convives')||{}).value||'';
     const _txt=id=>((document.getElementById(id)||{}).value||'').trim();
     const _recap=id=>{const b=document.getElementById(id);if(!b)return'';return Array.from(b.querySelectorAll('tr')).map(tr=>Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.replace(/\s+/g,' ').trim()).filter(Boolean).join(' ')).filter(Boolean).join(' | ');};
+    const guideOffert=((document.getElementById('guide-statut')||{}).value||'')==='offert';
+    const guideBoissonVal=(document.querySelector('input[name="guide-boisson"]:checked')||{}).value||'';
     return {
       client:societe,
       contact:String(contact).trim(),
@@ -2010,8 +2012,8 @@ function genererDocument(){
       allergies:_txt('regime-detail'),
       observations:((document.querySelector('.notes-area textarea')||{}).value||'').trim(),
       modeReglement:_txt('mode-reglement'),
-      cuisineResume:(_recap('recap-fixe-body')+' '+_recap('recap-carte-body')).trim(),
-      barResume:_recap('recap-bar-body')
+      cuisineResume:(_recap('recap-fixe-body')+' '+_recap('recap-carte-body')+(guideOffert?' | 🎁 Repas guide : '+_recap('recap-guide-body'):'')).trim(),
+      barResume:(_recap('recap-bar-body')+(guideOffert&&guideBoissonVal?' | 🎁 Boisson guide : '+guideBoissonVal+' × '+nbGuides:'')).trim()
     };
   }
 
@@ -2184,8 +2186,13 @@ function genererDocument(){
   window.gbEnregistrer=async function(){
     try{
       if(typeof recalc==='function') recalc();
-      // Construit les tableaux récap (cuisine/bar) AVANT de lire gbMeta(), sinon cuisineResume/barResume partent vides
-      if(typeof genererDocument==='function') genererDocument();
+      // Construit les tableaux récap (cuisine/bar/guide) AVANT de lire gbMeta(), sinon cuisineResume/barResume partent vides
+      // (genererDocument() programme un window.print() 150ms plus tard → on neutralise le temps que ce délai passe)
+      if(typeof genererDocument==='function'){
+        var _realPrint=window.print; window.print=function(){};
+        try{ genererDocument(); }catch(e){}
+        setTimeout(function(){ window.print=_realPrint; }, 250);
+      }
       const type=(document.getElementById('gb-doctype')||{}).value||'proforma';
       const statut=(document.getElementById('gb-statut')||{}).value||'Brouillon';
       const meta=gbMeta();
