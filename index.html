@@ -1995,8 +1995,32 @@ function genererDocument(){
     const pax=(document.getElementById('nb-convives')||{}).value||'';
     const _txt=id=>((document.getElementById(id)||{}).value||'').trim();
     const _recap=id=>{const b=document.getElementById(id);if(!b)return'';return Array.from(b.querySelectorAll('tr')).map(tr=>Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.replace(/\s+/g,' ').trim()).filter(Boolean).join(' ')).filter(Boolean).join(' | ');};
-    const guideOffert=((document.getElementById('guide-statut')||{}).value||'')==='offert';
+    const guideOffert=((document.getElementById('guide-statut')||{}).value||'')==='offert' && nbGuides>0;
     const guideBoissonVal=(document.querySelector('input[name="guide-boisson"]:checked')||{}).value||'';
+    // Texte repas guide reconstruit depuis les champs sources (pas depuis le tableau récap, qui mélange aussi la boisson)
+    const _guideRepasTxt=()=>{
+      if(!guideOffert) return '';
+      const gType=(document.querySelector('input[name="guide-type-global"]:checked')||{}).value||'fixe';
+      const parts=[];
+      if(gType==='fixe'){
+        const val=(document.getElementById('guide-menu-global')||{}).value||'';
+        const p=val.split('|');
+        parts.push('Menu Fixe'+(p[0]?(' — '+p[0]):''));
+        if(p[1]) parts.push('Entrée : '+p[1]);
+        if(p[2]) parts.push('Plat : '+p[2]);
+        if(p[3]) parts.push('Dessert : '+p[3]);
+      }else{
+        const gE=_txt('guide-entree-global'), gP=_txt('guide-plat-global'), gD=_txt('guide-dessert-global');
+        parts.push('À la carte');
+        if(gE) parts.push('Entrée : '+gE);
+        if(gP) parts.push('Plat : '+gP);
+        if(gD) parts.push('Dessert : '+gD);
+      }
+      return parts.join(' | ')+' ('+nbGuides+' guide(s) — offert)';
+    };
+    const guideRepasTxt=_guideRepasTxt();
+    const cuisinePayant=(_recap('recap-fixe-body')+' '+_recap('recap-carte-body')).trim();
+    const barPayant=_recap('recap-bar-body').trim();
     return {
       client:societe,
       contact:String(contact).trim(),
@@ -2012,8 +2036,8 @@ function genererDocument(){
       allergies:_txt('regime-detail'),
       observations:((document.querySelector('.notes-area textarea')||{}).value||'').trim(),
       modeReglement:_txt('mode-reglement'),
-      cuisineResume:(_recap('recap-fixe-body')+' '+_recap('recap-carte-body')+(guideOffert?' | 🎁 Repas guide : '+_recap('recap-guide-body'):'')).trim(),
-      barResume:(_recap('recap-bar-body')+(guideOffert&&guideBoissonVal?' | 🎁 Boisson guide : '+guideBoissonVal+' × '+nbGuides:'')).trim()
+      cuisineResume:(cuisinePayant+(guideRepasTxt?'\n\n🎁 Repas guide (offert) :\n'+guideRepasTxt:'')).trim(),
+      barResume:(barPayant+(guideOffert&&guideBoissonVal?'\n\n🎁 Boisson guide (offerte) : '+guideBoissonVal+' × '+nbGuides:'')).trim()
     };
   }
 
@@ -2027,6 +2051,8 @@ function genererDocument(){
     });
     document.querySelectorAll('.menu-accompagnement[data-menu]').forEach(s=>{ fd.accomp[s.dataset.menu]=s.value; });
     const cr=document.querySelector('input[name="reglement"]:checked'); fd.reglement=cr?cr.value:null;
+    const gtg=document.querySelector('input[name="guide-type-global"]:checked'); fd.guideTypeGlobal=gtg?gtg.value:null;
+    const gbo=document.querySelector('input[name="guide-boisson"]:checked'); fd.guideBoisson=gbo?gbo.value:'';
     const obs=document.querySelector('.notes-area textarea'); fd.observations=obs?obs.value:null;
     try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,nbGuides:nbGuides,directe:document.body.classList.contains('gb-directe-mode')}; }catch(e){ fd.globals={}; }
     return fd;
@@ -2037,7 +2063,7 @@ function genererDocument(){
     const g=fd.globals||{};
     if(g.lang&&typeof setLang==='function') setLang(g.lang);
     if(g.tarif&&typeof setTarif==='function') setTarif(g.tarif);
-    try{ if(typeof g.nbGuides!=='undefined') nbGuides=g.nbGuides; }catch(e){}
+    try{ if(typeof g.nbGuides!=='undefined'){ nbGuides=g.nbGuides; const el=document.getElementById('nb-guides-display'); if(el) el.textContent=nbGuides; } }catch(e){}
     try{ if(typeof g.selMenu!=='undefined') selMenu=g.selMenu; }catch(e){}
     if(g.mode&&typeof setMode==='function') setMode(g.mode);
     if(typeof buildMenuCards==='function') buildMenuCards();
@@ -2054,6 +2080,9 @@ function genererDocument(){
       const gg=el.querySelector('.gateau-message'); if(gg&&it.g!=null) gg.value=it.g;
     }); }
     if(fd.reglement){ const r=document.querySelector('input[name="reglement"][value="'+fd.reglement+'"]'); if(r){ r.checked=true; if(typeof showReglement==='function') showReglement(fd.reglement);} }
+    if(fd.guideTypeGlobal){ const r=document.querySelector('input[name="guide-type-global"][value="'+fd.guideTypeGlobal+'"]'); if(r){ r.checked=true; } if(typeof onGuideTypeGlobal==='function') onGuideTypeGlobal(); }
+    if(typeof fd.guideBoisson==='string'){ const r=document.querySelector('input[name="guide-boisson"][value="'+fd.guideBoisson+'"]'); if(r) r.checked=true; }
+    if(typeof onGuideMenuGlobal==='function') onGuideMenuGlobal(); // réaffiche le détail (entrée/plat/dessert) du menu guide restauré
     if(fd.observations!=null){ const obs=document.querySelector('.notes-area textarea'); if(obs) obs.value=fd.observations; }
     try{ if(typeof updateGuide==='function') updateGuide(); }catch(e){}
     try{ if(typeof updateLienPaiement==='function') updateLienPaiement(); }catch(e){}
