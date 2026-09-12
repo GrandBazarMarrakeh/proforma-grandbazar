@@ -1901,9 +1901,10 @@ function genererDocument(){
 
   // ── Champs texte auto-extensibles (plusieurs lignes) ──────────
   function gbAutoGrow(el){ if(!el) return; el.style.height='auto'; el.style.height=(el.scrollHeight)+'px'; }
-  function gbGrowAll(){ document.querySelectorAll('textarea.field-value').forEach(gbAutoGrow); }
+  const GB_AUTOGROW_SEL='textarea.field-value, #regime-detail, .notes-area textarea';
+  function gbGrowAll(){ document.querySelectorAll(GB_AUTOGROW_SEL).forEach(gbAutoGrow); }
   function gbInitAutoGrow(){
-    document.querySelectorAll('textarea.field-value').forEach(function(t){
+    document.querySelectorAll(GB_AUTOGROW_SEL).forEach(function(t){
       t.addEventListener('input',function(){ gbAutoGrow(t); });
       gbAutoGrow(t);
     });
@@ -1996,7 +1997,46 @@ function genererDocument(){
     const contact=(document.getElementById('inp-contact')||{}).value||'';
     const pax=(document.getElementById('nb-convives')||{}).value||'';
     const _txt=id=>((document.getElementById(id)||{}).value||'').trim();
-    const _recap=id=>{const b=document.getElementById(id);if(!b)return'';return Array.from(b.querySelectorAll('tr')).map(tr=>Array.from(tr.querySelectorAll('td')).map(td=>td.textContent.replace(/\s+/g,' ').trim()).filter(Boolean).join(' ')).filter(Boolean).join(' | ');};
+    // Extrait le texte d'une cellule (nom + éventuelle description séparée par « | »)
+    const _cellText=td=>{
+      const strong=td.querySelector('strong');
+      if(strong){
+        let t=strong.textContent.replace(/\s+/g,' ').trim();
+        const small=td.querySelector('small');
+        if(small){ const s=small.textContent.replace(/\s+/g,' ').replace(/^✏️\s*/,'').trim(); if(s) t+=' | '+s; }
+        return t;
+      }
+      return td.textContent.replace(/\s+/g,' ').trim();
+    };
+    const _stripIcon=s=>s.replace(/^[^\p{L}0-9]+/u,'').trim();
+    // Version aérée : un élément par ligne, prix unitaire × quantité (pas de total, pas d'icônes)
+    const _recap=id=>{
+      const b=document.getElementById(id); if(!b) return '';
+      const lines=[];
+      Array.from(b.querySelectorAll('tr')).forEach(tr=>{
+        const tds=tr.querySelectorAll('td');
+        if(tr.classList.contains('cat-row')){
+          const label=_stripIcon(tds[0]?tds[0].textContent.replace(/\s+/g,' ').trim():'');
+          if(label) lines.push(label);
+          return;
+        }
+        if(tr.classList.contains('detail-row')){
+          const t=(tds[0]?tds[0].textContent:'').replace(/\s+/g,' ').trim().replace(/^↳\s*/,'');
+          if(t) lines.push(t);
+          return;
+        }
+        if(tds.length>=3){
+          const name=_cellText(tds[0]);
+          const pu=tds[1].textContent.replace(/\s+/g,' ').trim();
+          const qty=parseInt(tds[2].textContent)||0;
+          if(name) lines.push(name+' '+pu+(qty?('*'+qty):''));
+          return;
+        }
+        const t=tr.textContent.replace(/\s+/g,' ').trim();
+        if(t) lines.push(t);
+      });
+      return lines.join('\n');
+    };
     const guideOffert=((document.getElementById('guide-statut')||{}).value||'')==='offert' && nbGuides>0;
     const guideBoissonVal=(document.querySelector('input[name="guide-boisson"]:checked')||{}).value||'';
     // Texte repas guide reconstruit depuis les champs sources (pas depuis le tableau récap, qui mélange aussi la boisson)
@@ -2018,11 +2058,12 @@ function genererDocument(){
         if(gP) parts.push('Plat : '+gP);
         if(gD) parts.push('Dessert : '+gD);
       }
-      return parts.join(' | ')+' ('+nbGuides+' guide(s) — offert)';
+      parts.push('('+nbGuides+' guide(s))');
+      return parts.join('\n');
     };
     const guideRepasTxt=_guideRepasTxt();
-    const cuisinePayant=(_recap('recap-fixe-body')+' '+_recap('recap-carte-body')).trim();
-    const barPayant=_recap('recap-bar-body').trim();
+    const cuisinePayant=[_recap('recap-fixe-body'),_recap('recap-carte-body')].filter(Boolean).join('\n');
+    const barPayant=_recap('recap-bar-body');
     return {
       client:societe,
       contact:String(contact).trim(),
@@ -2038,8 +2079,8 @@ function genererDocument(){
       allergies:_txt('regime-detail'),
       observations:((document.querySelector('.notes-area textarea')||{}).value||'').trim(),
       modeReglement:_txt('mode-reglement'),
-      cuisineResume:(cuisinePayant+(guideRepasTxt?'\n\n🎁 Repas guide (offert) :\n'+guideRepasTxt:'')).trim(),
-      barResume:(barPayant+(guideOffert&&guideBoissonVal?'\n\n🎁 Boisson guide (offerte) : '+guideBoissonVal+' × '+nbGuides:'')).trim()
+      cuisineResume:[cuisinePayant,(guideRepasTxt?'Repas guide (offert) :\n'+guideRepasTxt:'')].filter(Boolean).join('\n\n'),
+      barResume:[barPayant,((guideOffert&&guideBoissonVal)?'Boisson guide (offerte) : '+guideBoissonVal+' × '+nbGuides:'')].filter(Boolean).join('\n\n')
     };
   }
 
