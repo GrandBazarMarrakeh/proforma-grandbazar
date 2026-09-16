@@ -1453,6 +1453,7 @@ function buildMenuCards(){
     d.innerHTML=cardHtml;
     c.appendChild(d);
   });
+  majBtnCarteSupp();   // affiche/masque le bouton « suppléments » dès le chargement
 }
 const MENUS=[
   {id:1,nom:'International 1',prix_p:300,prix_c:350,entree_fr:'Tartare de thon rouge',entree_en:'Red tuna tartare',plat_fr:'Suprême de poulet aux champignons',plat_en:'Chicken supreme with mushrooms',dessert_fr:'Panna Cotta aux fruits rouges',dessert_en:'Panna Cotta with red berries'},
@@ -2009,28 +2010,57 @@ function genererDocument(){
   // text/plain => requête "simple" => pas de pré-vol CORS bloquant
   // + réessais auto si Google renvoie une page de connexion (incident intermittent)
   async function gbApi(payload){
-    // save / update / send ont un effet de bord : jamais de réessai après une réponse du serveur
-    var ecriture=/^(save|update|send)$/.test((payload&&payload.action)||'');
+    var action=(payload&&payload.action)||'';
+    // « save » crée une ligne et « send » envoie un email : les rejouer ferait un doublon.
+    // « update » (ciblé par id), « get », « list » et « ping » sont sans risque à répéter.
+    var rejouable = (action!=='save' && action!=='send');
     for(var attempt=0; attempt<3; attempt++){
       if(attempt>0) await new Promise(function(r){ setTimeout(r, 600); });
       var txt='';
       try{
         var res=await fetch(GB_API,{method:'POST',body:JSON.stringify(payload)});
         txt=await res.text();
-      }catch(e){ continue; } // erreur réseau → on réessaie
+      }catch(e){ continue; } // échec réseau : la requête n'est pas partie, on réessaie
       var t=(txt||'').trim();
       if(t.charAt(0)==='{' || t.charAt(0)==='['){
         var j;
-        try{ j=JSON.parse(t); }catch(e){ if(ecriture) break; else continue; }
+        try{ j=JSON.parse(t); }catch(e){ if(rejouable) continue; else break; }
         if(j.ok===false) throw new Error(j.error||'Erreur serveur');
         return j;
       }
-      // Réponse non-JSON (page Google intermittente) : le script a probablement DÉJÀ tourné.
-      // Rejouer une action d'écriture créerait un doublon (2e email, 2e ligne au registre).
-      if(ecriture) break;
+      // Réponse illisible (page Google intermittente) : le script a peut-être déjà tourné.
+      if(!rejouable) break;
     }
-    if(ecriture) throw new Error('Réponse inattendue du moteur.\n\nL\'opération a peut-être été exécutée quand même : vérifie le registre (et ta boîte mail) AVANT de recommencer, pour ne pas créer de doublon.');
-    throw new Error('Réponse inattendue (page de connexion Google intermittente). Réessaie dans un instant ; si ça persiste, redéploie une « Nouvelle version » en accès « Tout le monde ».');
+    if(action==='save'){
+      // Filet de sécurité : la ligne a-t-elle été créée malgré la réponse illisible ?
+      var recup=await gbRetrouverEnregistrement(payload);
+      if(recup) return recup;
+      throw new Error('Réponse inattendue du moteur, et aucune trace de l\'enregistrement dans le registre.\n\nRéessaie dans un instant.');
+    }
+    if(action==='send'){
+      throw new Error('Réponse inattendue du moteur.\n\nL\'email est peut-être parti quand même : vérifie tes messages envoyés AVANT de renvoyer, pour ne pas écrire deux fois au client.');
+    }
+    throw new Error('Réponse inattendue du moteur. Réessaie dans un instant ; si ça persiste, redéploie une « Nouvelle version » en accès « Tout le monde ».');
+  }
+
+  // Relit le registre (lecture seule, sans risque) pour retrouver une ligne qui vient
+  // d'être créée alors que le moteur avait mal répondu — évite l'enregistrement en double.
+  async function gbRetrouverEnregistrement(payload){
+    try{
+      var j=await gbApi({action:'list'});
+      var docs=(j&&j.docs)||[];   // les plus récents en premier
+      var cli=String(payload.client||'').trim().toLowerCase();
+      var mt=Math.round(Number(payload.montant)||0);
+      var px=String(payload.pax||'').trim();
+      for(var i=0;i<Math.min(docs.length,15);i++){
+        var d=docs[i];
+        if(String(d.client||'').trim().toLowerCase()!==cli) continue;
+        if(Math.round(Number(d.montant)||0)!==mt) continue;
+        if(String(d.pax||'').trim()!==px) continue;
+        return {ok:true,id:d.id,numero:d.numero,driveUrl:d.driveUrl||'',dateMaj:d.dateMaj,recupere:true};
+      }
+    }catch(e){ /* le filet de sécurité ne doit jamais masquer l'erreur d'origine */ }
+    return null;
   }
 
   function gbNum(t){ return parseFloat(String(t||'').replace(/[^0-9.,-]/g,'').replace(/\s/g,'').replace(',','.'))||0; }
