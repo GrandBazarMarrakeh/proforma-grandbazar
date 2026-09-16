@@ -394,6 +394,7 @@ body.gb-directe-mode #directe-block{display:block!important}
         <button class="mode-btn active screen-only" id="mb-fixe-en" onclick="setMode('fixe')" data-en>📋 Fixed Menu</button>
         <button class="mode-btn screen-only" id="mb-carte" onclick="setMode('carte')" data-fr>🧾 À la Carte</button>
         <button class="mode-btn screen-only" id="mb-carte-en" onclick="setMode('carte')" data-en>🧾 À la Carte</button>
+        <button class="mode-btn screen-only" id="btn-carte-supp" style="display:none;margin-left:8px" onclick="toggleCarteSupp()">➕ Plats à la carte en supplément</button>
       </div>
     </div>
 
@@ -1467,7 +1468,7 @@ const MENUS=[
      {col:3,l_fr:'Dessert',l_en:'Dessert',v_fr:'Pavlova citron & chocolat blanc',v_en:'Lemon & white chocolate Pavlova'}
    ]},
 ];
-let lang='fr',tarif='partenaire',mode='fixe',selMenu=null;
+let lang='fr',tarif='partenaire',mode='fixe',selMenu=null,carteSupp=false;
 document.getElementById('ref-date').valueAsDate=new Date();
 document.getElementById('ref-num').value=new Date().getFullYear()+'-001';
 buildMenuCards();recalc();
@@ -1534,7 +1535,16 @@ function setTarif(t){
   }
   buildMenuCards();recalc();
 }
-function setMode(m){mode=m;document.getElementById('block-fixe').style.display=m==='fixe'?'block':'none';document.getElementById('block-carte').style.display=m==='carte'?'block':'none';['mb-fixe','mb-fixe-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='fixe');});['mb-carte','mb-carte-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='carte');});document.getElementById('btn-fixe').classList.toggle('active',m==='fixe');document.getElementById('btn-carte').classList.toggle('active',m==='carte');recalc();}
+function toggleCarteSupp(){ carteSupp=!carteSupp; setMode(mode); }
+function majBtnCarteSupp(){
+  const b=document.getElementById('btn-carte-supp'); if(!b) return;
+  const fr=(lang==='fr');
+  b.textContent = carteSupp ? (fr?'➖ Retirer les suppléments':'➖ Hide extras')
+                            : (fr?'➕ Plats à la carte en supplément':'➕ Add à la carte extras');
+  b.classList.toggle('active',carteSupp);
+  b.style.display = (mode==='fixe') ? 'inline-block' : 'none';
+}
+function setMode(m){mode=m;document.getElementById('block-fixe').style.display=m==='fixe'?'block':'none';document.getElementById('block-carte').style.display=(m==='carte'||(m==='fixe'&&carteSupp))?'block':'none';majBtnCarteSupp();['mb-fixe','mb-fixe-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='fixe');});['mb-carte','mb-carte-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='carte');});document.getElementById('btn-fixe').classList.toggle('active',m==='fixe');document.getElementById('btn-carte').classList.toggle('active',m==='carte');recalc();}
 
 // Accompagnements par menu (null = pas d'accompagnement)
 function selectMenu(id){selMenu=selMenu===id?null:id;buildMenuCards();recalc();}
@@ -1619,8 +1629,8 @@ function recalc(){
     ['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=acompteVal;});
     return;
   }
-  let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'){
-    // Items cuisine (seulement en mode à la carte)
+  let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'||carteSupp){
+    // Items cuisine : mode à la carte, ou suppléments ajoutés à un menu fixe
     document.querySelectorAll('#block-carte .carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});
   }
   // Items bar à la carte (bières, vins, cocktails) - comptés dans TOUS les modes
@@ -1732,7 +1742,7 @@ function genererDocument(){
   if(bF)bF.innerHTML=`<tr class="cat-row"><td colspan="4">${isFr?'🍽 Menu Fixe Groupe':'🍽 Fixed Group Menu'}</td></tr><tr><td><strong>Menu ${m.nom||m.id}</strong></td><td class="r"><strong>${prix.toLocaleString('fr-FR')} DH</strong></td><td class="r"><strong>${nb}</strong></td><td class="r total-cell"><strong>${total.toLocaleString('fr-FR')} DH</strong></td></tr>`+detailRows;}
   // Recap carte
   const bC=document.getElementById('recap-carte-body');if(bC)bC.innerHTML='';
-  if(bC&&mode==='carte'){const _ao=[{id:'acc-legumes',fr:'Légumes',en:'Vegetables'},{id:'acc-semoule',fr:'Semoule',en:'Semolina'},{id:'acc-salade',fr:'Salade verte',en:'Green salad'},{id:'acc-puree',fr:'Purée',en:'Mashed potato'},{id:'acc-frites',fr:'Frites',en:'Fries'}];const _accL=[];_ao.forEach(o=>{const v=parseInt(document.getElementById(o.id)?.value)||0;if(v>0)_accL.push(`${v} ${isFr?o.fr:o.en}`);});const _accRow=_accL.length?`<tr class="cat-row"><td colspan="4">${isFr?'🥗 Accompagnements':'🥗 Side dishes'}</td></tr><tr><td colspan="4">${_accL.join(' + ')}</td></tr>`:'';[{label:isFr?'🍢 Tapas':'🍢 Tapas',id:'sec-tapas'},{label:isFr?'🥗 Entrées':'🥗 Starters',id:'sec-entrees'},{label:isFr?'🍽 Plats':'🍽 Main Courses',id:'sec-plats'},{label:isFr?'🍮 Desserts':'🍮 Desserts',id:'sec-desserts'}].forEach(sec=>{if(sec.id==='sec-desserts'&&_accRow)bC.innerHTML+=_accRow;const items=[];document.querySelectorAll(`#${sec.id} .carte-item.selected`).forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';const gMsg=item.querySelector('.gateau-message')?.value||'';
+  if(bC&&(mode==='carte'||carteSupp)){const _ao=[{id:'acc-legumes',fr:'Légumes',en:'Vegetables'},{id:'acc-semoule',fr:'Semoule',en:'Semolina'},{id:'acc-salade',fr:'Salade verte',en:'Green salad'},{id:'acc-puree',fr:'Purée',en:'Mashed potato'},{id:'acc-frites',fr:'Frites',en:'Fries'}];const _accL=[];_ao.forEach(o=>{const v=parseInt(document.getElementById(o.id)?.value)||0;if(v>0)_accL.push(`${v} ${isFr?o.fr:o.en}`);});const _accRow=_accL.length?`<tr class="cat-row"><td colspan="4">${isFr?'🥗 Accompagnements':'🥗 Side dishes'}</td></tr><tr><td colspan="4">${_accL.join(' + ')}</td></tr>`:'';[{label:isFr?'🍢 Tapas':'🍢 Tapas',id:'sec-tapas'},{label:isFr?'🥗 Entrées':'🥗 Starters',id:'sec-entrees'},{label:isFr?'🍽 Plats':'🍽 Main Courses',id:'sec-plats'},{label:isFr?'🍮 Desserts':'🍮 Desserts',id:'sec-desserts'}].forEach(sec=>{if(sec.id==='sec-desserts'&&_accRow)bC.innerHTML+=_accRow;const items=[];document.querySelectorAll(`#${sec.id} .carte-item.selected`).forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';const gMsg=item.querySelector('.gateau-message')?.value||'';
             items.push({name,desc,prix,qty,total:prix*qty,gMsg});});if(items.length){bC.innerHTML+=`<tr class="cat-row"><td colspan="4">${sec.label}</td></tr>`;items.forEach(it=>{
           bC.innerHTML+=`<tr><td><strong>${it.name}</strong>${it.desc?'<br><small style="color:var(--text-light);font-style:italic">'+it.desc+'</small>':''}${it.gMsg?'<br><small style="color:var(--burgundy);font-weight:600">✏️ '+(isFr?'Message':'Message')+' : '+it.gMsg+'</small>':''}</td><td class="r">${it.prix>0?it.prix.toLocaleString('fr-FR')+' DH':'—'}</td><td class="r"><strong>${it.qty}</strong></td><td class="r total-cell"><strong>${it.total>0?it.total.toLocaleString('fr-FR')+' DH':'—'}</strong></td></tr>`;
         });}});}
@@ -2131,7 +2141,7 @@ function genererDocument(){
     const gtg=document.querySelector('input[name="guide-type-global"]:checked'); fd.guideTypeGlobal=gtg?gtg.value:null;
     const gbo=document.querySelector('input[name="guide-boisson"]:checked'); fd.guideBoisson=gbo?gbo.value:'';
     const obs=document.querySelector('.notes-area textarea'); fd.observations=obs?obs.value:null;
-    try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,nbGuides:nbGuides,directe:document.body.classList.contains('gb-directe-mode')}; }catch(e){ fd.globals={}; }
+    try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,carteSupp:carteSupp,nbGuides:nbGuides,directe:document.body.classList.contains('gb-directe-mode')}; }catch(e){ fd.globals={}; }
     return fd;
   }
 
@@ -2142,6 +2152,7 @@ function genererDocument(){
     if(g.tarif&&typeof setTarif==='function') setTarif(g.tarif);
     try{ if(typeof g.nbGuides!=='undefined'){ nbGuides=g.nbGuides; const el=document.getElementById('nb-guides-display'); if(el) el.textContent=nbGuides; } }catch(e){}
     try{ if(typeof g.selMenu!=='undefined') selMenu=g.selMenu; }catch(e){}
+    try{ if(typeof g.carteSupp!=='undefined') carteSupp=!!g.carteSupp; }catch(e){}
     if(g.mode&&typeof setMode==='function') setMode(g.mode);
     if(typeof buildMenuCards==='function') buildMenuCards();
     if(typeof g.directe!=='undefined' && typeof window.gbToggleDirecte==='function') window.gbToggleDirecte(!!g.directe);
