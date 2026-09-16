@@ -2187,7 +2187,9 @@ function genererDocument(){
     if(typeof buildMenuCards==='function') buildMenuCards();
     if(typeof g.directe!=='undefined' && typeof window.gbToggleDirecte==='function') window.gbToggleDirecte(!!g.directe);
     if(fd.accomp) Object.keys(fd.accomp).forEach(k=>{ const s=document.querySelector('.menu-accompagnement[data-menu="'+k+'"]'); if(s) s.value=fd.accomp[k]; });
-    if(fd.byId) Object.keys(fd.byId).forEach(id=>{ const el=document.getElementById(id); if(el&&fd.byId[id]!=null) el.value=fd.byId[id]; });
+    // « ref-num » ne doit JAMAIS venir de la sauvegarde : le numéro fait foi côté registre.
+    // (la photo du formulaire contient la valeur affichée au 1er enregistrement, donc le placeholder)
+    if(fd.byId) Object.keys(fd.byId).forEach(id=>{ if(id==='ref-num') return; const el=document.getElementById(id); if(el&&fd.byId[id]!=null) el.value=fd.byId[id]; });
     if(fd.fields){ const els=document.querySelectorAll('.info-box .field-value'); fd.fields.forEach((v,i)=>{ if(els[i]&&v!=null) els[i].value=v; }); }
     gbGrowAll();
     if(fd.items){ document.querySelectorAll('.carte-item[data-id],.bar-item[data-id]').forEach(el=>{
