@@ -265,8 +265,7 @@ body.gb-directe-mode #directe-block{display:block!important}
     </select>
     <button class="ctrl-btn" onclick="gbEnregistrer()" title="Attribue un numéro auto et enregistre dans le registre">💾 Enregistrer</button>
     <button class="ctrl-btn" onclick="gbOuvrirListe()" title="Rouvrir / modifier un document existant">📂 Mes documents</button>
-    <button class="ctrl-btn" onclick="gbEnvoyer()" title="Envoyer le document par email au client">📧 Envoyer</button>
-    <button class="ctrl-btn" onclick="gbPartagerClient()" title="Envoyer au client un lien pour compléter/modifier ses choix">🔗 Partager avec le client</button>
+    <button class="ctrl-btn" onclick="gbEnvoyerAuClient()" title="Envoyer au client : le document en PDF, ou un lien qu'il peut modifier">📤 Envoyer au client</button>
   </div>
 </div>
 
@@ -2000,6 +1999,8 @@ function genererDocument(){
   // text/plain => requête "simple" => pas de pré-vol CORS bloquant
   // + réessais auto si Google renvoie une page de connexion (incident intermittent)
   async function gbApi(payload){
+    // save / update / send ont un effet de bord : jamais de réessai après une réponse du serveur
+    var ecriture=/^(save|update|send)$/.test((payload&&payload.action)||'');
     for(var attempt=0; attempt<3; attempt++){
       if(attempt>0) await new Promise(function(r){ setTimeout(r, 600); });
       var txt='';
@@ -2010,12 +2011,15 @@ function genererDocument(){
       var t=(txt||'').trim();
       if(t.charAt(0)==='{' || t.charAt(0)==='['){
         var j;
-        try{ j=JSON.parse(t); }catch(e){ continue; } // JSON incomplet → on réessaie
+        try{ j=JSON.parse(t); }catch(e){ if(ecriture) break; else continue; }
         if(j.ok===false) throw new Error(j.error||'Erreur serveur');
         return j;
       }
-      // réponse = page HTML (login Google intermittent) → on réessaie
+      // Réponse non-JSON (page Google intermittente) : le script a probablement DÉJÀ tourné.
+      // Rejouer une action d'écriture créerait un doublon (2e email, 2e ligne au registre).
+      if(ecriture) break;
     }
+    if(ecriture) throw new Error('Réponse inattendue du moteur.\n\nL\'opération a peut-être été exécutée quand même : vérifie le registre (et ta boîte mail) AVANT de recommencer, pour ne pas créer de doublon.');
     throw new Error('Réponse inattendue (page de connexion Google intermittente). Réessaie dans un instant ; si ça persiste, redéploie une « Nouvelle version » en accès « Tout le monde ».');
   }
 
@@ -2325,10 +2329,6 @@ function genererDocument(){
       const refn=document.getElementById('ref-num'); if(refn&&numero) refn.value=numero;
       gbLoadPartners(); // mémorise le partenaire pour la prochaine fois
       alert('✅ Enregistré\nN° '+numero+'\nStatut : '+statut+(driveUrl?'\n📄 PDF rangé dans le Drive ✔':'\n(données seules, sans PDF)'));
-      // Envoi proposé si une adresse email est renseignée
-      if(gbClientEmail() && pdf && pdf.b64){
-        try{ await gbSendCurrent(pdf); }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
-      }
     }catch(e){ alert('❌ Enregistrement impossible\n'+e.message); }
   };
 
@@ -2380,10 +2380,9 @@ function genererDocument(){
   }
 })();
 </script>
-<!-- ══ PARTAGE CLIENT ══ -->
+<!-- ══ ENVOI AU CLIENT (PDF ou lien modifiable) ══ -->
 <script>
 (function(){
-  // Adresse de la page client (par défaut : client.html dans le même dossier)
   function urlClient(){
     return location.href.replace(/[?#].*$/,'').replace(/[^\/]*$/,'') + 'client.html';
   }
@@ -2392,41 +2391,94 @@ function genererDocument(){
     var els=box.querySelectorAll('.field-value');
     return els[2]?String(els[2].value||'').trim():'';
   }
-  window.gbPartagerClient=async function(){
+  function numero(){ return (document.getElementById('ref-num')||{}).value||''; }
+
+  // Enregistre le document s'il n'a pas encore de numéro (sans proposer d'envoi)
+  async function assurerEnregistrement(){
+    if(window.GB_currentId) return true;
+    var _rc=window.confirm; window.confirm=function(){ return false; };
+    try{ await window.gbEnregistrer(); } finally { window.confirm=_rc; }
+    return !!window.GB_currentId;
+  }
+
+  function choixEnvoi(email){
+    return new Promise(function(resolve){
+      var btn='display:block;width:100%;text-align:left;margin-bottom:9px;padding:11px 14px;border:1.5px solid #d4c5a0;'
+             +'border-radius:4px;background:#f5f0e8;cursor:pointer;font-family:inherit;font-size:13.5px;color:#3d1a35';
+      var sub='display:block;font-size:11px;color:#5a5a6e;margin-top:2px';
+      var m=document.createElement('div');
+      m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;display:flex;align-items:center;'
+                     +'justify-content:center;font-family:\'Cormorant Garamond\',Georgia,serif';
+      m.innerHTML='<div style="background:#fff;border-radius:6px;padding:22px 26px;max-width:470px;width:92%;box-shadow:0 10px 40px rgba(0,0,0,.3)">'
+        +'<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#3d1a35;font-weight:700;margin-bottom:5px">Envoyer au client</div>'
+        +'<div style="font-size:13px;color:#1a1a2e;margin-bottom:16px">Destinataire : <b>'+email+'</b></div>'
+        +'<button data-c="pdf" style="'+btn+'">📄 Le document en PDF<span style="'+sub+'">Version figée, pour accord et signature</span></button>'
+        +'<button data-c="lien" style="'+btn+'">🔗 Un lien modifiable<span style="'+sub+'">Le client complète ou modifie ses choix — enregistré en Devis</span></button>'
+        +'<button data-c="" style="margin-top:4px;padding:7px 14px;border:none;background:none;cursor:pointer;'
+        +'font-family:inherit;font-size:12px;color:#5a5a6e;text-decoration:underline">Annuler</button>'
+        +'</div>';
+      document.body.appendChild(m);
+      m.addEventListener('click', function(e){
+        var b=e.target.closest ? e.target.closest('button') : null;
+        if(!b) return;
+        var c=b.getAttribute('data-c'); m.remove(); resolve(c||null);
+      });
+    });
+  }
+
+  async function envoyerLien(email){
+    // un lien modifiable = un devis ; on force le type avant le premier enregistrement
+    if(!window.GB_currentId){
+      var dt=document.getElementById('gb-doctype');
+      if(dt && dt.value!=='devis'){ dt.value='devis'; if(typeof window.gbSetTitleByType==='function') window.gbSetTitleByType('devis'); }
+    }
+    if(!await assurerEnregistrement()) return;
+    var lien=urlClient()+'?doc='+encodeURIComponent(window.GB_currentId);
+    var num=numero();
+    var subject='Le Grand Bazar Marrakech — votre proposition'+(num?(' n° '+num):'');
+    var body='Bonjour,\n\n'
+      +'Voici votre proposition pour Le Grand Bazar Marrakech'+(num?(' (réf. '+num+')'):'')+'.\n\n'
+      +'Vous pouvez la consulter et compléter ou modifier vos choix (menus, boissons, régimes alimentaires) '
+      +'directement en ligne via ce lien personnel :\n\n'+lien+'\n\n'
+      +'Une fois vos choix arrêtés, cliquez sur « Valider mes choix » en bas de la page : '
+      +'nous recevrons votre sélection et vous ferons parvenir le devis définitif.\n\n'
+      +'Ce lien vous est personnel, merci de ne pas le transmettre.\n\n'
+      +'Bien cordialement,\n'
+      +'Le Grand Bazar — Restaurant Rooftop\n'
+      +'Place Jemaa El Fna, Marrakech\n'
+      +'+212 6 11078244';
+    await window.gbApi({action:'send', email:email, subject:subject, message:body});
+    var st=document.getElementById('gb-statut'); if(st) st.value='Partagé au client';
+    window.gbGenererSilencieux();
+    await window.gbApi(Object.assign({action:'update', id:window.GB_currentId,
+      statut:'Partagé au client', formData:window.gbCollectState()}, window.gbMeta()));
+    alert('🔗 Lien envoyé à '+email+'\n\nN° '+numero()+' — statut : Partagé au client.\n'
+         +'Tu recevras un email dès qu\'il aura validé ses choix.');
+  }
+
+  async function envoyerPdf(email){
+    if(!await assurerEnregistrement()) return;
+    // gbEnvoyer redemande confirmation : le choix vient d'être fait dans la fenêtre
+    var _rc=window.confirm; window.confirm=function(){ return true; };
+    try{ await window.gbEnvoyer(); } finally { window.confirm=_rc; }
+  }
+
+  window.gbEnvoyerAuClient=async function(){
     try{
-      if(!window.GB_currentId){
-        alert('Enregistre d\'abord le document (💾 Enregistrer) : il faut un numéro avant de pouvoir le partager.');
-        return;
-      }
       var email=emailClient();
       if(!email){ alert('📧 Aucune adresse email dans le bloc client.'); return; }
-      var lien=urlClient()+'?doc='+encodeURIComponent(window.GB_currentId);
-      var num=(document.getElementById('ref-num')||{}).value||'';
-      var societe=(document.querySelectorAll('.info-box .field-value')[0]||{}).value||'';
-      var subject='Le Grand Bazar Marrakech — votre proposition'+(num?(' n° '+num):'');
-      var body='Bonjour,\n\n'
-        +'Voici votre proposition pour Le Grand Bazar Marrakech'+(num?(' (réf. '+num+')'):'')+'.\n\n'
-        +'Vous pouvez la consulter et compléter ou modifier vos choix (menus, boissons, régimes alimentaires) '
-        +'directement en ligne via ce lien personnel :\n\n'+lien+'\n\n'
-        +'Une fois vos choix arrêtés, cliquez sur « Valider mes choix » en bas de la page : '
-        +'nous recevrons votre sélection et vous ferons parvenir le devis définitif.\n\n'
-        +'Ce lien vous est personnel, merci de ne pas le transmettre.\n\n'
-        +'Bien cordialement,\n'
-        +'Le Grand Bazar — Restaurant Rooftop\n'
-        +'Place Jemaa El Fna, Marrakech\n'
-        +'+212 6 11078244';
-      if(!confirm('🔗 Envoyer le lien de modification à :\n'+email+'\n\nObjet : '+subject+'\n\nConfirmer ?')) return;
-      // envoi SANS id : évite que le moteur force le statut à « Envoyé »
-      await window.gbApi({action:'send', email:email, subject:subject, message:body});
-      // puis on pose le statut « Partagé au client »
-      var st=document.getElementById('gb-statut'); if(st) st.value='Partagé au client';
-      window.gbGenererSilencieux();
-      var meta=window.gbMeta();
-      await window.gbApi(Object.assign({action:'update', id:window.GB_currentId,
-        statut:'Partagé au client', formData:window.gbCollectState()}, meta));
-      alert('🔗 Lien envoyé à '+email+'\n\nStatut : Partagé au client.\nTu recevras un email dès qu\'il aura validé ses choix.');
-    }catch(e){ alert('❌ Partage impossible\n'+e.message); }
+      var choix=await choixEnvoi(email);
+      if(!choix) return;
+      if(choix==='lien') await envoyerLien(email); else await envoyerPdf(email);
+    }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
   };
+
+  // Ouverture directe d'un document : …/2026.html?doc=<identifiant>
+  document.addEventListener('DOMContentLoaded', async function(){
+    var id=new URLSearchParams(location.search).get('doc');
+    if(!id || typeof window.gbCharger!=='function') return;
+    try{ await window.gbCharger(id); }catch(e){ alert('❌ Impossible d\'ouvrir ce document\n'+e.message); }
+  });
 })();
 </script>
 </body>
