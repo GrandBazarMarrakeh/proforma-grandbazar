@@ -395,6 +395,8 @@ body.gb-directe-mode #directe-block{display:block!important}
         <button class="mode-btn screen-only" id="mb-carte" onclick="setMode('carte')" data-fr>🧾 À la Carte</button>
         <button class="mode-btn screen-only" id="mb-carte-en" onclick="setMode('carte')" data-en>🧾 À la Carte</button>
         <button class="mode-btn screen-only" id="btn-carte-supp" style="display:none;margin-left:8px" onclick="toggleCarteSupp()">➕ Plats à la carte en supplément</button>
+        <label class="mode-btn screen-only" id="btn-menu-multi" style="display:none;margin-left:8px;cursor:pointer">
+          <input type="checkbox" id="chk-menu-multi" onchange="toggleMenuMulti(this.checked)" style="vertical-align:middle;margin-right:5px">👥 Répartir par menu</label>
       </div>
     </div>
 
@@ -424,6 +426,7 @@ body.gb-directe-mode #directe-block{display:block!important}
     <div id="block-fixe">
       <p class="screen-only" style="font-size:11px;color:var(--text-light);margin-bottom:10px" data-fr>Cliquez sur un menu pour le sélectionner. Un seul menu possible.</p>
       <div class="menu-selector" id="menu-selector"></div>
+      <div class="screen-only" id="menu-repartition" style="display:none;font-size:11px;margin:-6px 0 12px 2px;font-style:italic"></div>
       <!-- Recap impression menu fixe : 4 colonnes propres -->
       <table class="recap-table print-only-recap" id="recap-fixe" style="table-layout:fixed">
         <colgroup><col style="width:55%"><col style="width:15%"><col style="width:10%"><col style="width:20%"></colgroup>
@@ -1410,7 +1413,8 @@ function buildMenuCards(){
   MENUS.forEach(m=>{
     const prix=tarif==='partenaire'?m.prix_p:m.prix_c;
     const d=document.createElement('div');
-    d.className='menu-card'+(selMenu===m.id?' selected':'')+(m.courses&&m.courses.length?' menu-card-large':'');
+    const actif = menuMulti ? ((menuQty[m.id]||0)>0) : (selMenu===m.id);
+    d.className='menu-card'+(actif?' selected':'')+(m.courses&&m.courses.length?' menu-card-large':'');
     d.onclick=()=>selectMenu(m.id);
     const acc=ACCOMP_MENUS[m.id];
     // Construire le HTML de la carte
@@ -1432,6 +1436,14 @@ function buildMenuCards(){
       <div class="menu-card-price">${prix} DH<span style="font-size:11px;font-weight:400"> / pers.</span></div>
       <div class="${detailCls}">${lignes}</div>
       <span style="font-size:9px;color:var(--text-light);margin-top:5px;display:block">${isFr?'À partir de 10 personnes':'From 10 guests'}</span>`;
+    if(menuMulti){
+      cardHtml+=`<div class="screen-only menu-qty-bloc" style="margin-top:8px;padding-top:7px;border-top:1px dashed var(--gold);display:flex;align-items:center;gap:7px">
+        <span style="font-size:9px;text-transform:uppercase;letter-spacing:1px;color:var(--burgundy);font-weight:700">${isFr?'Nb. personnes':'Guests'}</span>
+        <input type="number" min="0" class="menu-qty" data-menu="${m.id}" value="${menuQty[m.id]||0}"
+          onclick="event.stopPropagation()" oninput="setMenuQty(${m.id},this.value)"
+          style="width:70px;padding:3px 6px;border:1px solid var(--border);border-radius:3px;font-family:inherit;font-size:13px;text-align:center">
+      </div>`;
+    }
     // Ajouter le bloc accompagnement HORS de menu-card-detail pour qu'il soit toujours visible
     if(acc){
       const opts=(isFr?acc.fr:acc.en).map(o=>`<option${savedAccomp[m.id]===o?' selected':''}>${o}</option>`).join('');
@@ -1469,7 +1481,7 @@ const MENUS=[
      {col:3,l_fr:'Dessert',l_en:'Dessert',v_fr:'Pavlova citron & chocolat blanc',v_en:'Lemon & white chocolate Pavlova'}
    ]},
 ];
-let lang='fr',tarif='partenaire',mode='fixe',selMenu=null,carteSupp=false;
+let lang='fr',tarif='partenaire',mode='fixe',selMenu=null,carteSupp=false,menuMulti=false,menuQty={};
 document.getElementById('ref-date').valueAsDate=new Date();
 document.getElementById('ref-num').value='non enregistré';   // remplacé par le vrai numéro dès le 1er enregistrement
 buildMenuCards();recalc();
@@ -1537,6 +1549,30 @@ function setTarif(t){
   buildMenuCards();recalc();
 }
 function toggleCarteSupp(){ carteSupp=!carteSupp; setMode(mode); }
+function toggleMenuMulti(on){
+  menuMulti=!!on;
+  if(!menuMulti){ menuQty={}; }
+  else if(selMenu){ menuQty={}; menuQty[selMenu]=parseInt(document.getElementById('nb-convives').value)||0; }
+  buildMenuCards(); recalc();
+}
+// Quantité saisie sur une carte de menu
+function setMenuQty(id,val){
+  const n=Math.max(0,parseInt(val)||0);
+  if(n>0) menuQty[id]=n; else delete menuQty[id];
+  majRepartition(); recalc();
+}
+function totalRepartis(){ let t=0; for(const k in menuQty) t+=menuQty[k]||0; return t; }
+function majRepartition(){
+  const el=document.getElementById('menu-repartition'); if(!el) return;
+  if(!menuMulti){ el.style.display='none'; return; }
+  const nb=parseInt(document.getElementById('nb-convives').value)||0, rep=totalRepartis();
+  const fr=(lang==='fr'), ok=(rep===nb&&nb>0);
+  el.style.display='block';
+  el.style.color = ok ? 'var(--text-light)' : 'var(--burgundy)';
+  el.textContent = fr
+    ? (nb+' convive'+(nb>1?'s':'')+' — '+rep+' réparti'+(rep>1?'s':'')+(ok?' ✔':(rep<nb?(' — il en reste '+(nb-rep)+' à placer'):(' — '+(rep-nb)+' de trop'))))
+    : (nb+' guest'+(nb>1?'s':'')+' — '+rep+' assigned'+(ok?' ✔':(rep<nb?(' — '+(nb-rep)+' left'):(' — '+(rep-nb)+' too many'))));
+}
 function majBtnCarteSupp(){
   const b=document.getElementById('btn-carte-supp'); if(!b) return;
   const fr=(lang==='fr');
@@ -1544,11 +1580,22 @@ function majBtnCarteSupp(){
                             : (fr?'➕ Plats à la carte en supplément':'➕ Add à la carte extras');
   b.classList.toggle('active',carteSupp);
   b.style.display = (mode==='fixe') ? 'inline-block' : 'none';
+  const m=document.getElementById('btn-menu-multi');
+  if(m) m.style.display = (mode==='fixe') ? 'inline-block' : 'none';
+  const c=document.getElementById('chk-menu-multi'); if(c) c.checked=menuMulti;
 }
 function setMode(m){mode=m;document.getElementById('block-fixe').style.display=m==='fixe'?'block':'none';document.getElementById('block-carte').style.display=(m==='carte'||(m==='fixe'&&carteSupp))?'block':'none';majBtnCarteSupp();['mb-fixe','mb-fixe-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='fixe');});['mb-carte','mb-carte-en'].forEach(id=>{const el=document.getElementById(id);if(el)el.classList.toggle('active',m==='carte');});document.getElementById('btn-fixe').classList.toggle('active',m==='fixe');document.getElementById('btn-carte').classList.toggle('active',m==='carte');recalc();}
 
 // Accompagnements par menu (null = pas d'accompagnement)
-function selectMenu(id){selMenu=selMenu===id?null:id;buildMenuCards();recalc();}
+function selectMenu(id){
+  if(menuMulti){
+    const nb=parseInt(document.getElementById('nb-convives').value)||0;
+    const reste=Math.max(0,nb-totalRepartis());
+    if(menuQty[id]) delete menuQty[id]; else menuQty[id]=(reste>0?reste:nb);
+    buildMenuCards(); recalc(); return;
+  }
+  selMenu=selMenu===id?null:id;buildMenuCards();recalc();
+}
 function toggleAccordion(id){
   const body = document.getElementById(id);
   const btn = body?.previousElementSibling;
@@ -1630,7 +1677,11 @@ function recalc(){
     ['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=acompteVal;});
     return;
   }
-  let total=0;if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'||carteSupp){
+  let total=0;
+  if(mode==='fixe'&&menuMulti){
+    MENUS.forEach(function(m){ const q=menuQty[m.id]||0; if(q>0) total+=(tarif==='partenaire'?m.prix_p:m.prix_c)*q; });
+    majRepartition();
+  } else if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);if(m){const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;total+=prix*nb;}}if(mode==='carte'||carteSupp){
     // Items cuisine : mode à la carte, ou suppléments ajoutés à un menu fixe
     document.querySelectorAll('#block-carte .carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});
   }
@@ -1722,7 +1773,24 @@ function genererDocument(){
   document.getElementById('sec-anim')?.classList.toggle('hide-print',!hasAnim);
   // Recap fixe
   const bF=document.getElementById('recap-fixe-body');if(bF)bF.innerHTML='';
-  if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;const total=prix*nb;
+  if(mode==='fixe'&&menuMulti){
+    // Répartition : une ligne par menu, avec sa quantité
+    let htmlMenus='';
+    MENUS.forEach(function(m){
+      const q=menuQty[m.id]||0; if(q<=0) return;
+      const pu=tarif==='partenaire'?m.prix_p:m.prix_c, tot=pu*q;
+      let dr='';
+      if(m.courses&&m.courses.length){
+        m.courses.forEach(function(c){ dr+=`<tr class="detail-row"><td colspan="4">↳ ${isFr?c.l_fr:c.l_en} : ${isFr?c.v_fr:c.v_en}</td></tr>`; });
+      }else{
+        dr=`<tr class="detail-row"><td colspan="4">↳ ${isFr?'Entrée':'Starter'} : ${isFr?m.entree_fr:m.entree_en}</td></tr>`
+          +`<tr class="detail-row"><td colspan="4">↳ ${isFr?'Plat':'Main'} : ${isFr?m.plat_fr:m.plat_en}</td></tr>`
+          +`<tr class="detail-row"><td colspan="4">↳ Dessert : ${isFr?m.dessert_fr:m.dessert_en}</td></tr>`;
+      }
+      htmlMenus+=`<tr><td><strong>Menu ${m.nom||m.id}</strong></td><td class="r"><strong>${pu.toLocaleString('fr-FR')} DH</strong></td><td class="r"><strong>${q}</strong></td><td class="r total-cell"><strong>${tot.toLocaleString('fr-FR')} DH</strong></td></tr>`+dr;
+    });
+    if(bF&&htmlMenus) bF.innerHTML=`<tr class="cat-row"><td colspan="4">${isFr?'🍽 Menus Groupe':'🍽 Group Menus'}</td></tr>`+htmlMenus;
+  } else if(mode==='fixe'&&selMenu){const m=MENUS.find(x=>x.id===selMenu);const prix=tarif==='partenaire'?m.prix_p:m.prix_c;const nb=parseInt(document.getElementById('nb-convives').value)||0;const total=prix*nb;
   // Accompagnements multi
   const accOpts=[{id:'acc-legumes',fr:'Légumes',en:'Vegetables'},{id:'acc-semoule',fr:'Semoule',en:'Semolina'},{id:'acc-salade',fr:'Salade verte',en:'Green salad'},{id:'acc-puree',fr:'Purée',en:'Mashed potato'},{id:'acc-frites',fr:'Frites',en:'Fries'}];
   const accLines=[];accOpts.forEach(o=>{const v=parseInt(document.getElementById(o.id)?.value)||0;if(v>0)accLines.push(`${v} ${isFr?o.fr:o.en}`);});
@@ -2174,7 +2242,7 @@ function genererDocument(){
     const gtg=document.querySelector('input[name="guide-type-global"]:checked'); fd.guideTypeGlobal=gtg?gtg.value:null;
     const gbo=document.querySelector('input[name="guide-boisson"]:checked'); fd.guideBoisson=gbo?gbo.value:'';
     const obs=document.querySelector('.notes-area textarea'); fd.observations=obs?obs.value:null;
-    try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,carteSupp:carteSupp,nbGuides:nbGuides,directe:document.body.classList.contains('gb-directe-mode')}; }catch(e){ fd.globals={}; }
+    try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,carteSupp:carteSupp,menuMulti:menuMulti,menuQty:menuQty,nbGuides:nbGuides,directe:document.body.classList.contains('gb-directe-mode')}; }catch(e){ fd.globals={}; }
     return fd;
   }
 
@@ -2186,6 +2254,8 @@ function genererDocument(){
     try{ if(typeof g.nbGuides!=='undefined'){ nbGuides=g.nbGuides; const el=document.getElementById('nb-guides-display'); if(el) el.textContent=nbGuides; } }catch(e){}
     try{ if(typeof g.selMenu!=='undefined') selMenu=g.selMenu; }catch(e){}
     try{ if(typeof g.carteSupp!=='undefined') carteSupp=!!g.carteSupp; }catch(e){}
+    try{ if(typeof g.menuMulti!=='undefined') menuMulti=!!g.menuMulti; }catch(e){}
+    try{ if(g.menuQty&&typeof g.menuQty==='object') menuQty=Object.assign({},g.menuQty); }catch(e){}
     if(g.mode&&typeof setMode==='function') setMode(g.mode);
     if(typeof buildMenuCards==='function') buildMenuCards();
     if(typeof g.directe!=='undefined' && typeof window.gbToggleDirecte==='function') window.gbToggleDirecte(!!g.directe);
