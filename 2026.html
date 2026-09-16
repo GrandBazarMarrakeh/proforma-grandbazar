@@ -1269,7 +1269,7 @@ body.gb-directe-mode #directe-block{display:block!important}
     <div class="reglement-box screen-only">
       <p class="regl-hint" data-fr>Sélectionnez le mode retenu — seul ce bloc apparaîtra à l'impression.</p>
       <div class="regl-options">
-        <label class="regl-opt"><input type="radio" name="reglement" value="virement" onchange="showReglement(this.value)" checked><span data-fr>💳 Virement bancaire</span><span data-en>💳 Bank transfer</span></label>
+        <label class="regl-opt"><input type="radio" name="reglement" value="virement" onchange="showReglement(this.value)"><span data-fr>💳 Virement bancaire</span><span data-en>💳 Bank transfer</span></label>
         <label class="regl-opt"><input type="radio" name="reglement" value="lien" onchange="showReglement(this.value)"><span data-fr>🔗 Lien de paiement</span><span data-en>🔗 Payment link</span></label>
         <label class="regl-opt"><input type="radio" name="reglement" value="especes" onchange="showReglement(this.value)"><span data-fr>💵 Espèces</span><span data-en>💵 Cash</span></label>
 
@@ -1483,7 +1483,7 @@ const MENUS=[
 let lang='fr',tarif='partenaire',mode='fixe',selMenu=null,carteSupp=false,menuMulti=false,menuQty={};
 document.getElementById('ref-date').valueAsDate=new Date();
 document.getElementById('ref-num').value='non enregistré';   // remplacé par le vrai numéro dès le 1er enregistrement
-buildMenuCards();recalc();showReglement('virement');
+buildMenuCards();recalc();
 // Init guide : s'assurer que le bloc est caché au départ
 (function(){
   const gs = document.getElementById('guide-statut');
@@ -1739,7 +1739,8 @@ function gbForcerReglement(){
   });
   if(estFacture) return;   // une facture ne porte volontairement pas de bloc de règlement
   const cr=document.querySelector('input[name="reglement"]:checked');
-  const sel=document.getElementById('regl-'+((cr&&cr.value)||'virement'));
+  if(!cr) return;          // aucun mode retenu : aucun bloc, pas de RIB imposé
+  const sel=document.getElementById('regl-'+cr.value);
   if(sel){ sel.classList.add('active-regl'); sel.style.setProperty('display','block','important'); }
 }
 
@@ -2176,10 +2177,8 @@ function genererDocument(){
     const _cellText=td=>{
       const strong=td.querySelector('strong');
       if(strong){
-        let t=strong.textContent.replace(/\s+/g,' ').trim();
-        const small=td.querySelector('small');
-        if(small){ const s=small.textContent.replace(/\s+/g,' ').replace(/^✏️\s*/,'').trim(); if(s) t+=' | '+s; }
-        return t;
+        // Feuille de route : le nom du plat seul, sans la description
+        return strong.textContent.replace(/\s+/g,' ').trim();
       }
       return td.textContent.replace(/\s+/g,' ').trim();
     };
@@ -2204,7 +2203,7 @@ function genererDocument(){
           const name=_cellText(tds[0]);
           const pu=tds[1].textContent.replace(/\s+/g,' ').trim();
           const qty=parseInt(tds[2].textContent)||0;
-          if(name) lines.push(name+' '+pu+(qty?('*'+qty):''));
+          if(name) lines.push(name+(qty?(' ×'+qty):''));   // nom + quantité, sans le prix
           return;
         }
         const t=tr.textContent.replace(/\s+/g,' ').trim();
