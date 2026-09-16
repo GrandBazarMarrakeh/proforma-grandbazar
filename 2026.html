@@ -1471,7 +1471,7 @@ const MENUS=[
 ];
 let lang='fr',tarif='partenaire',mode='fixe',selMenu=null,carteSupp=false;
 document.getElementById('ref-date').valueAsDate=new Date();
-document.getElementById('ref-num').value=new Date().getFullYear()+'-001';
+document.getElementById('ref-num').value='non enregistré';   // remplacé par le vrai numéro dès le 1er enregistrement
 buildMenuCards();recalc();
 // Init guide : s'assurer que le bloc est caché au départ
 (function(){
