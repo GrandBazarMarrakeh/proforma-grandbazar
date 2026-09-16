@@ -1999,6 +1999,8 @@ function genererDocument(){
   // text/plain => requête "simple" => pas de pré-vol CORS bloquant
   // + réessais auto si Google renvoie une page de connexion (incident intermittent)
   async function gbApi(payload){
+    // save / update / send ont un effet de bord : jamais de réessai après une réponse du serveur
+    var ecriture=/^(save|update|send)$/.test((payload&&payload.action)||'');
     for(var attempt=0; attempt<3; attempt++){
       if(attempt>0) await new Promise(function(r){ setTimeout(r, 600); });
       var txt='';
@@ -2009,12 +2011,15 @@ function genererDocument(){
       var t=(txt||'').trim();
       if(t.charAt(0)==='{' || t.charAt(0)==='['){
         var j;
-        try{ j=JSON.parse(t); }catch(e){ continue; } // JSON incomplet → on réessaie
+        try{ j=JSON.parse(t); }catch(e){ if(ecriture) break; else continue; }
         if(j.ok===false) throw new Error(j.error||'Erreur serveur');
         return j;
       }
-      // réponse = page HTML (login Google intermittent) → on réessaie
+      // Réponse non-JSON (page Google intermittente) : le script a probablement DÉJÀ tourné.
+      // Rejouer une action d'écriture créerait un doublon (2e email, 2e ligne au registre).
+      if(ecriture) break;
     }
+    if(ecriture) throw new Error('Réponse inattendue du moteur.\n\nL\'opération a peut-être été exécutée quand même : vérifie le registre (et ta boîte mail) AVANT de recommencer, pour ne pas créer de doublon.');
     throw new Error('Réponse inattendue (page de connexion Google intermittente). Réessaie dans un instant ; si ça persiste, redéploie une « Nouvelle version » en accès « Tout le monde ».');
   }
 
@@ -2396,7 +2401,11 @@ function genererDocument(){
 </style>
 <script>
 (function(){
-  var NOTIF_TO = 'com.legrandbazardemarrakech@gmail.com';   // ← destinataire de la notification
+  var NOTIF_TO   = 'com.legrandbazardemarrakech@gmail.com';   // ← destinataire de la notification
+  var FORM_RESTO = '2026.html';   // ← nom du formulaire restaurant, dans le même dossier
+  function lienResto(id){
+    return location.href.replace(/[?#].*$/,'').replace(/[^\/]*$/,'') + FORM_RESTO + '?doc=' + encodeURIComponent(id);
+  }
   var DOC_ID = new URLSearchParams(location.search).get('doc') || '';
 
   function banniere(txt){
@@ -2432,7 +2441,7 @@ function genererDocument(){
             +'\nMontant TTC : '+(meta.montant||'')+' DH\n\n'
             +'Cuisine :\n'+(meta.cuisineResume||'—')+'\n\nBar :\n'+(meta.barResume||'—')
             +'\n\nRégimes / allergies :\n'+(meta.allergies||'—')
-            +'\n\nOuvre le registre puis 📂 Mes documents pour finaliser la proforma.'});
+            +'\n\nOuvrir directement le document pour le finaliser :\n'+lienResto(DOC_ID)});
       }catch(e){ /* la notification ne doit pas bloquer la validation */ }
       btn.textContent='✅ Choix transmis';
       alert('✅ Merci, vos choix ont bien été transmis au Grand Bazar.\n\n'
