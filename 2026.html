@@ -2164,7 +2164,10 @@ function genererDocument(){
     document.querySelectorAll('.info-box .field-value').forEach((el,i)=>{ fd.fields[i]=el.value; });
     document.querySelectorAll('.carte-item[data-id],.bar-item[data-id]').forEach(el=>{
       const q=el.querySelector('.carte-qty input'), g=el.querySelector('.gateau-message');
-      fd.items[el.dataset.id]={s:el.classList.contains('selected'),q:q?q.value:null,g:g?g.value:null};
+      // d : détail sushi (texte libre), p : prix libre (DJ…), x : prix calculé stocké sur l'élément
+      const sd=el.querySelector('.sushi-detail'), pl=el.querySelector('.prix-libre');
+      fd.items[el.dataset.id]={s:el.classList.contains('selected'),q:q?q.value:null,g:g?g.value:null,
+        d:sd?sd.value:null, p:pl?pl.value:null, x:(sd||pl)?(el.dataset.prix||null):null};
     });
     document.querySelectorAll('.menu-accompagnement[data-menu]').forEach(s=>{ fd.accomp[s.dataset.menu]=s.value; });
     const cr=document.querySelector('input[name="reglement"]:checked'); fd.reglement=cr?cr.value:null;
@@ -2187,7 +2190,9 @@ function genererDocument(){
     if(typeof buildMenuCards==='function') buildMenuCards();
     if(typeof g.directe!=='undefined' && typeof window.gbToggleDirecte==='function') window.gbToggleDirecte(!!g.directe);
     if(fd.accomp) Object.keys(fd.accomp).forEach(k=>{ const s=document.querySelector('.menu-accompagnement[data-menu="'+k+'"]'); if(s) s.value=fd.accomp[k]; });
-    if(fd.byId) Object.keys(fd.byId).forEach(id=>{ const el=document.getElementById(id); if(el&&fd.byId[id]!=null) el.value=fd.byId[id]; });
+    // « ref-num » ne doit JAMAIS venir de la sauvegarde : le numéro fait foi côté registre.
+    // (la photo du formulaire contient la valeur affichée au 1er enregistrement, donc le placeholder)
+    if(fd.byId) Object.keys(fd.byId).forEach(id=>{ if(id==='ref-num') return; const el=document.getElementById(id); if(el&&fd.byId[id]!=null) el.value=fd.byId[id]; });
     if(fd.fields){ const els=document.querySelectorAll('.info-box .field-value'); fd.fields.forEach((v,i)=>{ if(els[i]&&v!=null) els[i].value=v; }); }
     gbGrowAll();
     if(fd.items){ document.querySelectorAll('.carte-item[data-id],.bar-item[data-id]').forEach(el=>{
@@ -2196,6 +2201,10 @@ function genererDocument(){
       const cb=el.querySelector('input[type=checkbox]'); if(cb) cb.checked=!!it.s;
       const q=el.querySelector('.carte-qty input'); if(q&&it.q!=null) q.value=it.q;
       const gg=el.querySelector('.gateau-message'); if(gg&&it.g!=null) gg.value=it.g;
+      const sd=el.querySelector('.sushi-detail'); if(sd&&it.d!=null) sd.value=it.d;
+      const pl=el.querySelector('.prix-libre');   if(pl&&it.p!=null) pl.value=it.p;
+      if(it.x!=null&&it.x!=='') el.dataset.prix=it.x;
+      if(sd&&it.d&&typeof setSushiPrix==='function'){ try{ setSushiPrix(sd); }catch(e){} }
     }); }
     if(fd.reglement){ const r=document.querySelector('input[name="reglement"][value="'+fd.reglement+'"]'); if(r){ r.checked=true; if(typeof showReglement==='function') showReglement(fd.reglement);} }
     if(fd.guideTypeGlobal){ const r=document.querySelector('input[name="guide-type-global"][value="'+fd.guideTypeGlobal+'"]'); if(r){ r.checked=true; } if(typeof onGuideTypeGlobal==='function') onGuideTypeGlobal(); }
