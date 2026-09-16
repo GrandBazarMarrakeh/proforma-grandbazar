@@ -1269,7 +1269,7 @@ body.gb-directe-mode #directe-block{display:block!important}
     <div class="reglement-box screen-only">
       <p class="regl-hint" data-fr>Sélectionnez le mode retenu — seul ce bloc apparaîtra à l'impression.</p>
       <div class="regl-options">
-        <label class="regl-opt"><input type="radio" name="reglement" value="virement" onchange="showReglement(this.value)"><span data-fr>💳 Virement bancaire</span><span data-en>💳 Bank transfer</span></label>
+        <label class="regl-opt"><input type="radio" name="reglement" value="virement" onchange="showReglement(this.value)" checked><span data-fr>💳 Virement bancaire</span><span data-en>💳 Bank transfer</span></label>
         <label class="regl-opt"><input type="radio" name="reglement" value="lien" onchange="showReglement(this.value)"><span data-fr>🔗 Lien de paiement</span><span data-en>🔗 Payment link</span></label>
         <label class="regl-opt"><input type="radio" name="reglement" value="especes" onchange="showReglement(this.value)"><span data-fr>💵 Espèces</span><span data-en>💵 Cash</span></label>
 
@@ -1330,7 +1330,6 @@ body.gb-directe-mode #directe-block{display:block!important}
         <div class="rib-warning" data-en>⚠ Deposit due at least <strong>15 days before</strong>. A receipt will be issued.</div>
       </div>
     </div>
-    >
 
     <div class="signatures">
       <div class="sig-block">
@@ -1484,7 +1483,7 @@ const MENUS=[
 let lang='fr',tarif='partenaire',mode='fixe',selMenu=null,carteSupp=false,menuMulti=false,menuQty={};
 document.getElementById('ref-date').valueAsDate=new Date();
 document.getElementById('ref-num').value='non enregistré';   // remplacé par le vrai numéro dès le 1er enregistrement
-buildMenuCards();recalc();
+buildMenuCards();recalc();showReglement('virement');
 // Init guide : s'assurer que le bloc est caché au départ
 (function(){
   const gs = document.getElementById('guide-statut');
@@ -1722,7 +1721,27 @@ function updateLienPaiement(){
   });
 }
 
-function showReglement(val){document.querySelectorAll('.regl-bloc').forEach(b=>b.style.display='none');const bloc=document.getElementById('regl-'+val);if(bloc)bloc.style.display='block';const a=document.getElementById('acompte').textContent;['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=a;});}
+function showReglement(val){
+  document.querySelectorAll('.regl-bloc').forEach(b=>b.style.setProperty('display','none','important'));
+  const bloc=document.getElementById('regl-'+val);
+  if(bloc) bloc.style.setProperty('display','block','important');
+  const a=document.getElementById('acompte').textContent;
+  ['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=a;});
+}
+
+// Impose le bloc de règlement retenu, y compris à l'impression et dans le PDF.
+// Un style en ligne « important » l'emporte sur toutes les règles de la feuille de styles.
+function gbForcerReglement(){
+  const estFacture = ((document.getElementById('gb-doctype')||{}).value||'')==='facture';
+  document.querySelectorAll('.regl-bloc').forEach(function(b){
+    b.classList.remove('active-regl');
+    b.style.setProperty('display','none','important');
+  });
+  if(estFacture) return;   // une facture ne porte volontairement pas de bloc de règlement
+  const cr=document.querySelector('input[name="reglement"]:checked');
+  const sel=document.getElementById('regl-'+((cr&&cr.value)||'virement'));
+  if(sel){ sel.classList.add('active-regl'); sel.style.setProperty('display','block','important'); }
+}
 
 function genererDocument(){
   recalc(); // S'assurer que les totaux sont à jour
@@ -1756,9 +1775,7 @@ function genererDocument(){
   if(nbPax&&nbPax!=='0') parts.push(nbPax+'pax');
   document.title=parts.join('_');
   // Règlement
-  document.querySelectorAll('.regl-bloc').forEach(b=>b.classList.remove('active-regl'));
-  const cr=document.querySelector('input[name="reglement"]:checked');
-  if(cr){const b=document.getElementById('regl-'+cr.value);if(b)b.classList.add('active-regl');}
+  gbForcerReglement();
   // Masquer sections vides
   ['sec-entrees','sec-tapas','sec-pizzas','sec-sushis','sec-plats','sec-desserts'].forEach(id=>{const s=document.getElementById(id);if(!s)return;s.classList.toggle('hide-print',s.querySelectorAll('.carte-item.selected').length===0);});
   const hasIntl=document.querySelectorAll('#sec-plats .carte-item[data-id^="pi"].selected').length>0;
@@ -2106,9 +2123,25 @@ function genererDocument(){
       throw new Error('Réponse inattendue du moteur, et aucune trace de l\'enregistrement dans le registre.\n\nRéessaie dans un instant.');
     }
     if(action==='send'){
+      // Le moteur passe le statut à « Envoyé » quand il a réellement expédié :
+      // on relit le document (lecture seule) pour savoir si l'email est parti.
+      var env=await gbVerifierEnvoi(payload);
+      if(env) return env;
       throw new Error('Réponse inattendue du moteur.\n\nL\'email est peut-être parti quand même : vérifie tes messages envoyés AVANT de renvoyer, pour ne pas écrire deux fois au client.');
     }
     throw new Error('Réponse inattendue du moteur. Réessaie dans un instant ; si ça persiste, redéploie une « Nouvelle version » en accès « Tout le monde ».');
+  }
+
+  // Après un envoi à la réponse illisible : le moteur a-t-il bien expédié l'email ?
+  async function gbVerifierEnvoi(payload){
+    if(!payload||!payload.id) return null;
+    try{
+      var j=await gbApi({action:'get',id:payload.id});
+      if(j&&j.doc&&String(j.doc.statut||'').trim()==='Envoyé'){
+        return {ok:true,sentTo:payload.email,recupere:true};
+      }
+    }catch(e){}
+    return null;
   }
 
   // Relit le registre (lecture seule, sans risque) pour retrouver une ligne qui vient
@@ -2387,6 +2420,8 @@ function genererDocument(){
     var realPrint=window.print; window.print=function(){};
     try{ if(typeof genererDocument==='function') genererDocument(); }catch(e){}
     window.print=realPrint;
+    // Réimpose le bloc de règlement : gbApplyTypeVisibility ci-dessous peut le remasquer
+    try{ gbForcerReglement(); }catch(e){}
     // Réapplique le masquage facture + le montant en lettres à jour (après recalcul de genererDocument)
     try{ gbApplyTypeVisibility((document.getElementById('gb-doctype')||{}).value||'proforma'); }catch(e){}
     var fileBase=(document.title||'').trim();
@@ -2394,8 +2429,9 @@ function genererDocument(){
     document.body.classList.add('gb-capturing');
     await new Promise(function(r){ setTimeout(r,400); });
     var el=document.querySelector('.document');
-    var opt={margin:[8,8,8,8],image:{type:'jpeg',quality:0.96},
-      html2canvas:{scale:2,useCORS:true,backgroundColor:'#ffffff'},
+    // Qualité volontairement modérée : un PDF trop lourd fait échouer l'envoi vers le moteur
+    var opt={margin:[8,8,8,8],image:{type:'jpeg',quality:0.82},
+      html2canvas:{scale:1.4,useCORS:true,backgroundColor:'#ffffff'},
       jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
       pagebreak:{mode:['css','legacy']}};
     var b64='';
@@ -2567,7 +2603,7 @@ function genererDocument(){
       +'Le Grand Bazar — Restaurant Rooftop\n'
       +'Place Jemaa El Fna, Marrakech\n'
       +'+212 6 11078244';
-    await window.gbApi({action:'send', email:email, subject:subject, message:body});
+    await window.gbApi({action:'send', id:window.GB_currentId, email:email, subject:subject, message:body});
     var st=document.getElementById('gb-statut'); if(st) st.value='Partagé au client';
     window.gbGenererSilencieux();
     await window.gbApi(Object.assign({action:'update', id:window.GB_currentId,
