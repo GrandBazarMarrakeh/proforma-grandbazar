@@ -2501,8 +2501,20 @@ function genererDocument(){
     }
     var b=banniere('⏳ Chargement de votre proposition…');
     var realAlert=window.alert; window.alert=function(){};     // masque les messages internes
-    try{ await window.gbCharger(DOC_ID); }catch(e){}
+    var charge=false;
+    try{ await window.gbCharger(DOC_ID); charge=!!window.GB_currentId; }catch(e){}
     window.alert=realAlert;
+    if(!charge){
+      // Le document n'a pas pu être chargé : ne jamais laisser croire au client
+      // qu'un formulaire vide est sa proposition.
+      b.style.borderColor='#7b1c3a'; b.style.background='#fdf3f5';
+      b.innerHTML='<b>Ce lien ne correspond à aucune proposition.</b><br>'
+        +'Le document a peut-être été remplacé ou supprimé depuis l\'envoi de ce message.<br>'
+        +'Merci de nous contacter pour en recevoir un nouveau : '
+        +'<b>com.legrandbazardemarrakech@gmail.com</b> — +212 6 11078244.';
+      var doc=document.querySelector('.document'); if(doc) doc.style.display='none';
+      return;
+    }
     try{ window.__gbTarifVerrou = (typeof tarif!=='undefined') ? tarif : null; }catch(e){}
     var num=(document.getElementById('ref-num')||{}).value||'';
     b.innerHTML='<b>Bienvenue</b> — voici votre proposition'+(num?(' n° '+num):'')+'.<br>'
