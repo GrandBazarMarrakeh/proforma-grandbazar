@@ -1285,8 +1285,8 @@ body.gb-directe-mode #directe-block{display:block!important}
           <div class="rib-field"><span class="rib-label">IBAN</span><span class="rib-val rib-iban">MA64 007 450 0015095000000196 27</span></div>
           <div class="rib-field"><span class="rib-label">BIC / SWIFT</span><span class="rib-val rib-mono">BCMAMAMC</span></div>
         </div>
-        <div class="rib-warning" data-fr>⚠ Le virement doit être effectué <strong>au minimum 15 jours avant</strong> la date de la prestation. La réservation n'est confirmée qu'à réception des fonds.</div>
-        <div class="rib-warning" data-en>⚠ Bank transfer must be completed at least <strong>15 days before</strong> the event.</div>
+        <div class="rib-warning" data-fr>⚠ Le virement doit être effectué <strong>au minimum 15 jours avant</strong> la date de la prestation. La réservation n'est confirmée qu'à réception des fonds.<br>📎 Merci de nous <strong>transmettre une copie de l'ordre de virement</strong> dès qu'il est effectué, afin d'assurer le suivi de votre dossier.</div>
+        <div class="rib-warning" data-en>⚠ Bank transfer must be completed at least <strong>15 days before</strong> the event.<br>📎 Please <strong>send us a copy of the transfer order</strong> once completed, so we can track your booking.</div>
       </div>
     </div>
     <div class="regl-bloc" id="regl-lien" style="display:none">
@@ -1674,6 +1674,7 @@ function recalc(){
     document.getElementById('reste').textContent=fmt(reste>0?reste:0);
     const acompteVal=document.getElementById('acompte').textContent;
     ['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=acompteVal;});
+    if(typeof window.gbMajArrete==='function') window.gbMajArrete();
     return;
   }
   let total=0;
@@ -1688,6 +1689,7 @@ function recalc(){
   document.querySelectorAll('#sec-bar .carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});document.querySelectorAll('.bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;total+=prix*qty;});const ht=total/1.1,tva=total-ht;document.getElementById('ht').textContent=fmt(ht);document.getElementById('tva').textContent=fmt(tva);document.getElementById('ttc').textContent=fmt(total);document.getElementById('acompte').textContent=fmt(total*0.5);const dejaVerse=parseFloat(document.getElementById('deja-verse')?.value)||0;const soldeAnt=parseFloat(document.getElementById('solde-anterieur')?.value)||0;const reste=total-dejaVerse+soldeAnt;document.getElementById('reste').textContent=fmt(reste>0?reste:0);
   // Mettre à jour le montant dans les blocs règlement
   const acompteVal=document.getElementById('acompte').textContent;['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=acompteVal;});
+  if(typeof window.gbMajArrete==='function') window.gbMajArrete();
 }
 function toggleSoldeAnt(){
   const row = document.getElementById('solde-ant-row');
@@ -1959,6 +1961,16 @@ function genererDocument(){
     if(n>0)  parts.push(b1000(n));
     return parts.join(' ').trim();
   }
+
+  // Met à jour la mention « Arrêté la présente facture à la somme de… » d'après le TOTAL TTC
+  // affiché. Appelée à chaque recalcul : la phrase ne peut plus rester figée sur zéro.
+  window.gbMajArrete=function(){
+    var box=document.getElementById('gb-arrete'); if(!box) return;
+    var type=((document.getElementById('gb-doctype')||{}).value||'');
+    if(type!=='facture') return;
+    var ttc=gbNum((document.getElementById('ttc')||{}).textContent);
+    box.textContent=gbArreteText(ttc);
+  };
 
   function gbArreteText(ttc){
     var dh=Math.floor(ttc), cts=Math.round((ttc-dh)*100);
@@ -2274,7 +2286,7 @@ function genererDocument(){
     const gtg=document.querySelector('input[name="guide-type-global"]:checked'); fd.guideTypeGlobal=gtg?gtg.value:null;
     const gbo=document.querySelector('input[name="guide-boisson"]:checked'); fd.guideBoisson=gbo?gbo.value:'';
     const obs=document.querySelector('.notes-area textarea'); fd.observations=obs?obs.value:null;
-    try{ fd.globals={lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,carteSupp:carteSupp,menuMulti:menuMulti,menuQty:menuQty,nbGuides:nbGuides,directe:document.body.classList.contains('gb-directe-mode')}; }catch(e){ fd.globals={}; }
+    try{ fd.globals={reglement:fd.reglement,lang:lang,tarif:tarif,mode:mode,selMenu:selMenu,carteSupp:carteSupp,menuMulti:menuMulti,menuQty:menuQty,nbGuides:nbGuides,directe:document.body.classList.contains('gb-directe-mode')}; }catch(e){ fd.globals={}; }
     return fd;
   }
 
@@ -2308,13 +2320,19 @@ function genererDocument(){
       if(it.x!=null&&it.x!=='') el.dataset.prix=it.x;
       if(sd&&it.d&&typeof setSushiPrix==='function'){ try{ setSushiPrix(sd); }catch(e){} }
     }); }
-    if(fd.reglement){ const r=document.querySelector('input[name="reglement"][value="'+fd.reglement+'"]'); if(r){ r.checked=true; if(typeof showReglement==='function') showReglement(fd.reglement);} }
+    const _reg = fd.reglement || g.reglement || null;
+    if(_reg){ const r=document.querySelector('input[name="reglement"][value="'+_reg+'"]'); if(r){ r.checked=true; if(typeof showReglement==='function') showReglement(_reg);} }
     if(fd.guideTypeGlobal){ const r=document.querySelector('input[name="guide-type-global"][value="'+fd.guideTypeGlobal+'"]'); if(r){ r.checked=true; } if(typeof onGuideTypeGlobal==='function') onGuideTypeGlobal(); }
     if(typeof fd.guideBoisson==='string'){ const r=document.querySelector('input[name="guide-boisson"][value="'+fd.guideBoisson+'"]'); if(r) r.checked=true; }
     if(typeof onGuideMenuGlobal==='function') onGuideMenuGlobal(); // réaffiche le détail (entrée/plat/dessert) du menu guide restauré
     if(fd.observations!=null){ const obs=document.querySelector('.notes-area textarea'); if(obs) obs.value=fd.observations; }
     try{ if(typeof updateGuide==='function') updateGuide(); }catch(e){}
     try{ if(typeof updateLienPaiement==='function') updateLienPaiement(); }catch(e){}
+    // Après TOUS les champs : le bloc de règlement est réimposé, et les zones de
+    // texte (observations, allergies) sont redimensionnées — sinon le texte restauré
+    // après le premier ajustement reste coupé à une ligne.
+    try{ if(typeof gbForcerReglement==='function') gbForcerReglement(); }catch(e){}
+    gbGrowAll();
     if(typeof recalc==='function') recalc();
   }
 
@@ -2324,6 +2342,15 @@ function genererDocument(){
     var els=box.querySelectorAll('.field-value'); // [Société, Contact, Email, Tél, Adresse, ICE]
     return els[2]?String(els[2].value||'').trim():'';
   }
+
+  // Mention ajoutée aux emails lorsque le règlement retenu est le virement bancaire
+  window.gbMentionVirement=function(){
+    var cr=document.querySelector('input[name="reglement"]:checked');
+    if(!cr || cr.value!=='virement') return '';
+    return 'Règlement par virement bancaire : nos coordonnées figurent sur le document.\n'
+         + 'Merci de nous transmettre une copie de l\'ordre de virement dès qu\'il est effectué, '
+         + 'afin d\'assurer le suivi de votre dossier.\n\n';
+  };
 
   function gbDefaultMail(type,numero){
     var L={ proforma:{t:'votre facture proforma',n:'Facture proforma'},
@@ -2335,6 +2362,7 @@ function genererDocument(){
     var body='Bonjour,\n\n'
       +'Veuillez trouver ci-joint '+x.t+(numero?(' n° '+numero):'')+' pour Le Grand Bazar Marrakech.\n'
       +'Nous restons à votre disposition pour toute question.\n\n'
+      +window.gbMentionVirement()
       +'Bien cordialement,\n'
       +'Le Grand Bazar — Restaurant Rooftop\n'
       +'Place Jemaa El Fna, Marrakech\n'
@@ -2569,6 +2597,7 @@ function genererDocument(){
         +'<div style="font-size:13px;color:#1a1a2e;margin-bottom:16px">Destinataire : <b>'+email+'</b></div>'
         +'<button data-c="pdf" style="'+btn+'">📄 Le document en PDF<span style="'+sub+'">Version figée, pour accord et signature</span></button>'
         +'<button data-c="lien" style="'+btn+'">🔗 Un lien modifiable<span style="'+sub+'">Le client complète ou modifie ses choix — enregistré en Devis</span></button>'
+        +'<button data-c="copier" style="'+btn+'">📋 Copier le lien, je l\'envoie moi-même<span style="'+sub+'">Pour le coller dans ta conversation en cours avec le client</span></button>'
         +'<button data-c="" style="margin-top:4px;padding:7px 14px;border:none;background:none;cursor:pointer;'
         +'font-family:inherit;font-size:12px;color:#5a5a6e;text-decoration:underline">Annuler</button>'
         +'</div>';
@@ -2598,6 +2627,7 @@ function genererDocument(){
       +'Une fois vos choix arrêtés, cliquez sur « Valider mes choix » en bas de la page : '
       +'nous recevrons votre sélection et vous ferons parvenir le devis définitif.\n\n'
       +'Ce lien vous est personnel, merci de ne pas le transmettre.\n\n'
+      +(typeof window.gbMentionVirement==='function'?window.gbMentionVirement():'')
       +'Bien cordialement,\n'
       +'Le Grand Bazar — Restaurant Rooftop\n'
       +'Place Jemaa El Fna, Marrakech\n'
@@ -2609,6 +2639,20 @@ function genererDocument(){
       statut:'Partagé au client', formData:window.gbCollectState()}, window.gbMeta()));
     alert('🔗 Lien envoyé à '+email+'\n\nN° '+numero()+' — statut : Partagé au client.\n'
          +'Tu recevras un email dès qu\'il aura validé ses choix.');
+  }
+
+  // Copie le lien client dans le presse-papiers : à coller dans une conversation existante
+  async function copierLien(){
+    if(!window.GB_currentId){
+      const dt=document.getElementById('gb-doctype');
+      if(dt && dt.value!=='devis'){ dt.value='devis'; if(typeof window.gbSetTitleByType==='function') window.gbSetTitleByType('devis'); }
+    }
+    if(!await assurerEnregistrement()) return;
+    const lien=urlClient()+'?doc='+encodeURIComponent(window.GB_currentId);
+    let ok=false;
+    try{ await navigator.clipboard.writeText(lien); ok=true; }catch(e){}
+    if(ok) alert('📋 Lien copié — n° '+numero()+'\n\n'+lien+'\n\nColle-le dans ta conversation en cours avec le client.\nPense à passer le statut sur « Partagé au client » une fois envoyé.');
+    else   window.prompt('Copie ce lien (Ctrl+C) puis colle-le dans ta conversation :', lien);
   }
 
   async function envoyerPdf(email){
@@ -2624,7 +2668,9 @@ function genererDocument(){
       if(!email){ alert('📧 Aucune adresse email dans le bloc client.'); return; }
       var choix=await choixEnvoi(email);
       if(!choix) return;
-      if(choix==='lien') await envoyerLien(email); else await envoyerPdf(email);
+      if(choix==='lien') await envoyerLien(email);
+      else if(choix==='copier') await copierLien();
+      else await envoyerPdf(email);
     }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
   };
 
