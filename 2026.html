@@ -657,6 +657,7 @@ body.gb-directe-mode #directe-block{display:block!important}
         </div>
         <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-glaces')">— 🍦 Glaces &amp; Sorbets — 30 DH / boule —</div>
         <div class="bar-accordion-body" id="acc-glaces">
+<div class="carte-item" data-id="g12" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace ou sorbet — parfum au choix du client</strong><strong data-en>Ice cream or sorbet — guest's choice</strong><br><span class="carte-item-desc" data-fr>Parfums choisis sur place — indiquer le nombre de boules</span><span class="carte-item-desc" data-en>Flavours chosen on site — enter the number of scoops</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
 <div class="carte-item" data-id="g1" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Vanille</strong><strong data-en>Vanilla Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
 <div class="carte-item" data-id="g2" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Corne de Gazelle</strong><strong data-en>Gazelle Horn Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
 <div class="carte-item" data-id="g3" data-prix="30" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Glace Café "Nes Nes"</strong><strong data-en>"Nes Nes" Coffee Ice Cream</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">30 DH</div></div>
@@ -1837,9 +1838,15 @@ function genererDocument(){
         });}});}
   // Recap bar
   const bB=document.getElementById('recap-bar-body');if(bB)bB.innerHTML='';
-  document.querySelectorAll('#sec-bar .bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`.bar-item-name[data-${lang}]`)||item.querySelector('.bar-item-name'))?.textContent||'';if(bB)bB.innerHTML+=`<tr><td><strong>${name}</strong></td><td class="r">${prix.toLocaleString('fr-FR')} DH</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${(prix*qty).toLocaleString('fr-FR')} DH</strong></td></tr>`;});
-  // Items bar à la carte (bières, vins, cocktails)
-  document.querySelectorAll('#sec-bar .carte-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';if(bB)bB.innerHTML+=`<tr><td><strong>${name}</strong>${desc?'<br><small style="color:var(--text-light);font-style:italic">'+desc+'</small>':''}</td><td class="r">${prix.toLocaleString('fr-FR')} DH</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${(prix*qty).toLocaleString('fr-FR')} DH</strong></td></tr>`;});
+  const _estCocktail=el=>!!(el.closest&&el.closest('#virgin,#signature,#classiques-120,#classiques-150'));
+  const _ligneBarItem=item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`.bar-item-name[data-${lang}]`)||item.querySelector('.bar-item-name'))?.textContent||'';return `<tr><td><strong>${name}</strong></td><td class="r">${prix.toLocaleString('fr-FR')} DH</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${(prix*qty).toLocaleString('fr-FR')} DH</strong></td></tr>`;};
+  const _ligneCarteBar=item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`strong[data-${lang}]`)||item.querySelector('strong'))?.textContent||'';const desc=(item.querySelector(`.carte-item-desc[data-${lang}]`)||item.querySelector('.carte-item-desc'))?.textContent||'';return `<tr><td><strong>${name}</strong>${desc?'<br><small style="color:var(--text-light);font-style:italic">'+desc+'</small>':''}</td><td class="r">${prix.toLocaleString('fr-FR')} DH</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${(prix*qty).toLocaleString('fr-FR')} DH</strong></td></tr>`;};
+  // 1) les cocktails d'abord : c'est l'apéritif
+  document.querySelectorAll('#sec-bar .carte-item.selected').forEach(item=>{ if(bB&&_estCocktail(item)) bB.innerHTML+=_ligneCarteBar(item); });
+  // 2) forfaits et open bars
+  document.querySelectorAll('#sec-bar .bar-item.selected').forEach(item=>{ if(bB) bB.innerHTML+=_ligneBarItem(item); });
+  // 3) le reste de la carte bar (bières, vins, softs…)
+  document.querySelectorAll('#sec-bar .carte-item.selected').forEach(item=>{ if(bB&&!_estCocktail(item)) bB.innerHTML+=_ligneCarteBar(item); });
   // Recap anim
   const bA=document.getElementById('recap-anim-body');if(bA)bA.innerHTML='';
   document.querySelectorAll('#sec-anim .bar-item.selected').forEach(item=>{const prix=parseFloat(item.dataset.prix)||0;const qty=parseInt(item.querySelector('.carte-qty input')?.value)||0;const name=(item.querySelector(`.bar-item-name[data-${lang}]`)||item.querySelector('.bar-item-name'))?.textContent||'';if(bA)bA.innerHTML+=`<tr><td><strong>${name}</strong></td><td class="r">${prix>0?prix.toLocaleString('fr-FR')+' DH':'—'}</td><td class="r"><strong>${qty}</strong></td><td class="r total-cell"><strong>${prix>0?(prix*qty).toLocaleString('fr-FR')+' DH':'—'}</strong></td></tr>`;});
@@ -2196,13 +2203,16 @@ function genererDocument(){
     };
     const _stripIcon=s=>s.replace(/^[^\p{L}0-9]+/u,'').trim();
     // Version aérée : un élément par ligne, prix unitaire × quantité (pas de total, pas d'icônes)
-    const _recap=id=>{
-      const b=document.getElementById(id); if(!b) return '';
+    const _blocs=id=>{
+      const b=document.getElementById(id); if(!b) return [];
+      const blocs=[]; let cat='';
       const lines=[];
+      const pousser=()=>{ if(lines.length){ blocs.push({cat:cat,txt:lines.join('\n')}); lines.length=0; } };
       Array.from(b.querySelectorAll('tr')).forEach(tr=>{
         const tds=tr.querySelectorAll('td');
         if(tr.classList.contains('cat-row')){
           const label=_stripIcon(tds[0]?tds[0].textContent.replace(/\s+/g,' ').trim():'');
+          pousser(); cat=label;
           if(label) lines.push(label);
           return;
         }
@@ -2221,9 +2231,12 @@ function genererDocument(){
         const t=tr.textContent.replace(/\s+/g,' ').trim();
         if(t) lines.push(t);
       });
-      return lines.join('\n');
+      pousser();
+      return blocs;
     };
-    const guideOffert=((document.getElementById('guide-statut')||{}).value||'')==='offert' && nbGuides>0;
+    const _recap=id=>_blocs(id).map(b=>b.txt).filter(Boolean).join('\n');
+    const guideStatut=((document.getElementById('guide-statut')||{}).value||'');
+    const guideOffert=guideStatut==='offert' && nbGuides>0;
     const guideBoissonVal=(document.querySelector('input[name="guide-boisson"]:checked')||{}).value||'';
     // Texte repas guide reconstruit depuis les champs sources (pas depuis le tableau récap, qui mélange aussi la boisson)
     const _guideRepasTxt=()=>{
@@ -2248,12 +2261,36 @@ function genererDocument(){
       return parts.join('\n');
     };
     const guideRepasTxt=_guideRepasTxt();
-    const cuisinePayant=[_recap('recap-fixe-body'),_recap('recap-carte-body')].filter(Boolean).join('\n');
+    // Tapas et entrées sont servies ensemble à l'apéritif : un seul bloc, placé avant les menus
+    const _bc=_blocs('recap-carte-body');
+    const _estApero=c=>/tapas|entr/i.test(c||'');
+    const _sansTitre=b=>b.txt.split('\n').slice(1).join('\n');
+    const _ligApero=_bc.filter(b=>_estApero(b.cat)).map(_sansTitre).filter(Boolean).join('\n');
+    const _tapas =_ligApero ? ('Tapas / Entrées\n'+_ligApero) : '';
+    const _ligAutres=_bc.filter(b=>!_estApero(b.cat)).map(b=>b.txt).filter(Boolean).join('\n');
+    const _autres=_ligAutres ? ('À la carte\n'+_ligAutres) : '';
+    // Menu groupe : « Menu Marocain 2 : 10 pax » plutôt que « Menu Marocain 2 ×10 »
+    const _menuFixe=_recap('recap-fixe-body').replace(/ ×(\d+)/g,' : $1 pax');
+    const cuisinePayant=[_tapas,_menuFixe,_autres].filter(Boolean).join('\n\n');
+    // Guide(s) au même menu que le groupe : une seule ligne plutôt qu'un bloc séparé
+    let _fusionGuide='';
+    try{
+      if(mode==='fixe' && !menuMulti && selMenu && guideOffert){
+        const _m=MENUS.find(x=>x.id===selMenu);
+        const _vg=((document.getElementById('guide-menu-global')||{}).value||'').split('|')[0].trim();
+        if(_m && _vg && _vg===('Menu '+(_m.nom||_m.id))){
+          const _nbc=parseInt((document.getElementById('nb-convives')||{}).value)||0;
+          _fusionGuide='Menu groupe '+_vg+' '+_nbc+' pax +'+nbGuides+' gratuit';
+        }
+      }
+    }catch(e){}
     const barPayant=_recap('recap-bar-body');
     return {
       client:societe,
       contact:String(contact).trim(),
       pax:pax,
+      guides:(guideStatut==='offert'||guideStatut==='paye')?(nbGuides||0):0,
+      guideOffert:(guideStatut==='offert'),
       montant:gbNum((document.getElementById('ttc')||{}).textContent),
       acompte:gbNum((document.getElementById('acompte')||{}).textContent),
       dejaVerse:gbNum(_txt('deja-verse')),
@@ -2265,7 +2302,9 @@ function genererDocument(){
       allergies:_txt('regime-detail'),
       observations:((document.querySelector('.notes-area textarea')||{}).value||'').trim(),
       modeReglement:_txt('mode-reglement'),
-      cuisineResume:[cuisinePayant,(guideRepasTxt?'Repas guide (offert) :\n'+guideRepasTxt:'')].filter(Boolean).join('\n\n'),
+      cuisineResume: _fusionGuide
+        ? [_tapas,_fusionGuide,_autres].filter(Boolean).join('\n')
+        : [cuisinePayant,(guideRepasTxt?'Repas guide (offert) :\n'+guideRepasTxt:'')].filter(Boolean).join('\n\n'),
       barResume:[barPayant,((guideOffert&&guideBoissonVal)?'Boisson guide (offerte) : '+guideBoissonVal+' × '+nbGuides:'')].filter(Boolean).join('\n\n')
     };
   }
@@ -2282,6 +2321,10 @@ function genererDocument(){
         d:sd?sd.value:null, p:pl?pl.value:null, x:(sd||pl)?(el.dataset.prix||null):null};
     });
     document.querySelectorAll('.menu-accompagnement[data-menu]').forEach(s=>{ fd.accomp[s.dataset.menu]=s.value; });
+    fd.regimes=Array.from(document.querySelectorAll('.regime-item')).map(function(it){
+      const cb=it.querySelector('input[type=checkbox]'), nb=it.querySelector('.regime-nb');
+      return {c:!!(cb&&cb.checked), n:nb?nb.value:''};
+    });
     const cr=document.querySelector('input[name="reglement"]:checked'); fd.reglement=cr?cr.value:null;
     const gtg=document.querySelector('input[name="guide-type-global"]:checked'); fd.guideTypeGlobal=gtg?gtg.value:null;
     const gbo=document.querySelector('input[name="guide-boisson"]:checked'); fd.guideBoisson=gbo?gbo.value:'';
@@ -2320,6 +2363,14 @@ function genererDocument(){
       if(it.x!=null&&it.x!=='') el.dataset.prix=it.x;
       if(sd&&it.d&&typeof setSushiPrix==='function'){ try{ setSushiPrix(sd); }catch(e){} }
     }); }
+    if(Array.isArray(fd.regimes)){
+      const its=document.querySelectorAll('.regime-item');
+      fd.regimes.forEach(function(r,i){
+        if(!its[i]||!r) return;
+        const cb=its[i].querySelector('input[type=checkbox]'); if(cb) cb.checked=!!r.c;
+        const nb=its[i].querySelector('.regime-nb');           if(nb&&r.n!=null) nb.value=r.n;
+      });
+    }
     const _reg = fd.reglement || g.reglement || null;
     if(_reg){ const r=document.querySelector('input[name="reglement"][value="'+_reg+'"]'); if(r){ r.checked=true; if(typeof showReglement==='function') showReglement(_reg);} }
     if(fd.guideTypeGlobal){ const r=document.querySelector('input[name="guide-type-global"][value="'+fd.guideTypeGlobal+'"]'); if(r){ r.checked=true; } if(typeof onGuideTypeGlobal==='function') onGuideTypeGlobal(); }
@@ -2520,10 +2571,46 @@ function genererDocument(){
     catch(e){ alert('❌ '+e.message); }
   };
 
+  // Vide entièrement le formulaire : sans cela, les champs absents du document que
+  // l'on ouvre gardent la valeur du document précédent — d'où des dossiers mélangés.
+  window.gbResetFormulaire=function(){
+    const garder={'ref-num':1,'ref-date':1,'gb-doctype':1,'gb-statut':1,'gb-partner':1,'chk-menu-multi':1};
+    document.querySelectorAll('.carte-item[data-id],.bar-item[data-id]').forEach(function(el){
+      el.classList.remove('selected');
+      const cb=el.querySelector('input[type=checkbox]'); if(cb) cb.checked=false;
+      const q=el.querySelector('.carte-qty input'); if(q) q.value=0;
+      ['.gateau-message','.sushi-detail','.prix-libre'].forEach(function(s){ const f=el.querySelector(s); if(f) f.value=''; });
+      if(el.querySelector('.sushi-detail')){ el.dataset.prix=0; const d=document.getElementById('sushi-price-display'); if(d) d.textContent='— DH'; }
+      if(el.querySelector('.prix-libre')) el.dataset.prix=0;
+    });
+    document.querySelectorAll('.info-box .field-value').forEach(function(f){ f.value=''; });
+    document.querySelectorAll('input[id],select[id],textarea[id]').forEach(function(el){
+      if(garder[el.id]||el.type==='radio'||el.type==='checkbox') return;
+      el.value = (el.tagName==='SELECT') ? (el.options[0]?el.options[0].value:'') : '';
+    });
+    const obs=document.querySelector('.notes-area textarea'); if(obs) obs.value='';
+    document.querySelectorAll('.regime-item').forEach(function(it){
+      const cb=it.querySelector('input[type=checkbox]'); if(cb) cb.checked=false;
+      const nb=it.querySelector('.regime-nb'); if(nb) nb.value='';
+    });
+    document.querySelectorAll('input[name="reglement"]').forEach(function(r){ r.checked=false; });
+    document.querySelectorAll('.regl-bloc').forEach(function(b){ b.classList.remove('active-regl'); b.style.setProperty('display','none','important'); });
+    const rf=document.querySelector('input[name="guide-type-global"][value="fixe"]'); if(rf) rf.checked=true;
+    const rb=document.querySelector('input[name="guide-boisson"][value=""]'); if(rb) rb.checked=true;
+    try{ selMenu=null; carteSupp=false; menuMulti=false; menuQty={}; nbGuides=1; }catch(e){}
+    const ng=document.getElementById('nb-guides-display'); if(ng) ng.textContent=1;
+    try{ if(typeof window.gbToggleDirecte==='function') window.gbToggleDirecte(false); }catch(e){}
+    try{ if(typeof setMode==='function') setMode('fixe'); }catch(e){}
+    try{ if(typeof buildMenuCards==='function') buildMenuCards(); }catch(e){}
+    try{ if(typeof updateGuide==='function') updateGuide(); }catch(e){}
+    try{ if(typeof recalc==='function') recalc(); }catch(e){}
+  };
+
   window.gbCharger=async function(id){
     try{
       const j=await gbApi({action:'get',id:id});
       if(!j.doc){ alert('Document introuvable'); return; }
+      window.gbResetFormulaire();          // page nette avant d'appliquer le document
       window.GB_currentId=j.doc.id;
       const dt=document.getElementById('gb-doctype'); if(dt&&j.doc.type) dt.value=j.doc.type;
       if(j.doc.type) gbSetTitleByType(j.doc.type);
