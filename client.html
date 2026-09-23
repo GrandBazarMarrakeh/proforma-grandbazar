@@ -530,43 +530,7 @@ body.gb-directe-mode #directe-block{display:block!important}
       </div>
 
       <div class="carte-section" id="sec-plats">
-        <!-- Accompagnements multi avec compteur -->
-        <div id="accomp-bloc" style="padding:10px 12px;background:rgba(201,168,76,.08);border:1px dashed var(--gold);margin:6px 0;border-radius:3px;" class="screen-only">
-          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-fr>🥗 Accompagnements — répartition pour les plats ci-dessus</div>
-          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-en>🥗 Side dishes — split across the mains above</div>
-          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center">
-            <div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Légumes</div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Vegetables</div>
-              <input type="number" min="0" value="0" id="acc-legumes" oninput="updateAccomp()"
-                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
-            </div>
-            <div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px">Semoule</div>
-              <input type="number" min="0" value="0" id="acc-semoule" oninput="updateAccomp()"
-                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
-            </div>
-            <div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Salade verte</div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Green salad</div>
-              <input type="number" min="0" value="0" id="acc-salade" oninput="updateAccomp()"
-                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
-            </div>
-            <div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Purée</div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Mashed potato</div>
-              <input type="number" min="0" value="0" id="acc-puree" oninput="updateAccomp()"
-                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
-            </div>
-            <div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Frites</div>
-              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Fries</div>
-              <input type="number" min="0" value="0" id="acc-frites" oninput="updateAccomp()"
-                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
-            </div>
-          </div>
-          <div id="accomp-note" style="font-size:10px;color:var(--text-light);font-style:italic;margin-top:6px"></div>
-        </div>
+        <!-- Accompagnements : bloc déplacé plus bas, sous les plats internationaux concernés -->
         <div id="accomp-print" style="font-size:11px;color:var(--text-light);padding:4px 12px;font-style:italic;display:none"></div>
         <div class="bar-accordion carte-section-title" style="margin-top:8px" onclick="toggleAccordion('acc-trad')">— 🍽 Plats Traditionnels —</div>
         <div class="bar-accordion-body" id="acc-trad">
@@ -602,6 +566,42 @@ body.gb-directe-mode #directe-block{display:block!important}
 <div class="carte-item" data-id="i12" data-prix="270" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Entrecôte</strong><strong data-en>Ribeye Steak</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">270 DH</div></div>
 <div class="carte-item" data-id="i13" data-prix="270" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Poisson Grillé du Jour</strong><strong data-en>Grilled Fish of the Day</strong></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">270 DH</div></div>
 <div class="carte-item" data-id="i14" data-prix="290" onclick="toggleItem(this)"><input type="checkbox"><div class="carte-item-name"><strong data-fr>Souris d'Agneau</strong><strong data-en>Lamb Shank</strong><br><span class="carte-item-desc" data-fr>Purée, sauce d'agneau</span><span class="carte-item-desc" data-en>Mashed potato, lamb jus</span></div><div class="carte-qty"><input type="number" min="0" value="0" onclick="event.stopPropagation()" oninput="recalc()"></div><div class="carte-item-price">290 DH</div></div>
+        <div id="accomp-bloc" style="padding:10px 12px;background:rgba(201,168,76,.08);border:1px dashed var(--gold);margin:6px 0;border-radius:3px;" class="screen-only">
+          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-fr>🥗 Accompagnements — un par plat ci-dessus</div>
+          <div style="font-size:10px;color:var(--navy);font-weight:700;letter-spacing:1px;text-transform:uppercase;margin-bottom:8px" data-en>🥗 Side dishes — one per main above</div>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;text-align:center">
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Légumes</div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Vegetables</div>
+              <input type="number" min="0" value="0" id="acc-legumes" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px">Semoule</div>
+              <input type="number" min="0" value="0" id="acc-semoule" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Salade verte</div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Green salad</div>
+              <input type="number" min="0" value="0" id="acc-salade" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Purée</div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Mashed potato</div>
+              <input type="number" min="0" value="0" id="acc-puree" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+            <div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-fr>Frites</div>
+              <div style="font-size:10px;color:var(--burgundy);font-weight:600;margin-bottom:3px" data-en>Fries</div>
+              <input type="number" min="0" value="0" id="acc-frites" oninput="updateAccomp()"
+                style="width:100%;border:1px solid var(--border);border-radius:3px;text-align:center;padding:3px;font-family:'Cormorant Garamond',serif;font-size:13px;font-weight:700">
+            </div>
+          </div>
+          <div id="accomp-note" style="font-size:10px;color:var(--text-light);font-style:italic;margin-top:6px"></div>
+        </div>
         </div>
       </div>
 
