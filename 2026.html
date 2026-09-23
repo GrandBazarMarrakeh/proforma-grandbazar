@@ -1623,21 +1623,21 @@ function toggleItem(el){
   recalc();
 }
 function toggleBar(el){const cb=el.querySelector('input[type="checkbox"]');cb.checked=!cb.checked;el.classList.toggle('selected',cb.checked);if(cb.checked){const q=el.querySelector('.carte-qty input');if(q&&parseInt(q.value)===0)q.value=1;}recalc();}
-// Seuls ces plats internationaux sont servis avec un accompagnement
-const PLATS_AVEC_ACCOMP = ['i5','i6','i10','i11','i12','i13','i14'];
+// Plats internationaux servis avec un accompagnement.
+// La liste est déclarée À L'INTÉRIEUR de la fonction : recalc() est appelé au chargement,
+// bien avant cette ligne, et une constante de portée supérieure ne serait pas encore
+// initialisée — ce qui interrompait tout le script.
 function nbPlatsAvecAccomp(){
-  let n=0;
-  PLATS_AVEC_ACCOMP.forEach(function(id){
-    const el=document.querySelector('.carte-item[data-id="'+id+'"]');
-    if(el && el.classList.contains('selected')) n += parseInt(el.querySelector('.carte-qty input')?.value)||0;
+  var n=0;
+  ['i5','i6','i10','i11','i12','i13','i14'].forEach(function(id){
+    var el=document.querySelector('.carte-item[data-id="'+id+'"]');
+    if(el && el.classList.contains('selected')){
+      var q=el.querySelector('.carte-qty input');
+      n += (q ? parseInt(q.value) : 0) || 0;
+    }
   });
   return n;
 }
-// Replace le bloc accompagnements sous les plats concernés
-document.addEventListener('DOMContentLoaded', function(){
-  const bloc=document.getElementById('accomp-bloc'), cible=document.getElementById('acc-intl');
-  if(bloc && cible) cible.appendChild(bloc);
-});
 
 function updateAccomp(){ majCompteurAccomp(); if(typeof recalc==='function') recalc(); }
 
