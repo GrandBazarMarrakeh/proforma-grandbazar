@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Votre proposition — Le Grand Bazar Marrakech</title>
+<title>Facture Proforma — Le Grand Bazar Marrakech</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500;600&display=swap');
 :root{--navy:#3d1a35;--navy-dark:#2a0f2b;--gold:#c9a84c;--gold-light:#e8c97a;--burgundy:#7b1c3a;--cream:#f5f0e8;--cream-dark:#ede5d4;--text:#1a1a2e;--text-light:#5a5a6e;--white:#fff;--border:#d4c5a0}
@@ -265,7 +265,7 @@ body.gb-directe-mode #directe-block{display:block!important}
     </select>
     <button class="ctrl-btn" onclick="gbEnregistrer()" title="Attribue un numéro auto et enregistre dans le registre">💾 Enregistrer</button>
     <button class="ctrl-btn" onclick="gbOuvrirListe()" title="Rouvrir / modifier un document existant">📂 Mes documents</button>
-    <button class="ctrl-btn" onclick="gbEnvoyer()" title="Envoyer le document par email au client">📧 Envoyer</button>
+    <button class="ctrl-btn" onclick="gbEnvoyerAuClient()" title="Envoyer au client : le document en PDF, ou un lien qu'il peut modifier">📤 Envoyer au client</button>
   </div>
 </div>
 
@@ -2074,7 +2074,7 @@ function genererDocument(){
     gbInjectCaptureStyle();
     var dt=document.getElementById('gb-doctype'); if(dt) window.gbSetTitleByType(dt.value);
     gbInitAutoGrow();
-    /* désactivé en mode client */;
+    gbLoadPartners();
   });
 
   // ── Champs texte auto-extensibles (plusieurs lignes) ──────────
@@ -2235,6 +2235,16 @@ function genererDocument(){
       return td.textContent.replace(/\s+/g,' ').trim();
     };
     const _stripIcon=s=>s.replace(/^[^\p{L}0-9]+/u,'').trim();
+    // Le message du gâteau est rangé dans le même <small> que les descriptions :
+    // on le distingue par son préfixe crayon, et on le conserve pour la cuisine.
+    const _msgGateau=td=>{
+      let m='';
+      td.querySelectorAll('small').forEach(function(s){
+        const v=s.textContent.replace(/\s+/g,' ').trim();
+        if(/^✏️/.test(v) || /^Message\s*:/i.test(v)) m=v.replace(/^✏️\s*/,'').replace(/^Message\s*:\s*/i,'');
+      });
+      return m;
+    };
     // Version aérée : un élément par ligne, prix unitaire × quantité (pas de total, pas d'icônes)
     const _blocs=id=>{
       const b=document.getElementById(id); if(!b) return [];
@@ -2259,6 +2269,8 @@ function genererDocument(){
           const pu=tds[1].textContent.replace(/\s+/g,' ').trim();
           const qty=parseInt(tds[2].textContent)||0;
           if(name) lines.push(name+(qty?(' ×'+qty):''));   // nom + quantité, sans le prix
+          const _mg=_msgGateau(tds[0]);
+          if(_mg) lines.push('Message sur le gâteau : '+_mg);
           return;
         }
         const t=tr.textContent.replace(/\s+/g,' ').trim();
@@ -2594,12 +2606,8 @@ function genererDocument(){
       const numero=(j2&&j2.numero)||(j&&j.numero)||'';
       const driveUrl=(j2&&j2.driveUrl)||'';
       const refn=document.getElementById('ref-num'); if(refn&&numero) refn.value=numero;
-      /* désactivé en mode client */; // mémorise le partenaire pour la prochaine fois
+      gbLoadPartners(); // mémorise le partenaire pour la prochaine fois
       alert('✅ Enregistré\nN° '+numero+'\nStatut : '+statut+(driveUrl?'\n📄 PDF rangé dans le Drive ✔':'\n(données seules, sans PDF)'));
-      // Envoi proposé si une adresse email est renseignée
-      if(gbClientEmail() && pdf && pdf.b64){
-        try{ await gbSendCurrent(pdf); }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
-      }
     }catch(e){ alert('❌ Enregistrement impossible\n'+e.message); }
   };
 
@@ -2687,107 +2695,126 @@ function genererDocument(){
   }
 })();
 </script>
-<!-- ══ MODE CLIENT ══ -->
-<style>
-  #gb-engine-group{display:none!important}
-  #btn-p,#btn-c{display:none!important}
-  .gb-client-banner{max-width:900px;margin:0 auto 14px;padding:12px 16px;border:2px solid #c9a84c;
-    border-radius:6px;background:#fffaf0;font-family:'Cormorant Garamond',Georgia,serif;
-    font-size:13.5px;color:#3d1a35;line-height:1.5}
-  .gb-client-banner b{color:#7a1f3d}
-  .gb-client-bar{position:sticky;bottom:0;z-index:500;display:flex;justify-content:center;
-    gap:12px;padding:12px;background:rgba(61,26,53,.96);margin-top:20px}
-  .gb-valider-btn{font-family:'Cormorant Garamond',Georgia,serif;font-size:15px;font-weight:700;
-    padding:11px 26px;border:none;border-radius:4px;background:#c9a84c;color:#3d1a35;cursor:pointer}
-  .gb-valider-btn:hover{background:#dcbc5e}
-  @media print{.gb-client-banner,.gb-client-bar{display:none!important}}
-</style>
+<!-- ══ ENVOI AU CLIENT (PDF ou lien modifiable) ══ -->
 <script>
 (function(){
-  var NOTIF_TO   = 'com.legrandbazardemarrakech@gmail.com';   // ← destinataire de la notification
-  var FORM_RESTO = '2026.html';   // ← nom du formulaire restaurant, dans le même dossier
-  function lienResto(id){
-    return location.href.replace(/[?#].*$/,'').replace(/[^\/]*$/,'') + FORM_RESTO + '?doc=' + encodeURIComponent(id);
+  function urlClient(){
+    return location.href.replace(/[?#].*$/,'').replace(/[^\/]*$/,'') + 'client.html';
   }
-  var DOC_ID = new URLSearchParams(location.search).get('doc') || '';
+  function emailClient(){
+    var box=document.querySelectorAll('.info-box')[0]; if(!box) return '';
+    var els=box.querySelectorAll('.field-value');
+    return els[2]?String(els[2].value||'').trim():'';
+  }
+  function numero(){ return (document.getElementById('ref-num')||{}).value||''; }
 
-  function banniere(txt){
-    var d=document.createElement('div'); d.className='gb-client-banner'; d.innerHTML=txt;
-    var doc=document.querySelector('.document');
-    if(doc && doc.parentNode) doc.parentNode.insertBefore(d, doc); else document.body.insertBefore(d, document.body.firstChild);
-    return d;
+  // Enregistre le document s'il n'a pas encore de numéro (sans proposer d'envoi)
+  async function assurerEnregistrement(){
+    if(window.GB_currentId) return true;
+    var _rc=window.confirm; window.confirm=function(){ return false; };
+    try{ await window.gbEnregistrer(); } finally { window.confirm=_rc; }
+    return !!window.GB_currentId;
   }
-  function barreValidation(){
-    var b=document.createElement('div'); b.className='gb-client-bar';
-    b.innerHTML='<button class="gb-valider-btn" id="gb-valider">✅ Valider mes choix</button>';
-    document.body.appendChild(b);
-    document.getElementById('gb-valider').onclick=valider;
+
+  function choixEnvoi(email){
+    return new Promise(function(resolve){
+      var btn='display:block;width:100%;text-align:left;margin-bottom:9px;padding:11px 14px;border:1.5px solid #d4c5a0;'
+             +'border-radius:4px;background:#f5f0e8;cursor:pointer;font-family:inherit;font-size:13.5px;color:#3d1a35';
+      var sub='display:block;font-size:11px;color:#5a5a6e;margin-top:2px';
+      var m=document.createElement('div');
+      m.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:99999;display:flex;align-items:center;'
+                     +'justify-content:center;font-family:\'Cormorant Garamond\',Georgia,serif';
+      m.innerHTML='<div style="background:#fff;border-radius:6px;padding:22px 26px;max-width:470px;width:92%;box-shadow:0 10px 40px rgba(0,0,0,.3)">'
+        +'<div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#3d1a35;font-weight:700;margin-bottom:5px">Envoyer au client</div>'
+        +'<div style="font-size:13px;color:#1a1a2e;margin-bottom:16px">Destinataire : <b>'+email+'</b></div>'
+        +'<button data-c="pdf" style="'+btn+'">📄 Le document en PDF<span style="'+sub+'">Version figée, pour accord et signature</span></button>'
+        +'<button data-c="lien" style="'+btn+'">🔗 Un lien modifiable<span style="'+sub+'">Le client complète ou modifie ses choix — enregistré en Devis</span></button>'
+        +'<button data-c="copier" style="'+btn+'">📋 Copier le lien, je l\'envoie moi-même<span style="'+sub+'">Pour le coller dans ta conversation en cours avec le client</span></button>'
+        +'<button data-c="" style="margin-top:4px;padding:7px 14px;border:none;background:none;cursor:pointer;'
+        +'font-family:inherit;font-size:12px;color:#5a5a6e;text-decoration:underline">Annuler</button>'
+        +'</div>';
+      document.body.appendChild(m);
+      m.addEventListener('click', function(e){
+        var b=e.target.closest ? e.target.closest('button') : null;
+        if(!b) return;
+        var c=b.getAttribute('data-c'); m.remove(); resolve(c||null);
+      });
+    });
   }
-  async function valider(){
-    var btn=document.getElementById('gb-valider');
-    if(!DOC_ID){ alert('Lien invalide : aucun document associé.'); return; }
-    if(!confirm('Confirmer l\'envoi de vos choix au restaurant ?')) return;
-    btn.disabled=true; btn.textContent='⏳ Envoi en cours…';
+
+  async function envoyerLien(email){
+    // un lien modifiable = un devis ; on force le type avant le premier enregistrement
+    if(!window.GB_currentId){
+      var dt=document.getElementById('gb-doctype');
+      if(dt && dt.value!=='devis'){ dt.value='devis'; if(typeof window.gbSetTitleByType==='function') window.gbSetTitleByType('devis'); }
+    }
+    if(!await assurerEnregistrement()) return;
+    var lien=urlClient()+'?doc='+encodeURIComponent(window.GB_currentId);
+    var num=numero();
+    var subject='Le Grand Bazar Marrakech — votre proposition'+(num?(' n° '+num):'');
+    var body='Bonjour,\n\n'
+      +'Voici votre proposition pour Le Grand Bazar Marrakech'+(num?(' (réf. '+num+')'):'')+'.\n\n'
+      +'Vous pouvez la consulter et compléter ou modifier vos choix (menus, boissons, régimes alimentaires) '
+      +'directement en ligne via ce lien personnel :\n\n'+lien+'\n\n'
+      +'Une fois vos choix arrêtés, cliquez sur « Valider mes choix » en bas de la page : '
+      +'nous recevrons votre sélection et vous ferons parvenir le devis définitif.\n\n'
+      +'Ce lien vous est personnel, merci de ne pas le transmettre.\n\n'
+      +(typeof window.gbMentionVirement==='function'?window.gbMentionVirement():'')
+      +'Bien cordialement,\n'
+      +'Le Grand Bazar — Restaurant Rooftop\n'
+      +'Place Jemaa El Fna, Marrakech\n'
+      +'+212 6 11078244';
+    await window.gbApi({action:'send', id:window.GB_currentId, email:email, subject:subject, message:body});
+    var st=document.getElementById('gb-statut'); if(st) st.value='Partagé au client';
+    window.gbGenererSilencieux();
+    await window.gbApi(Object.assign({action:'update', id:window.GB_currentId,
+      statut:'Partagé au client', formData:window.gbCollectState()}, window.gbMeta()));
+    alert('🔗 Lien envoyé à '+email+'\n\nN° '+numero()+' — statut : Partagé au client.\n'
+         +'Tu recevras un email dès qu\'il aura validé ses choix.');
+  }
+
+  // Copie le lien client dans le presse-papiers : à coller dans une conversation existante
+  async function copierLien(){
+    if(!window.GB_currentId){
+      const dt=document.getElementById('gb-doctype');
+      if(dt && dt.value!=='devis'){ dt.value='devis'; if(typeof window.gbSetTitleByType==='function') window.gbSetTitleByType('devis'); }
+    }
+    if(!await assurerEnregistrement()) return;
+    const lien=urlClient()+'?doc='+encodeURIComponent(window.GB_currentId);
+    let ok=false;
+    try{ await navigator.clipboard.writeText(lien); ok=true; }catch(e){}
+    if(ok) alert('📋 Lien copié — n° '+numero()+'\n\n'+lien+'\n\nColle-le dans ta conversation en cours avec le client.\nPense à passer le statut sur « Partagé au client » une fois envoyé.');
+    else   window.prompt('Copie ce lien (Ctrl+C) puis colle-le dans ta conversation :', lien);
+  }
+
+  async function envoyerPdf(email){
+    if(!await assurerEnregistrement()) return;
+    // gbEnvoyer redemande confirmation : le choix vient d'être fait dans la fenêtre
+    var _rc=window.confirm; window.confirm=function(){ return true; };
+    try{ await window.gbEnvoyer(); } finally { window.confirm=_rc; }
+  }
+
+  window.gbEnvoyerAuClient=async function(){
     try{
-      try{ if(window.__gbTarifVerrou && typeof setTarif==='function') setTarif(window.__gbTarifVerrou); }catch(e){}
-      window.gbGenererSilencieux();
-      var meta=window.gbMeta();
-      await window.gbApi(Object.assign({action:'update', id:DOC_ID,
-        statut:'Choix client reçu', formData:window.gbCollectState()}, meta));
-      var num=(document.getElementById('ref-num')||{}).value||'';
-      try{
-        await window.gbApi({action:'send', email:NOTIF_TO,
-          subject:'✅ Choix client reçus — '+(meta.client||meta.contact||'')+(num?(' — '+num):''),
-          message:'Le client a validé ses choix en ligne.\n\n'
-            +'Document : '+num+'\nClient : '+(meta.client||'')+'\nContact : '+(meta.contact||'')
-            +'\nDate prestation : '+(meta.dateP||'')+'\nNb pax : '+(meta.pax||'')
-            +'\nMontant TTC : '+(meta.montant||'')+' DH\n\n'
-            +'Cuisine :\n'+(meta.cuisineResume||'—')+'\n\nBar :\n'+(meta.barResume||'—')
-            +'\n\nRégimes / allergies :\n'+(meta.allergies||'—')
-            +'\n\nOuvrir directement le document pour le finaliser :\n'+lienResto(DOC_ID)});
-      }catch(e){ /* la notification ne doit pas bloquer la validation */ }
-      btn.textContent='✅ Choix transmis';
-      alert('✅ Merci, vos choix ont bien été transmis au Grand Bazar.\n\n'
-        +'Le restaurant vous enverra le devis définitif. Vous pouvez encore revenir sur ce lien pour modifier '
-        +'votre sélection tant que le devis n\'est pas confirmé.');
-    }catch(e){
-      btn.disabled=false; btn.textContent='✅ Valider mes choix';
-      alert('❌ Envoi impossible\n'+e.message+'\n\nRéessaie dans un instant.');
-    }
-  }
+      var email=emailClient();
+      if(!email){ alert('📧 Aucune adresse email dans le bloc client.'); return; }
+      var choix=await choixEnvoi(email);
+      if(!choix) return;
+      if(choix==='lien') await envoyerLien(email);
+      else if(choix==='copier') await copierLien();
+      else await envoyerPdf(email);
+    }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
+  };
 
+  // Ouverture directe d'un document : …/2026.html?doc=<identifiant>
   document.addEventListener('DOMContentLoaded', async function(){
-    if(!DOC_ID){
-      banniere('<b>Lien incomplet.</b> Ce lien ne contient pas de référence de document — merci de nous recontacter pour en recevoir un nouveau.');
-      return;
-    }
-    var b=banniere('⏳ Chargement de votre proposition…');
-    var realAlert=window.alert; window.alert=function(){};     // masque les messages internes
-    var charge=false;
-    try{ await window.gbCharger(DOC_ID); charge=!!window.GB_currentId; }catch(e){}
-    window.alert=realAlert;
-    if(!charge){
-      // Le document n'a pas pu être chargé : ne jamais laisser croire au client
-      // qu'un formulaire vide est sa proposition.
-      b.style.borderColor='#7b1c3a'; b.style.background='#fdf3f5';
-      b.innerHTML='<b>Ce lien ne correspond à aucune proposition.</b><br>'
-        +'Le document a peut-être été remplacé ou supprimé depuis l\'envoi de ce message.<br>'
-        +'Merci de nous contacter pour en recevoir un nouveau : '
-        +'<b>com.legrandbazardemarrakech@gmail.com</b> — +212 6 11078244.';
-      var doc=document.querySelector('.document'); if(doc) doc.style.display='none';
-      return;
-    }
-    try{ window.__gbTarifVerrou = (typeof tarif!=='undefined') ? tarif : null; }catch(e){}
-    var num=(document.getElementById('ref-num')||{}).value||'';
-    b.innerHTML='<b>Bienvenue</b> — voici votre proposition'+(num?(' n° '+num):'')+'.<br>'
-      +'Vous pouvez <b>compléter ou modifier vos choix</b> : menus, plats à la carte, boissons, animations '
-      +'et régimes alimentaires. Les montants se recalculent automatiquement.<br>'
-      +'Une fois terminé, cliquez sur <b>« ✅ Valider mes choix »</b> en bas de page — nous recevrons votre '
-      +'sélection et vous enverrons le devis définitif.';
-    barreValidation();
+    var id=new URLSearchParams(location.search).get('doc');
+    if(!id || typeof window.gbCharger!=='function') return;
+    try{ await window.gbCharger(id); }catch(e){ alert('❌ Impossible d\'ouvrir ce document\n'+e.message); }
   });
 })();
 </script>
 </body>
 
+</html
 </html>
