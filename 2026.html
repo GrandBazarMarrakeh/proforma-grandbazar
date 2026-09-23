@@ -2235,6 +2235,16 @@ function genererDocument(){
       return td.textContent.replace(/\s+/g,' ').trim();
     };
     const _stripIcon=s=>s.replace(/^[^\p{L}0-9]+/u,'').trim();
+    // Le message du gâteau est rangé dans le même <small> que les descriptions :
+    // on le distingue par son préfixe crayon, et on le conserve pour la cuisine.
+    const _msgGateau=td=>{
+      let m='';
+      td.querySelectorAll('small').forEach(function(s){
+        const v=s.textContent.replace(/\s+/g,' ').trim();
+        if(/^✏️/.test(v) || /^Message\s*:/i.test(v)) m=v.replace(/^✏️\s*/,'').replace(/^Message\s*:\s*/i,'');
+      });
+      return m;
+    };
     // Version aérée : un élément par ligne, prix unitaire × quantité (pas de total, pas d'icônes)
     const _blocs=id=>{
       const b=document.getElementById(id); if(!b) return [];
@@ -2259,6 +2269,8 @@ function genererDocument(){
           const pu=tds[1].textContent.replace(/\s+/g,' ').trim();
           const qty=parseInt(tds[2].textContent)||0;
           if(name) lines.push(name+(qty?(' ×'+qty):''));   // nom + quantité, sans le prix
+          const _mg=_msgGateau(tds[0]);
+          if(_mg) lines.push('Message sur le gâteau : '+_mg);
           return;
         }
         const t=tr.textContent.replace(/\s+/g,' ').trim();
