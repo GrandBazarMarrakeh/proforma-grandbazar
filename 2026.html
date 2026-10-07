@@ -2662,6 +2662,20 @@ function genererDocument(){
       const st=document.getElementById('gb-statut'); if(st&&j.doc.statut) st.value=j.doc.statut;
       const refn=document.getElementById('ref-num'); if(refn) refn.value=j.doc.numero;
       gbApplyState(j.doc.formData);
+      // Garde-fou : un document ancien peut référencer des menus dont le contenu ou le prix
+      // a changé depuis. Le total est alors recalculé avec la carte actuelle et ne correspond
+      // plus au montant enregistré — enregistrer écraserait silencieusement le bon montant.
+      try{
+        var _stock=Number(j.doc.montant)||0;
+        var _calc=gbNum((document.getElementById('ttc')||{}).textContent);
+        if(_stock>0 && Math.abs(_stock-_calc)>1){
+          alert('⚠️ Montant recalculé différent de l\'enregistré\n\n'
+            +'Enregistré au registre : '+_stock.toLocaleString('fr-FR')+' DH\n'
+            +'Recalculé maintenant : '+_calc.toLocaleString('fr-FR')+' DH\n\n'
+            +'Ce document a été créé avec une version antérieure de la carte (menus ou prix modifiés depuis).\n'
+            +'Vérifie les lignes avant toute action : si tu enregistres, le montant d\'origine sera remplacé.');
+        }
+      }catch(e){}
       gbCloseModal();
       alert('📂 Chargé : '+j.doc.numero+'\nModifie puis clique Enregistrer pour mettre à jour (même numéro).');
     }catch(e){ alert('❌ '+e.message); }
