@@ -2357,7 +2357,8 @@ function genererDocument(){
       cuisineResume: _fusionGuide
         ? [_tapas,_fusionGuide,_autres].filter(Boolean).join('\n')
         : [cuisinePayant,(guideRepasTxt?'Repas guide (offert) :\n'+guideRepasTxt:'')].filter(Boolean).join('\n\n'),
-      barResume:[barPayant,((guideOffert&&guideBoissonVal)?'Boisson guide (offerte) : '+guideBoissonVal+' × '+nbGuides:'')].filter(Boolean).join('\n\n')
+      barResume:[barPayant,((guideOffert&&guideBoissonVal)?'Boisson guide (offerte) : '+guideBoissonVal+' × '+nbGuides:'')].filter(Boolean).join('\n\n'),
+      animationResume:_recap('recap-anim-body')
     };
   }
 
