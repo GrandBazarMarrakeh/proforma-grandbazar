@@ -2705,8 +2705,12 @@ function genererDocument(){
 
   window.gbCharger=async function(id){
     try{
-      const j=await gbApi({action:'get',id:id});
-      if(!j.doc){ alert('Document introuvable'); return; }
+      let j=await gbApi({action:'get',id:id});
+      if(!j.doc){                          // réponse vide du moteur (page Google intermittente) : une 2e tentative avant de conclure
+        await new Promise(function(r){ setTimeout(r, 800); });
+        j=await gbApi({action:'get',id:id});
+      }
+      if(!j.doc){ alert('Document introuvable (réponse vide du moteur). Réessaie dans un instant ; si ça persiste, préviens Claude avec le numéro du document.'); return; }
       window.gbResetFormulaire();          // page nette avant d'appliquer le document
       window.GB_currentId=j.doc.id;
       const dt=document.getElementById('gb-doctype'); if(dt&&j.doc.type) dt.value=j.doc.type;
