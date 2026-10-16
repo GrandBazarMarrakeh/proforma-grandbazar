@@ -2448,15 +2448,42 @@ function genererDocument(){
   }
 
   // Mention ajoutée aux emails lorsque le règlement retenu est le virement bancaire
+  // Langue du mail = langue du DOCUMENT (bouton FR / EN de l'outil) : un proforma en anglais part avec un mail en anglais (14-16/10/2026)
+  window.gbLangueMail=function(){ try{ return (typeof lang!=='undefined' && lang==='en') ? 'en' : 'fr'; }catch(e){ return 'fr'; } };
+
   window.gbMentionVirement=function(){
     var cr=document.querySelector('input[name="reglement"]:checked');
     if(!cr || cr.value!=='virement') return '';
+    if(window.gbLangueMail()==='en'){
+      return 'Payment by bank transfer: our bank details are on the document.\n'
+           + 'Please send us a copy of the transfer order as soon as it has been made, '
+           + 'so that we can follow up on your booking.\n\n';
+    }
     return 'Règlement par virement bancaire : nos coordonnées figurent sur le document.\n'
          + 'Merci de nous transmettre une copie de l\'ordre de virement dès qu\'il est effectué, '
          + 'afin d\'assurer le suivi de votre dossier.\n\n';
   };
 
   function gbDefaultMail(type,numero){
+    if(window.gbLangueMail()==='en'){
+      var E={ proforma:{t:'your proforma invoice',n:'Proforma invoice'},
+              devis:{t:'your quotation',n:'Quotation'},
+              facture:{t:'your invoice',n:'Invoice'},
+              recu:{t:'your receipt',n:'Receipt'} };
+      var y=E[type]||{t:'your document',n:'Document'};
+      return {
+        subject:'Le Grand Bazar Marrakech — '+y.n+(numero?(' n° '+numero):''),
+        body:'Hello,\n\n'
+          +'Please find attached '+y.t+(numero?(' no. '+numero):'')+' for Le Grand Bazar Marrakech.\n'
+          +'Please do not hesitate to contact us with any question.\n\n'
+          +window.gbMentionVirement()
+          +'Kind regards,\n'
+          +'Le Grand Bazar — Restaurant Rooftop\n'
+          +'Place Jemaa El Fna, Marrakech\n'
+          +'+212 6 11078244\n'
+          +'com.legrandbazardemarrakech@gmail.com'
+      };
+    }
     var L={ proforma:{t:'votre facture proforma',n:'Facture proforma'},
             devis:{t:'votre devis',n:'Devis'},
             facture:{t:'votre facture',n:'Facture'},
@@ -2493,6 +2520,12 @@ function genererDocument(){
   window.gbEnvoyer=async function(){
     try{
       if(!window.GB_currentId){ alert('Enregistre d\'abord le document (💾 Enregistrer), puis envoie-le.'); return; }
+      // 16/10/2026 : l'envoi ENREGISTRE d'abord (Registre, PDF à jour, feuille de route) — avant, un document modifié puis envoyé sans repasser par 💾 Enregistrer
+      // laissait le Registre et la feuille de route avec les anciennes données (devis 2026-D-029 : 14 pax et 0 Dh au lieu de 12 pax).
+      var _al=window.alert, _erreur=false;
+      window.alert=function(m){ if(/^(❌|⚠)/.test(String(m))){ _erreur=true; _al(m); } };   // message de succès de l'enregistrement masqué, erreurs conservées
+      try{ await window.gbEnregistrer(); } finally { window.alert=_al; }
+      if(_erreur) return;
       await gbSendCurrent(null);
     }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
   };
@@ -2784,8 +2817,21 @@ function genererDocument(){
     if(!await assurerEnregistrement()) return;
     var lien=urlClient()+'?doc='+encodeURIComponent(window.GB_currentId);
     var num=numero();
-    var subject='Le Grand Bazar Marrakech — votre proposition'+(num?(' n° '+num):'');
-    var body='Bonjour,\n\n'
+    var en=(window.gbLangueMail()==='en');
+    var subject=en ? 'Le Grand Bazar Marrakech — your proposal'+(num?(' n° '+num):'') : 'Le Grand Bazar Marrakech — votre proposition'+(num?(' n° '+num):'');
+    var body=en ? ('Hello,\n\n'
+      +'Here is your proposal for Le Grand Bazar Marrakech'+(num?(' (ref. '+num+')'):'')+'.\n\n'
+      +'You can view it and complete or change your choices (menus, drinks, dietary requirements) '
+      +'directly online using this personal link:\n\n'+lien+'\n\n'
+      +'Once your choices are final, please click "Validate my choices" at the bottom of the page: '
+      +'we will receive your selection and send you the final quotation.\n\n'
+      +'This link is personal to you, please do not share it.\n\n'
+      +(typeof window.gbMentionVirement==='function'?window.gbMentionVirement():'')
+      +'Kind regards,\n'
+      +'Le Grand Bazar — Restaurant Rooftop\n'
+      +'Place Jemaa El Fna, Marrakech\n'
+      +'+212 6 11078244')
+      : ('Bonjour,\n\n'
       +'Voici votre proposition pour Le Grand Bazar Marrakech'+(num?(' (réf. '+num+')'):'')+'.\n\n'
       +'Vous pouvez la consulter et compléter ou modifier vos choix (menus, boissons, régimes alimentaires) '
       +'directement en ligne via ce lien personnel :\n\n'+lien+'\n\n'
@@ -2796,7 +2842,7 @@ function genererDocument(){
       +'Bien cordialement,\n'
       +'Le Grand Bazar — Restaurant Rooftop\n'
       +'Place Jemaa El Fna, Marrakech\n'
-      +'+212 6 11078244';
+      +'+212 6 11078244');
     await window.gbApi({action:'send', id:window.GB_currentId, email:email, subject:subject, message:body});
     var st=document.getElementById('gb-statut'); if(st) st.value='Partagé au client';
     window.gbGenererSilencieux();
