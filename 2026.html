@@ -1412,7 +1412,12 @@ function buildMenuCards(){
   });
   c.innerHTML='';
   const isFr=lang==='fr';
+  const dejOk=gbMenuDejeunerDispo();
+  if(!dejOk){                                   // menu de midi sélectionné mais plus disponible (tarif ou heure changés) : on l'enlève
+    MENUS.forEach(function(m){ if(m.dej){ if(selMenu===m.id) selMenu=null; if(menuQty[m.id]) delete menuQty[m.id]; } });
+  }
   MENUS.forEach(m=>{
+    if(m.dej && !dejOk) return;
     const prix=tarif==='partenaire'?m.prix_p:m.prix_c;
     const d=document.createElement('div');
     const actif = menuMulti ? ((menuQty[m.id]||0)>0) : (selMenu===m.id);
@@ -1482,11 +1487,22 @@ const MENUS=[
      {col:2,l_fr:'Plat de la terre',l_en:'From the land',v_fr:'T-Bone Steak, sauce au vin rouge, purée de céleri rave',v_en:'T-Bone steak, red wine sauce, celeriac purée'},
      {col:3,l_fr:'Dessert',l_en:'Dessert',v_fr:'Pavlova citron & chocolat blanc',v_en:'Lemon & white chocolate Pavlova'}
    ]},
+  // Menu de DÉJEUNER à 200 DH (partenaires / TO, service de midi seulement : heure de 12:00 à 15:45) — remis le 03/11/2026 sur demande de Fabien (un seul menu)
+  {id:6,nom:'Déjeuner',dej:true,prix_p:200,prix_c:250,entree_fr:'Farandole de légumes grillés',entree_en:'Grilled vegetable selection',plat_fr:'Tajine de poulet (semoule ou salade verte)',plat_en:'Chicken Tagine (couscous or green salad)',dessert_fr:'Mhalabia',dessert_en:'Mhalabia'},
 ];
+// Les menus « dej » ne sont proposés qu'au tarif Partenaires et pour une heure de déjeuner (12:00 à 15:45)
+function gbMenuDejeunerDispo(){
+  if(tarif!=='partenaire') return false;
+  const h=((document.getElementById('inp-heure')||{}).value||'').match(/^(\d{1,2}):(\d{2})/);
+  if(!h) return false;
+  const hh=parseInt(h[1],10);
+  return hh>=12 && hh<16;
+}
 let lang='fr',tarif='partenaire',mode='fixe',selMenu=null,carteSupp=false,menuMulti=false,menuQty={};
 document.getElementById('ref-date').valueAsDate=new Date();
 document.getElementById('ref-num').value='non enregistré';   // remplacé par le vrai numéro dès le 1er enregistrement
 buildMenuCards();recalc();
+(function(){ const sh=document.getElementById('inp-heure'); if(sh) sh.addEventListener('change',function(){ buildMenuCards(); recalc(); }); })();
 // Init guide : s'assurer que le bloc est caché au départ
 (function(){
   const gs = document.getElementById('guide-statut');
