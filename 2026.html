@@ -1277,6 +1277,7 @@ body.gb-directe-mode #directe-block{display:block!important}
         <label class="regl-opt"><input type="radio" name="reglement" value="especes" onchange="showReglement(this.value)"><span data-fr>💵 Espèces</span><span data-en>💵 Cash</span></label>
 
       </div>
+      <input type="hidden" id="mode-regl-memo" value="">
     </div>
     <div class="regl-bloc" id="regl-virement" style="display:none">
       <div class="rib-box"><div class="rib-header"><span class="rib-bank">🏦</span><span class="rib-title" data-fr>Coordonnées Bancaires — Virement</span><span class="rib-title" data-en>Bank Details — Wire Transfer</span></div>
@@ -1822,6 +1823,10 @@ function gbVerifLienPerime(){
 }
 
 function showReglement(val){
+  // Mémorise le choix dans un champ caché : le bouton radio peut se décocher
+  // (reconstruction du DOM, réouverture), le champ caché est enregistré avec le document.
+  const memo=document.getElementById('mode-regl-memo');
+  if(memo) memo.value=val||'';
   document.querySelectorAll('.regl-bloc').forEach(b=>b.style.setProperty('display','none','important'));
   const bloc=document.getElementById('regl-'+val);
   if(bloc) bloc.style.setProperty('display','block','important');
@@ -1839,9 +1844,17 @@ function gbForcerReglement(){
     b.style.setProperty('display','none','important');
   });
   if(estFacture) return;   // une facture ne porte volontairement pas de bloc de règlement
+  // Le radio fait foi s'il est coché ; sinon on retombe sur le choix mémorisé,
+  // et on recoche le radio — c'est lui qui se perdait et vidait le bloc du PDF.
   const cr=document.querySelector('input[name="reglement"]:checked');
-  if(!cr) return;          // aucun mode retenu : aucun bloc, pas de RIB imposé
-  const sel=document.getElementById('regl-'+cr.value);
+  const memo=((document.getElementById('mode-regl-memo')||{}).value||'').trim();
+  const choix=cr ? cr.value : memo;
+  if(!choix) return;       // aucun mode retenu : aucun bloc, pas de RIB imposé
+  if(!cr){
+    const r=document.querySelector('input[name="reglement"][value="'+choix+'"]');
+    if(r) r.checked=true;
+  }
+  const sel=document.getElementById('regl-'+choix);
   if(sel){ sel.classList.add('active-regl'); sel.style.setProperty('display','block','important'); }
   try{ gbVerifLienPerime(); }catch(e){}
 }
@@ -1851,14 +1864,15 @@ function genererDocument(){
   // Garde-fou : sans mode de règlement coché, la section « Mode de Règlement » sort vide
   try{
     var _dt=((document.getElementById('gb-doctype')||{}).value||'');
-    if(_dt!=='facture' && !document.querySelector('input[name="reglement"]:checked')){
+    var _memoR=((document.getElementById('mode-regl-memo')||{}).value||'').trim();
+    if(_dt!=='facture' && !document.querySelector('input[name="reglement"]:checked') && !_memoR){
       var _msg=(lang==='en')
         ? 'No payment method is selected — the "Payment Method" section will be empty and the client will not know how to pay.\n\nGenerate anyway?'
         : 'Aucun mode de règlement n\'est coché — la section « Mode de Règlement » sortira vide et le client ne saura pas comment payer.\n\nGénérer quand même ?';
       if(!confirm(_msg)) return;
     }
-    var _cr=document.querySelector('input[name="reglement"]:checked');
-    if(_cr && _cr.value==='lien'){
+    var _crv=(document.querySelector('input[name="reglement"]:checked')||{}).value||_memoR;
+    if(_crv==='lien'){
       var _u=(document.getElementById('lien-paiement-url')||{}).value||'';
       if(!_u.trim()){
         var _m2=(lang==='en')
@@ -2467,7 +2481,8 @@ function genererDocument(){
       const cb=it.querySelector('input[type=checkbox]'), nb=it.querySelector('.regime-nb');
       return {c:!!(cb&&cb.checked), n:nb?nb.value:''};
     });
-    const cr=document.querySelector('input[name="reglement"]:checked'); fd.reglement=cr?cr.value:null;
+    const cr=document.querySelector('input[name="reglement"]:checked');
+    fd.reglement=cr?cr.value:(((document.getElementById('mode-regl-memo')||{}).value||'').trim()||null);
     const gtg=document.querySelector('input[name="guide-type-global"]:checked'); fd.guideTypeGlobal=gtg?gtg.value:null;
     const gbo=document.querySelector('input[name="guide-boisson"]:checked'); fd.guideBoisson=gbo?gbo.value:'';
     const obs=document.querySelector('.notes-area textarea'); fd.observations=obs?obs.value:null;
@@ -2513,7 +2528,7 @@ function genererDocument(){
         const nb=its[i].querySelector('.regime-nb');           if(nb&&r.n!=null) nb.value=r.n;
       });
     }
-    const _reg = fd.reglement || g.reglement || null;
+    const _reg = fd.reglement || g.reglement || (((fd.byId||{})['mode-regl-memo']||'').trim()) || null;
     if(_reg){ const r=document.querySelector('input[name="reglement"][value="'+_reg+'"]'); if(r){ r.checked=true; if(typeof showReglement==='function') showReglement(_reg);} }
     if(fd.guideTypeGlobal){ const r=document.querySelector('input[name="guide-type-global"][value="'+fd.guideTypeGlobal+'"]'); if(r){ r.checked=true; } if(typeof onGuideTypeGlobal==='function') onGuideTypeGlobal(); }
     if(typeof fd.guideBoisson==='string'){ const r=document.querySelector('input[name="guide-boisson"][value="'+fd.guideBoisson+'"]'); if(r) r.checked=true; }
@@ -2787,6 +2802,7 @@ function genererDocument(){
       const nb=it.querySelector('.regime-nb'); if(nb) nb.value='';
     });
     document.querySelectorAll('input[name="reglement"]').forEach(function(r){ r.checked=false; });
+    var _memo=document.getElementById('mode-regl-memo'); if(_memo) _memo.value='';
     document.querySelectorAll('.regl-bloc').forEach(function(b){ b.classList.remove('active-regl'); b.style.setProperty('display','none','important'); });
     const rf=document.querySelector('input[name="guide-type-global"][value="fixe"]'); if(rf) rf.checked=true;
     const rb=document.querySelector('input[name="guide-boisson"][value=""]'); if(rb) rb.checked=true;
