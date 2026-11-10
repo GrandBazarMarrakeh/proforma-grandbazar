@@ -1805,6 +1805,26 @@ function gbForcerReglement(){
 
 function genererDocument(){
   recalc(); // S'assurer que les totaux sont à jour
+  // Garde-fou : sans mode de règlement coché, la section « Mode de Règlement » sort vide
+  try{
+    var _dt=((document.getElementById('gb-doctype')||{}).value||'');
+    if(_dt!=='facture' && !document.querySelector('input[name="reglement"]:checked')){
+      var _msg=(lang==='en')
+        ? 'No payment method is selected — the "Payment Method" section will be empty and the client will not know how to pay.\n\nGenerate anyway?'
+        : 'Aucun mode de règlement n\'est coché — la section « Mode de Règlement » sortira vide et le client ne saura pas comment payer.\n\nGénérer quand même ?';
+      if(!confirm(_msg)) return;
+    }
+    var _cr=document.querySelector('input[name="reglement"]:checked');
+    if(_cr && _cr.value==='lien'){
+      var _u=(document.getElementById('lien-paiement-url')||{}).value||'';
+      if(!_u.trim()){
+        var _m2=(lang==='en')
+          ? 'Payment link selected but the URL field is empty — the document will show a dash instead of the link.\n\nGenerate anyway?'
+          : 'Lien de paiement coché mais le champ URL est vide — le document affichera un tiret à la place du lien.\n\nGénérer quand même ?';
+        if(!confirm(_m2)) return;
+      } else if(typeof updateLienPaiement==='function'){ updateLienPaiement(); }
+    }
+  }catch(e){}
   const isFr=lang==='fr';
   // Nom fichier : AA_MM_JJ_Société_Contact_Référence_NbPax (champs vides omis)
   const dv=document.getElementById('inp-date-prestation').value;
@@ -2540,9 +2560,13 @@ function genererDocument(){
       // laissait le Registre et la feuille de route avec les anciennes données (devis 2026-D-029 : 14 pax et 0 Dh au lieu de 12 pax).
       var _al=window.alert, _erreur=false;
       window.alert=function(m){ if(/^(❌|⚠)/.test(String(m))){ _erreur=true; _al(m); } };   // message de succès de l'enregistrement masqué, erreurs conservées
+      window.GB_lastPdf=null;
       try{ await window.gbEnregistrer(); } finally { window.alert=_al; }
       if(_erreur) return;
-      await gbSendCurrent(null);
+      // Réutilise le PDF produit par l'enregistrement : une seule génération, un seul fichier
+      var _p=window.GB_lastPdf;
+      var _frais=_p && _p.b64 && _p.id===window.GB_currentId && (Date.now()-_p.t)<120000;
+      await gbSendCurrent(_frais?_p:null);
     }catch(e){ alert('❌ Envoi impossible\n'+e.message); }
   };
 
@@ -2674,6 +2698,9 @@ function genererDocument(){
       const driveUrl=(j2&&j2.driveUrl)||'';
       const refn=document.getElementById('ref-num'); if(refn&&numero) refn.value=numero;
       gbLoadPartners(); // mémorise le partenaire pour la prochaine fois
+      // Conserve le PDF qui vient d'être produit : l'envoi qui suit le réutilise au lieu
+      // d'en fabriquer un second (sinon deux fichiers dans le Drive pour un seul document).
+      window.GB_lastPdf={b64:pdf.b64,fileBase:pdf.fileBase,id:window.GB_currentId,t:Date.now()};
       alert('✅ Enregistré\nN° '+numero+'\nStatut : '+statut+(driveUrl?'\n📄 PDF rangé dans le Drive ✔':'\n(données seules, sans PDF)'));
     }catch(e){ alert('❌ Enregistrement impossible\n'+e.message); }
     finally{ window.gbVerrouBoutons(false); }
