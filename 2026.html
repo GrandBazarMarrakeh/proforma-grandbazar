@@ -1301,10 +1301,13 @@ body.gb-directe-mode #directe-block{display:block!important}
             <span class="rib-label" data-fr>🔗 Lien de paiement</span>
             <span class="rib-label" data-en>🔗 Payment link</span>
             <span class="rib-val">
-              <input type="url" id="lien-paiement-url" placeholder="https://..." oninput="updateLienPaiement()"
+              <input type="url" id="lien-paiement-url" placeholder="https://..." oninput="updateLienPaiement(true)"
                 style="width:100%;border:none;border-bottom:1px dashed var(--gold);background:transparent;
                        font-family:'Cormorant Garamond',serif;font-size:12.5px;padding:2px 4px;
                        outline:none;color:var(--navy)">
+              <button type="button" onclick="gbNouveauLien()" title="Effacer pour coller un nouveau lien"
+                style="margin-top:4px;border:1px solid #d4c5a0;background:#f5f0e8;cursor:pointer;font-family:inherit;
+                       font-size:11px;padding:3px 9px;border-radius:3px;color:#7b1c3a"><span data-fr>↻ Remplacer le lien</span><span data-en>↻ Replace link</span></button>
             </span>
           </div>
           <!-- Lien cliquable pour l'impression -->
@@ -1318,6 +1321,11 @@ body.gb-directe-mode #directe-block{display:block!important}
               </a>
             </span>
           </div>
+        </div>
+        <input type="hidden" id="lien-montant-ref" value="">
+        <div class="rib-warning screen-only" id="lien-perime" style="display:none;background:rgba(190,25,25,.10);border-left-color:#be1919;color:#8a1313">
+          <strong data-fr>⚠ Ce lien a été créé pour un acompte de <span class="lien-perime-ancien">—</span>, or l'acompte est maintenant de <span class="lien-perime-actuel">—</span>. Recrée le lien chez le prestataire et colle-le à nouveau, sinon le client paiera l'ancien montant.</strong>
+          <strong data-en>⚠ This link was created for a deposit of <span class="lien-perime-ancien">—</span>, but the deposit is now <span class="lien-perime-actuel">—</span>. Create a new link and paste it again, otherwise the client will pay the old amount.</strong>
         </div>
         <div class="rib-warning" data-fr>⚠ Lien valable <strong>48h</strong>. Réservation confirmée après validation du paiement.</div>
         <div class="rib-warning" data-en>⚠ Link valid <strong>48 hours</strong>. Reservation confirmed after payment.</div>
@@ -1763,7 +1771,16 @@ function toggleSoldeAnt(){
   recalc();
 }
 
-function updateLienPaiement(){
+// Vide le champ pour coller un lien tout neuf (l'ancien montant de référence part avec)
+function gbNouveauLien(){
+  const u=document.getElementById('lien-paiement-url');
+  if(!u) return;
+  u.value='';
+  updateLienPaiement(true);
+  u.focus();
+}
+
+function updateLienPaiement(memoriser){
   const url = document.getElementById('lien-paiement-url')?.value?.trim() || '';
   // Mettre à jour les deux lien-paiement (FR et EN ont même id, chercher tous)
   document.querySelectorAll('#lien-paiement-href').forEach(a=>{
@@ -1778,6 +1795,30 @@ function updateLienPaiement(){
   document.querySelectorAll('#lien-paiement-print-row').forEach(row=>{
     row.style.display = url ? 'flex' : 'none';
   });
+  // Mémorise l'acompte en vigueur UNIQUEMENT quand l'utilisateur saisit le lien.
+  // Les appels automatiques ne doivent pas effacer l'alerte « lien périmé ».
+  const ref=document.getElementById('lien-montant-ref');
+  if(ref){
+    if(!url) ref.value='';
+    else if(memoriser===true) ref.value=((document.getElementById('acompte')||{}).textContent||'').trim();
+  }
+  gbVerifLienPerime();
+}
+
+// Le lien de paiement est créé chez le prestataire pour un montant figé. Si l'acompte
+// change après coup, le lien encaisse l'ancien montant : on le signale à l'écran.
+function gbVerifLienPerime(){
+  const box=document.getElementById('lien-perime');
+  if(!box) return;
+  const url=((document.getElementById('lien-paiement-url')||{}).value||'').trim();
+  const ancien=((document.getElementById('lien-montant-ref')||{}).value||'').trim();
+  const actuel=((document.getElementById('acompte')||{}).textContent||'').trim();
+  const perime = !!url && !!ancien && ancien!==actuel;
+  box.style.display = perime ? 'block' : 'none';
+  if(perime){
+    document.querySelectorAll('.lien-perime-ancien').forEach(e=>e.textContent=ancien);
+    document.querySelectorAll('.lien-perime-actuel').forEach(e=>e.textContent=actuel);
+  }
 }
 
 function showReglement(val){
@@ -1786,6 +1827,7 @@ function showReglement(val){
   if(bloc) bloc.style.setProperty('display','block','important');
   const a=document.getElementById('acompte').textContent;
   ['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=a;});
+  gbVerifLienPerime();
 }
 
 // Impose le bloc de règlement retenu, y compris à l'impression et dans le PDF.
@@ -1801,6 +1843,7 @@ function gbForcerReglement(){
   if(!cr) return;          // aucun mode retenu : aucun bloc, pas de RIB imposé
   const sel=document.getElementById('regl-'+cr.value);
   if(sel){ sel.classList.add('active-regl'); sel.style.setProperty('display','block','important'); }
+  try{ gbVerifLienPerime(); }catch(e){}
 }
 
 function genererDocument(){
@@ -1822,7 +1865,17 @@ function genererDocument(){
           ? 'Payment link selected but the URL field is empty — the document will show a dash instead of the link.\n\nGenerate anyway?'
           : 'Lien de paiement coché mais le champ URL est vide — le document affichera un tiret à la place du lien.\n\nGénérer quand même ?';
         if(!confirm(_m2)) return;
-      } else if(typeof updateLienPaiement==='function'){ updateLienPaiement(); }
+      } else {
+        var _anc=((document.getElementById('lien-montant-ref')||{}).value||'').trim();
+        var _act=((document.getElementById('acompte')||{}).textContent||'').trim();
+        if(_anc && _anc!==_act){
+          var _m3=(lang==='en')
+            ? 'The payment link was created for a deposit of '+_anc+', but the deposit is now '+_act+'.\nThe client would pay the old amount.\n\nGenerate anyway?'
+            : 'Le lien de paiement a été créé pour un acompte de '+_anc+', or l\'acompte est maintenant de '+_act+'.\nLe client paierait l\'ancien montant.\n\nGénérer quand même ?';
+          if(!confirm(_m3)) return;
+        }
+        if(typeof updateLienPaiement==='function'){ updateLienPaiement(); }
+      }
     }
   }catch(e){}
   const isFr=lang==='fr';
