@@ -2568,6 +2568,96 @@ function genererDocument(){
          + 'afin d\'assurer le suivi de votre dossier.\n\n';
   };
 
+  // ── Éléments repris dans le corps du mail ─────────────────────
+  function gbInfosMail(){
+    var box=document.querySelectorAll('.info-box')[0];
+    var els=box?box.querySelectorAll('.field-value'):[];
+    var contact=els[1]?String(els[1].value||'').trim():'';
+    var societe=els[0]?String(els[0].value||'').trim():'';
+    var dv=(document.getElementById('inp-date-prestation')||{}).value||'';
+    var en=(window.gbLangueMail()==='en');
+    var dateTxt='';
+    if(dv){
+      try{
+        var d=new Date(dv+'T12:00:00');
+        dateTxt=d.toLocaleDateString(en?'en-GB':'fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+      }catch(e){ dateTxt=dv; }
+    }
+    var heure=((document.getElementById('inp-heure')||{}).value||'').trim();
+    var pax=((document.getElementById('nb-convives')||{}).value||'').trim();
+    var ttc=gbNum((document.getElementById('ttc')||{}).textContent);
+    var acompte=gbNum((document.getElementById('acompte')||{}).textContent);
+    var verse=gbNum((document.getElementById('deja-verse')||{}).value);
+    var mode=((document.querySelector('input[name="reglement"]:checked')||{}).value
+             ||((document.getElementById('mode-regl-memo')||{}).value||'')).trim();
+    var lien=((document.getElementById('lien-paiement-url')||{}).value||'').trim();
+    return {en:en,contact:contact,societe:societe,date:dateTxt,heure:heure,pax:pax,
+            ttc:ttc,acompte:acompte,verse:verse,mode:mode,lien:lien};
+  }
+
+  function gbFmtMontant(n){
+    return (Number(n)||0).toLocaleString('fr-FR',{minimumFractionDigits:2,maximumFractionDigits:2})+' DH';
+  }
+
+  // Récapitulatif chiffré + modalités de règlement, inséré dans le mail
+  function gbCorpsDetail(type){
+    var i=gbInfosMail(), en=i.en, L=[];
+    var final=(type==='facture'||type==='recu');
+
+    var occasion=[];
+    if(i.date)  occasion.push(en?('on '+i.date):('le '+i.date));
+    if(i.heure) occasion.push(en?('at '+i.heure):('à '+i.heure));
+    if(i.pax)   occasion.push(i.pax+(en?' guests':' personnes'));
+    if(occasion.length) L.push((en?'Your booking ':'Votre réception ')+occasion.join(', ')+'.');
+    L.push('');
+
+    L.push(en?'SUMMARY':'RÉCAPITULATIF');
+    L.push((en?'Total incl. VAT: ':'Montant total TTC : ')+gbFmtMontant(i.ttc));
+
+    if(!final && i.acompte>0){
+      if(i.verse>0){
+        L.push((en?'Deposit already received: ':'Acompte déjà reçu : ')+gbFmtMontant(i.verse)+(en?' — thank you.':' — merci.'));
+        L.push((en?'Balance payable on arrival: ':'Solde à régler sur place : ')+gbFmtMontant(i.ttc-i.verse));
+      }else{
+        L.push((en?'Deposit to confirm the booking: ':'Acompte à régler pour confirmer la réservation : ')+gbFmtMontant(i.acompte));
+        L.push((en?'Balance payable on arrival: ':'Solde à régler sur place le jour même : ')+gbFmtMontant(i.ttc-i.acompte));
+      }
+    }else if(final && i.verse>0){
+      L.push((en?'Already paid: ':'Déjà réglé : ')+gbFmtMontant(i.verse));
+      L.push((en?'Balance due: ':'Reste à régler : ')+gbFmtMontant(i.ttc-i.verse));
+    }
+    L.push('');
+
+    if(!final && i.mode==='lien'){
+      L.push(en?'PAYMENT OF THE DEPOSIT — ONLINE LINK':'RÈGLEMENT DE L\'ACOMPTE — LIEN DE PAIEMENT');
+      L.push(i.lien || (en?'(link to follow)':'(lien à venir)'));
+      L.push(en?'This link is valid for 48 hours. Your booking is confirmed as soon as the payment is validated.'
+               :'Ce lien est valable 48 heures. Votre réservation est confirmée dès validation du paiement.');
+      L.push('');
+    }else if(!final && i.mode==='virement'){
+      L.push(en?'PAYMENT OF THE DEPOSIT — BANK TRANSFER':'RÈGLEMENT DE L\'ACOMPTE — VIREMENT BANCAIRE');
+      L.push((en?'Account holder: ':'Titulaire : ')+'NYX');
+      L.push((en?'Bank: ':'Banque : ')+'AttijariWafa Bank — Ag. Marrakech Plaza (1509)');
+      L.push('IBAN : MA64 007 450 0015095000000196 27');
+      L.push('BIC / SWIFT : BCMAMAMC');
+      L.push(en?'The transfer must be completed at least 15 days before the event. Your booking is confirmed once the funds are received.'
+               :'Le virement doit être effectué au minimum 15 jours avant la date de la prestation. La réservation est confirmée à réception des fonds.');
+      L.push(en?'Please send us a copy of the transfer order so we can follow up on your file.'
+               :'Merci de nous transmettre une copie de l\'ordre de virement afin d\'assurer le suivi de votre dossier.');
+      L.push('');
+    }else if(!final && i.mode==='especes'){
+      L.push(en?'PAYMENT OF THE DEPOSIT — CASH':'RÈGLEMENT DE L\'ACOMPTE — ESPÈCES');
+      L.push(en?'The deposit is payable at the restaurant, at least 15 days before the event. A receipt will be issued.'
+               :'L\'acompte est à remettre sur place, au minimum 15 jours avant la date de la prestation. Un reçu vous sera délivré.');
+      L.push('');
+    }
+
+    L.push(en?'Any additional consumption ordered on the day will be payable directly at the restaurant at the end of service.'
+             :'Toute consommation supplémentaire prise le jour même sera à régler directement au restaurant, en fin de service.');
+    L.push('');
+    return L.join('\n');
+  }
+
   function gbDefaultMail(type,numero){
     if(window.gbLangueMail()==='en'){
       var E={ proforma:{t:'your proforma invoice',n:'Proforma invoice'},
@@ -2577,10 +2667,10 @@ function genererDocument(){
       var y=E[type]||{t:'your document',n:'Document'};
       return {
         subject:'Le Grand Bazar Marrakech — '+y.n+(numero?(' n° '+numero):''),
-        body:'Hello,\n\n'
-          +'Please find attached '+y.t+(numero?(' no. '+numero):'')+' for Le Grand Bazar Marrakech.\n'
-          +'Please do not hesitate to contact us with any question.\n\n'
-          +window.gbMentionVirement()
+        body:'Hello'+(gbInfosMail().contact?(' '+gbInfosMail().contact):'')+',\n\n'
+          +'Please find attached '+y.t+(numero?(' no. '+numero):'')+' for Le Grand Bazar Marrakech.\n\n'
+          +gbCorpsDetail(type)
+          +'We remain at your disposal for any question.\n\n'
           +'Kind regards,\n'
           +'Le Grand Bazar — Restaurant Rooftop\n'
           +'Place Jemaa El Fna, Marrakech\n'
@@ -2594,10 +2684,11 @@ function genererDocument(){
             recu:{t:'votre reçu',n:'Reçu'} };
     var x=L[type]||{t:'votre document',n:'Document'};
     var subject='Le Grand Bazar Marrakech — '+x.n+(numero?(' n° '+numero):'');
-    var body='Bonjour,\n\n'
-      +'Veuillez trouver ci-joint '+x.t+(numero?(' n° '+numero):'')+' pour Le Grand Bazar Marrakech.\n'
+    var _i=gbInfosMail();
+    var body='Bonjour'+(_i.contact?(' '+_i.contact):'')+',\n\n'
+      +'Veuillez trouver ci-joint '+x.t+(numero?(' n° '+numero):'')+' pour Le Grand Bazar Marrakech.\n\n'
+      +gbCorpsDetail(type)
       +'Nous restons à votre disposition pour toute question.\n\n'
-      +window.gbMentionVirement()
       +'Bien cordialement,\n'
       +'Le Grand Bazar — Restaurant Rooftop\n'
       +'Place Jemaa El Fna, Marrakech\n'
