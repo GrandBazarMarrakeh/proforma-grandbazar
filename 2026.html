@@ -1830,7 +1830,30 @@ function gbAcompteRecu(){
   const nb=t=>parseFloat(String(t||'').replace(/[^0-9.,-]/g,'').replace(',','.'))||0;
   const verse=parseFloat((document.getElementById('deja-verse')||{}).value)||0;
   const acompte=nb((document.getElementById('acompte')||{}).textContent);
-  return verse>0 && verse>=acompte-1;
+  // 25/11 : un acompte DÉCLARÉ reçu (statut) compte même s'il est inférieur à 50 % (ex. acompte déjà réglé sur OpenFlow)
+  const statut=((document.getElementById('gb-statut')||{}).value||'');
+  return verse>0 && (verse>=acompte-1 || statut==='Acompte reçu' || statut==='Soldé');
+}
+
+// L'encadré de règlement suit ce qui est saisi, tout de suite à l'écran (avant le 25/11 il ne disparaissait qu'à la fabrication du PDF)
+document.addEventListener('input',function(e){ if(e.target&&e.target.id==='deja-verse') setTimeout(gbForcerReglement,0); });
+document.addEventListener('change',function(e){ if(e.target&&(e.target.id==='gb-statut'||e.target.id==='deja-verse')) setTimeout(gbForcerReglement,0); });
+
+// Contrôle de la saisie avant d'enregistrer ou d'envoyer (25/11, cas Hubler : convives vides et 9 accompagnements pour 18 plats partis sans un mot)
+function gbControleSaisie(){
+  const pb=[];
+  const type=((document.getElementById('gb-doctype')||{}).value||'proforma');
+  if(type==='facture'||type==='recu'||document.body.classList.contains('gb-directe-mode')) return pb;
+  const nb=parseInt((document.getElementById('nb-convives')||{}).value,10)||0;
+  if(nb<=0) pb.push('Le NOMBRE DE CONVIVES est vide.');
+  if(mode==='carte'||carteSupp){
+    const attendu=nbPlatsAvecAccomp();
+    const noms={'acc-legumes':'légumes','acc-semoule':'semoule','acc-salade':'salade verte','acc-puree':'purée','acc-frites':'frites'};
+    let total=0; const detail=[];
+    Object.keys(noms).forEach(function(id){ const v=parseInt((document.getElementById(id)||{}).value,10)||0; total+=v; if(v>0) detail.push(v+' '+noms[id]); });
+    if(attendu!==total) pb.push('ACCOMPAGNEMENTS : '+attendu+' plat(s) avec accompagnement, mais '+total+' accompagnement(s) saisi(s)'+(detail.length?' ('+detail.join(' + ')+')':'')+'.');
+  }
+  return pb;
 }
 
 function showReglement(val){
@@ -1838,9 +1861,9 @@ function showReglement(val){
   // (reconstruction du DOM, réouverture), le champ caché est enregistré avec le document.
   const memo=document.getElementById('mode-regl-memo');
   if(memo) memo.value=val||'';
-  document.querySelectorAll('.regl-bloc').forEach(b=>b.style.setProperty('display','none','important'));
-  const bloc=document.getElementById('regl-'+val);
-  if(bloc) bloc.style.setProperty('display','block','important');
+  const choisi=document.querySelector('input[name="reglement"][value="'+val+'"]');
+  if(choisi) choisi.checked=true;
+  gbForcerReglement();
   const a=document.getElementById('acompte').textContent;
   ['lien-montant','especes-montant'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=a;});
   gbVerifLienPerime();
@@ -2758,8 +2781,9 @@ function genererDocument(){
       var _al=window.alert, _erreur=false;
       window.alert=function(m){ if(/^(❌|⚠)/.test(String(m))){ _erreur=true; _al(m); } };   // message de succès de l'enregistrement masqué, erreurs conservées
       window.GB_lastPdf=null;
+      window.GB_annule=false;
       try{ await window.gbEnregistrer(); } finally { window.alert=_al; }
-      if(_erreur) return;
+      if(_erreur||window.GB_annule) return;
       // Réutilise le PDF produit par l'enregistrement : une seule génération, un seul fichier
       var _p=window.GB_lastPdf;
       var _frais=_p && _p.b64 && _p.id===window.GB_currentId && (Date.now()-_p.t)<120000;
@@ -2889,6 +2913,10 @@ function genererDocument(){
         var _realPrint=window.print; window.print=function(){};
         try{ genererDocument(); }catch(e){}
         setTimeout(function(){ window.print=_realPrint; }, 250);
+      }
+      const aCorriger=gbControleSaisie();
+      if(aCorriger.length && !confirm('⚠️ À vérifier avant d\'enregistrer :\n\n• '+aCorriger.join('\n• ')+'\n\nOK = enregistrer quand même\nAnnuler = revenir corriger (rien n\'est enregistré ni envoyé)')){
+        window.GB_annule=true; return;
       }
       const type=(document.getElementById('gb-doctype')||{}).value||'proforma';
       const statut=(document.getElementById('gb-statut')||{}).value||'Brouillon';
