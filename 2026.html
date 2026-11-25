@@ -2813,6 +2813,27 @@ function genererDocument(){
     document.head.appendChild(st);
   }
 
+  // Zones de saisie (observations, allergies…) : le générateur PDF écrit leur texte sur UNE seule ligne, qui est coupée.
+  // Le temps de la capture, chacune est remplacée par un bloc de texte identique qui passe à la ligne (25/11/2026).
+  function gbMiroirsTexte(racine){
+    var miroirs=[];
+    racine.querySelectorAll('textarea').forEach(function(t){
+      var cs=window.getComputedStyle(t);
+      if(cs.display==='none'||!t.offsetWidth) return;
+      var d=document.createElement('div'); d.className='gb-miroir-texte';
+      ['fontFamily','fontSize','fontWeight','fontStyle','color','lineHeight','letterSpacing','textAlign','paddingTop','paddingRight','paddingBottom','paddingLeft','borderTop','borderRight','borderBottom','borderLeft','backgroundColor','marginTop','marginRight','marginBottom','marginLeft'].forEach(function(k){ d.style[k]=cs[k]; });
+      d.style.boxSizing='border-box'; d.style.width=t.offsetWidth+'px'; d.style.minHeight=cs.minHeight;
+      d.style.whiteSpace='pre-wrap'; d.style.overflowWrap='break-word'; d.style.wordBreak='break-word';
+      d.textContent=t.value||'';
+      t.parentNode.insertBefore(d,t);
+      miroirs.push({t:t,d:d,affichage:t.style.getPropertyValue('display'),priorite:t.style.getPropertyPriority('display')});
+      t.style.setProperty('display','none','important');
+    });
+    return function(){
+      miroirs.forEach(function(m){ m.d.remove(); if(m.affichage) m.t.style.setProperty('display',m.affichage,m.priorite); else m.t.style.removeProperty('display'); });
+    };
+  }
+
   async function gbGeneratePdf(){
     await gbLoadHtml2pdf();
     gbInjectCaptureStyle();
@@ -2836,10 +2857,13 @@ function genererDocument(){
       jsPDF:{unit:'mm',format:'a4',orientation:'portrait'},
       pagebreak:{mode:['css','legacy']}};
     var b64='';
+    var retirerMiroirs=null;
     try{
+      retirerMiroirs=gbMiroirsTexte(el);
       var uri=await window.html2pdf().set(opt).from(el).outputPdf('datauristring');
       b64=(uri.split(',')[1])||'';
     } finally {
+      if(retirerMiroirs) retirerMiroirs();
       document.body.classList.remove('gb-capturing');
       document.title=origTitle;
     }
