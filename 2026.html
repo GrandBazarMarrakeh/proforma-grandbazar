@@ -1839,9 +1839,33 @@ function gbAcompteRecu(){
 document.addEventListener('input',function(e){ if(e.target&&e.target.id==='deja-verse') setTimeout(gbForcerReglement,0); });
 document.addEventListener('change',function(e){ if(e.target&&(e.target.id==='gb-statut'||e.target.id==='deja-verse')) setTimeout(gbForcerReglement,0); });
 
+// Cases chiffrées qui affichent « 0 » : elles se vident quand on clique dedans, sinon un chiffre tapé devant le 0 donne dix fois trop (25/11 : 37800 au lieu de 3780)
+document.addEventListener('focusin',function(e){ const c=e.target; if(c&&c.tagName==='INPUT'&&c.type==='number'&&c.value==='0'){ c.value=''; c.dataset.gbZero='1'; } });
+document.addEventListener('focusout',function(e){ const c=e.target; if(c&&c.dataset&&c.dataset.gbZero){ delete c.dataset.gbZero; if(c.value==='') c.value='0'; } });
+
+// « Déjà versé » supérieur au total : signalé à l'écran (le « Reste à régler » affiche alors 0,00)
+function gbTropVerse(){
+  const verse=parseFloat((document.getElementById('deja-verse')||{}).value)||0;
+  const ttc=parseFloat(String((document.getElementById('ttc')||{}).textContent||'').replace(/[^0-9,.-]/g,'').replace(',','.'))||0;
+  const solde=parseFloat((document.getElementById('solde-anterieur')||{}).value)||0;
+  return (ttc>0 && verse>ttc+solde+1) ? {verse:verse, total:ttc+solde} : null;
+}
+function gbSignalerTropVerse(){
+  const champ=document.getElementById('deja-verse'); if(!champ) return;
+  const table=champ.closest('table'); if(!table) return;
+  let note=document.getElementById('gb-trop-verse');
+  if(!note){ note=document.createElement('div'); note.id='gb-trop-verse'; note.className='screen-only hide-print'; note.style.cssText='color:#b00020;font-weight:700;font-size:13px;text-align:right;margin:4px 0;display:none'; table.parentNode.insertBefore(note,table.nextSibling); }
+  const x=gbTropVerse();
+  note.style.display=x?'block':'none';
+  note.textContent=x?('⚠ Déjà versé ('+x.verse.toLocaleString('fr-FR')+' DH) supérieur au total ('+x.total.toLocaleString('fr-FR')+' DH) : vérifiez les chiffres.'):'';
+  champ.style.color=x?'#b00020':'';
+}
+
 // Contrôle de la saisie avant d'enregistrer ou d'envoyer (25/11, cas Hubler : convives vides et 9 accompagnements pour 18 plats partis sans un mot)
 function gbControleSaisie(){
   const pb=[];
+  const trop=gbTropVerse();
+  if(trop) pb.push('DÉJÀ VERSÉ : '+trop.verse.toLocaleString('fr-FR')+' DH, plus que le total de '+trop.total.toLocaleString('fr-FR')+' DH.');
   const type=((document.getElementById('gb-doctype')||{}).value||'proforma');
   if(type==='facture'||type==='recu'||document.body.classList.contains('gb-directe-mode')) return pb;
   const nb=parseInt((document.getElementById('nb-convives')||{}).value,10)||0;
@@ -1872,6 +1896,7 @@ function showReglement(val){
 // Impose le bloc de règlement retenu, y compris à l'impression et dans le PDF.
 // Un style en ligne « important » l'emporte sur toutes les règles de la feuille de styles.
 function gbForcerReglement(){
+  try{ gbSignalerTropVerse(); }catch(e){}
   const _typeDoc = ((document.getElementById('gb-doctype')||{}).value||'');
   const estFacture = (_typeDoc==='facture' || _typeDoc==='recu');   // un reçu, comme une facture, ne porte pas de bloc de règlement
   document.querySelectorAll('.regl-bloc').forEach(function(b){
